@@ -1,0 +1,161 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 20% 35%, rgba(195, 81, 187, 0.28) 0%, transparent 28%),
+        radial-gradient(circle at 80% 25%, rgba(124, 7, 93, 0.882) 0%, transparent 25%),
+        radial-gradient(circle at 65% 80%, rgba(186, 18, 133, 0.399) 0%, transparent 30%),
+        linear-gradient(135deg, #090510 0%, #160a27 45%, #0b0614 100%);
+    font-family: 'VT323', monospace;
+    color: #ffffff;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient( rgba(255, 255, 255, 0.025) 1px, transparent 1px ),
+        linear-gradient( 90deg, rgba(255, 255, 255, 0.02) 1px,transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.35;
+}
+
+.inicio {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    padding: 70px 8%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.inicio::before {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    top: -250px;
+    left: -150px;
+    border-radius: 50%;
+    background: rgba(168, 85, 247, 0.12);
+    filter: blur(80px);
+}
+
+.inicio::after {
+    content: "";
+    position: absolute;
+    width: 450px;
+    height: 450px;
+    right: -180px;
+    bottom: -220px;
+    border-radius: 50%;
+    background: rgba(126, 34, 206, 0.16);
+    filter: blur(80px);
+}
+
+.cyber-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1250px;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 80px;
+}
+
+.foro-header {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+}
+
+.foro-header h2 {
+    margin: 0 0 22px 0;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.78rem;
+    font-weight: normal;
+    line-height: 1.6;
+    letter-spacing: 1px;
+    color: #ddd6fe;
+    text-shadow: 0 0 8px rgba(196, 181, 253, 0.7);
+}
+
+.foro-header h1 {
+    margin: 0;
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(2rem, 4vw, 4rem);
+    line-height: 1.2;
+    letter-spacing: 2px;
+    color: #f884fc;
+    white-space: nowrap;
+    text-shadow:
+        0 0 8px #7e22ce,
+        0 0 20px rgba(192, 132, 252, 0.7),
+        0 0 40px rgba(168, 85, 247, 0.35);
+}
+
+.collage {
+    position: relative;
+    width: 520px;
+    height: 420px;
+    flex-shrink: 0;
+}
+
+.img-kit {
+    position: absolute;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 2px solid rgba(216, 180, 254, 0.65);
+    box-shadow:
+        0 0 18px rgba(168, 85, 247, 0.3),
+        0 15px 35px rgba(0, 0, 0, 0.65);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.kit-top-left {
+    width: 220px;
+    height: 155px;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    transform: rotate(-4deg);
+}
+
+.kit-top-right {
+    width: 250px;
+    height: 165px;
+    top: 35px;
+    right: 0;
+    z-index: 1;
+    transform: rotate(4deg);
+}
+
+.kit-bottom {
+    width: 320px;
+    height: 200px;
+    bottom: 0;
+    left: 100px;
+    z-index: 3;
+    border-color: #c084fc;
+    box-shadow:
+        0 0 25px rgba(192, 132, 252, 0.45),
+        0 15px 40px rgba(0, 0, 0, 0.7);
+    transform: rotate(-1deg);
+}
