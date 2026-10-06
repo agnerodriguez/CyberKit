@@ -21,9 +21,9 @@
       </header>
         <!-- COLLAGE DE IMÁGENES -->
         <div class="collage">
-          <img src="imagenes/cyberdesk-1.jpg" class="img-kit kit-top-left" alt="Cyberkit">
-          <img src="imagenes/cyberdesk-2.jpg" class="img-kit kit-top-right" alt="Cyberkit">
-          <img src="imagenes/cyberdesk-3.jpg" class="img-kit kit-bottom" alt="Cyberkit">
+          <img src="img/cyberdesk-1.jpg" class="img-kit kit-top-left" alt="Cyberkit">
+          <img src="img/cyberdesk-2.jpg" class="img-kit kit-top-right" alt="Cyberkit">
+          <img src="img/cyberdesk-3.jpg" class="img-kit kit-bottom" alt="Cyberkit">
         </div>
       </div>
     </section>
