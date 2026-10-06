@@ -12,20 +12,17 @@
     <link rel="stylesheet" href="registrarse.css">
 </head>
 <body>
-
-    <div class="scanlines"></div>
-
-    <div class="cyber-wrapper">
+    <div class="cyber-doble">
         
-        <header class="cyber-header">
-            <h1 class="glitch-title">REGISTRARSE</h1>
-            <p class="subtitle">crea una cuenta para navegar el sitio</p>
-        </header>
+        <div class="cyber-header">
+            <h1 class="titulo">REGISTRARSE</h1>
+            <p class="subtitulo">crea una cuenta para navegar el sitio</p>
+        </div>
 
-        <div class="card-offset-container">
+        <div class="card-contenedor">
             
-            <div class="pink-offset-layer"></div>
-            <div class="blue-offset-layer"></div>
+            <div class="pink-layer"></div>
+            <div class="blue-layer"></div>
 
             <div class="cyber-card">
                 
@@ -34,7 +31,7 @@
                     <div class="form-grid">
                         
                         <!--  Nombre -->
-                        <div class="input-group">
+                        <div class="inputs">
                             <label for="nombre">
                                 <div class="iconousuario"></div>
                                 Ingrese su nombre
@@ -45,7 +42,7 @@
                         </div>
 
                         <!--  Email -->
-                        <div class="input-group">
+                        <div class="inputs">
                             <label for="email">
                                 <div class="iconomail"></div>
                                 Ingrese su email
@@ -56,7 +53,7 @@
                         </div>
 
                         <!--  Edad -->
-                        <div class="input-group">
+                        <div class="inputs">
                             <label for="edad">
                                 <div class="icono-edad"></div>
                                 Ingrese su edad
@@ -67,7 +64,7 @@
                         </div>
 
                         <!--  Contraseña -->
-                        <div class="input-group">
+                        <div class="inputs">
                             <label for="password">
                                 <div class="iconocontrasena"></div>
                                 Crea una contraseña

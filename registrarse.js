@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const togglePasswordBtn = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('password');
-    // Buscamos la clase exacta que está en tu HTML: .icono-ojito
-    const iconoOjito = document.querySelector('.icono-ojito');
+    const togglePasswordBtn = document.getElementById('togglePassword'); 
+    const passwordInput = document.getElementById('password'); 
+    
+    const iconoOjito = document.querySelector('.icono-ojito'); // Buscamos la clase exacta que está en el HTML: .icono-ojito
 
     if (togglePasswordBtn && passwordInput && iconoOjito) {
         togglePasswordBtn.addEventListener('click', () => {
-            const esPassword = passwordInput.getAttribute('type') === 'password';
+            const esPassword = passwordInput.getAttribute('type') === 'password'; // verificamos si el tipo actual es "password"
             
             // Si actualmente es "password", lo pasamos a "text" (para mostrar la contraseña)
             if (esPassword) {
