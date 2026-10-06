@@ -27,8 +27,18 @@
         </div>
       </div>
     </section>
-    <section class="inicio">
 
+    <section class="inicio">
+      <div class="cyber-content">
+        <header class="preguntas-header">
+          <h1>Preguntas y Respuesta</h1>
+          <h2>¡Sube tus preguntas y responde las de la comunidad!</h2>
+        </header>
+      </div>
+      <div class="preguntas-lista">
+
+      </div>
     </section>
+
   </body>
 </html>
