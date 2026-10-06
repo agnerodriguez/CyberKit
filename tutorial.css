@@ -1,0 +1,578 @@
+/* Colores y tipografías compartidos por todos los componentes. */
+:root {
+    --bg-dark: #0d0314;
+    --purple-main: #6b21a8;
+    --purple-card: #a855f7;
+    --purple-card-dark: #581c87;
+    --neon-pink: #d946ef;
+    --neon-pink-bright: #ff2a8d;
+    --neon-cyan: #2dd4bf;
+    --neon-cyan-bright: #00f0ff;
+    --text-light: #f3e8ff;
+    --font-pixel: 'Press Start 2P', 'Silkscreen', monospace;
+    --font-sans: 'Rajdhani', 'Orbitron', sans-serif;
+}
+
+/* Normaliza las dimensiones y márgenes de todos los elementos. */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    /* Imagen de fondo cyberpunk con fallback a gradiente */
+    background-image: url('img/fondo.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: var(--text-light);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Capa visual fija que simula las líneas horizontales de un monitor CRT. */
+.lineas-pantalla-crt {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+    );
+    background-size: 100% 4px;
+    z-index: 999;
+    opacity: 0.6;
+}
+
+/* Centra el encabezado y da formato a los enlaces de navegación. */
+.encabezado-principal {
+    display: flex;
+    justify-content: center;
+    padding: 25px 20px 10px;
+}
+
+.contenedor-navegacion {
+    background: rgba(10, 5, 20, 0.75);
+    border: 1px solid rgba(217, 70, 239, 0.3);
+    border-radius: 40px;
+    padding: 6px 16px;
+    display: flex;
+    gap: 15px;
+    backdrop-filter: blur(8px);
+}
+
+.enlace-navegacion {
+    color: #ffffff;
+    text-decoration: none;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.enlace-navegacion:hover {
+    color: var(--neon-pink);
+}
+
+.enlace-navegacion.activo {
+    border: 1px solid #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Ancho general de las vistas, tipografía y transición al cambiar de sección. */
+.contenedor-contenido {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 20px 60px;
+    text-align: center;
+}
+
+.seccion-vista {
+    display: none;
+    animation: fadeIn 0.4s ease-in-out forwards;
+}
+
+.seccion-vista.activo {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.titulo-pixel {
+    font-family: var(--font-pixel);
+    font-size: 2.2rem;
+    color: var(--neon-pink);
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.brillo-rosa {
+    text-shadow: 0 0 10px var(--neon-pink), 0 0 20px rgba(217, 70, 239, 0.5);
+}
+
+.texto-subtitulo {
+    font-size: 1.15rem;
+    color: #e2e8f0;
+    max-width: 800px;
+    margin: 0 auto 15px;
+    font-weight: 500;
+}
+
+.etiqueta-seccion {
+    font-family: var(--font-sans);
+    letter-spacing: 2px;
+    color: var(--neon-pink);
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+/* Tarjetas de entrada para elegir entre tutoriales en video o archivos PDF. */
+.contenedor-tarjetas-menu {
+    display: flex;
+    justify-content: center;
+    gap: 35px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.tarjeta-menu-video,
+.tarjeta-menu-pdf {
+    background: linear-gradient(180deg, #9333ea 0%, #6b21a8 100%);
+    border-radius: 24px;
+    padding: 16px;
+    width: 440px;
+    max-width: 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.tarjeta-menu-video:hover,
+.tarjeta-menu-pdf:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(217, 70, 239, 0.3);
+}
+
+.vista-previa-tarjeta {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #000;
+}
+
+.imagen-previa-tarjeta {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.capa-icono-tarjeta {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.boton-reproducir-circular, .icono-pdf-circular {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background: rgba(217, 70, 239, 0.35);
+    border: 2px solid var(--neon-pink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 0 15px var(--neon-pink);
+}
+
+.triangulo-reproducir {
+    width: 0;
+    height: 0;
+    border-top: 14px solid transparent;
+    border-bottom: 14px solid transparent;
+    border-left: 22px solid #ffffff;
+    margin-left: 5px;
+}
+
+.contenido-tarjeta-menu {
+    padding: 20px 10px 10px;
+    text-align: center;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.contenido-tarjeta-menu h2 {
+    font-family: var(--font-pixel);
+    font-size: 0.95rem;
+    color: #ffffff;
+    margin-bottom: 12px;
+}
+
+.contenido-tarjeta-menu p {
+    font-size: 0.9rem;
+    color: #f1f5f9;
+    line-height: 1.3;
+    margin-bottom: 20px;
+}
+
+.boton-retro-menu {
+    background: #11051e;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-family: var(--font-pixel);
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    width: 80%;
+    margin: 0 auto;
+    transition: background 0.3s ease;
+}
+
+.boton-retro-menu:hover {
+    background: #250a3f;
+    color: var(--neon-pink);
+}
+
+/* Marco reutilizable con cabecera y puntos decorativos para las ventanas retro. */
+.ventana-retro-video {
+    background: #581c87;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(217, 70, 239, 0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.encabezado-ventana-retro {
+    background: #3b0764;
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.titulo-ventana-retro {
+    color: var(--neon-cyan);
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.titulo-ventana-pdf {
+    color: var(--neon-cyan);
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.puntos-ventana-retro {
+    display: flex;
+    gap: 6px;
+}
+
+.punto-ventana-retro {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #a855f7;
+}
+
+/* Distribución de videos, miniaturas, títulos e indicador de la galería. */
+.rejilla-videos-tutoriales {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.rejilla-videos-tutoriales .video-tutorial {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.rejilla-videos-tutoriales .video-tutorial:hover {
+    transform: translateY(-5px);
+}
+
+.contenido-ventana-retro {
+    padding: 15px;
+}
+
+.miniatura-video-tutorial {
+    position: relative;
+    width: 100%;
+    height: 160px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.miniatura-video-tutorial img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.miniatura-video-tutorial .boton-reproducir-circular {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 55px;
+    height: 55px;
+}
+
+.titulo-video-tutorial {
+    color: var(--neon-cyan);
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.barra-progreso-videos {
+    width: 100%;
+    height: 8px;
+    background: #3b0764;
+    border-radius: 4px;
+    margin-top: 40px;
+    overflow: hidden;
+}
+
+.progreso-videos {
+    width: 30%;
+    height: 100%;
+    background: var(--neon-pink);
+    border-radius: 4px;
+}
+
+/* Fondo, reproductor y panel descriptivo de la ventana emergente de video. */
+.fondo-modal-video {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 2, 10, 0.85);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.fondo-modal-video.activo {
+    display: flex;
+}
+
+.contenedor-modal-video {
+    position: relative;
+    max-width: 900px;
+    width: 100%;
+}
+
+.boton-cerrar-modal-video {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
+.rejilla-contenido-modal-video {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 20px;
+}
+
+.ventana-reproductor-video .contenido-reproductor-video {
+    padding: 0;
+    height: 280px;
+    background: #000;
+}
+
+.ventana-reproductor-video iframe {
+    width: 100%;
+    height: 100%;
+}
+
+.panel-descripcion-video {
+    background: rgba(59, 7, 100, 0.85);
+    border: 1px solid var(--purple-card);
+    border-radius: 16px;
+    padding: 25px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo-brillo-cian {
+    color: var(--neon-cyan);
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.texto-descripcion-video {
+    color: #ffffff;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    letter-spacing: 1px;
+}
+
+/* Marco, columnas, tarjetas numeradas y botones de la galería PDF. */
+.ventana-principal-pdfs {
+    background: #4c1d95;
+    border-radius: 20px;
+    border: 1px solid rgba(217, 70, 239, 0.3);
+    overflow: hidden;
+    margin-top: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.contenido-ventana-pdfs {
+    padding: 30px;
+}
+
+.rejilla-columnas-pdf {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    align-items: center;
+}
+
+.columna-pdf {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.columna-pdf.columna-pdf-desplazada {
+    margin-top: 0px;
+}
+
+.tarjeta-pdf1,
+.tarjeta-pdf2,
+.tarjeta-pdf3,
+.tarjeta-pdf4 {
+    background: #f8fafc;
+    border-radius: 4px;
+    padding: 20px 15px;
+    color: #1e293b;
+    text-align: left;
+    min-height: 170px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.tarjeta-pdf1 h3,
+.tarjeta-pdf2 h3,
+.tarjeta-pdf3 h3,
+.tarjeta-pdf4 h3 {
+    font-family: var(--font-pixel);
+    font-size: 0.8rem;
+    color: var(--neon-pink);
+    margin-bottom: 15px;
+}
+
+.tarjeta-pdf1 p,
+.tarjeta-pdf2 p,
+.tarjeta-pdf3 p,
+.tarjeta-pdf4 p {
+    font-size: 0.85rem;
+    color: #334155;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.boton-descargar-pdf {
+    background: var(--neon-cyan);
+    color: var(--neon-pink);
+    font-family: var(--font-pixel);
+    font-size: 0.7rem;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(45, 212, 191, 0.4);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.boton-descargar-pdf:hover {
+    background: var(--neon-cyan-bright);
+    transform: scale(1.03);
+}
+
+/* Adapta las rejillas y el modal a pantallas medianas y teléfonos. */
+/* En tabletas se reducen las columnas para dar más espacio a cada tarjeta. */
+@media (max-width: 900px) {
+    .rejilla-videos-tutoriales {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .rejilla-columnas-pdf {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .rejilla-contenido-modal-video {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* En teléfonos las tarjetas y galerías pasan a una sola columna. */
+@media (max-width: 600px) {
+    .titulo-pixel {
+        font-size: 1.5rem;
+    }
+
+    .contenedor-navegacion {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .contenedor-tarjetas-menu {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tarjeta-menu-video,
+    .tarjeta-menu-pdf {
+        width: 100%;
+    }
+
+    .rejilla-videos-tutoriales {
+        grid-template-columns: 1fr;
+    }
+
+    .rejilla-columnas-pdf {
+        grid-template-columns: 1fr;
+    }
+}
