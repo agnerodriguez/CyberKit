@@ -1,15 +1,4 @@
-:root {
-    --bg-card: #6d28d9;
-    --layer-pink: rgba(217, 38, 169, 0.7);
-    --layer-blue: rgba(67, 97, 238, 0.65);
-    --bg-input: #000000;            
-    --neon-cyan: #3ef0e6;           
-    --neon-pink: #e040fb;           
-    --text-white: #ffffff;
-    --text-pink-soft: #c084fc;
-    --font-pixel: 'Press Start 2P', monospace;
-    --font-sans-pixel: 'Silkscreen', cursive, sans-serif;
-}
+
 
 * {
     box-sizing: border-box;
@@ -51,21 +40,22 @@ body {
 }
 
 .titulo {
-    font-family: var(--font-pixel);
-    font-size: 2.5rem;
-    color: var(--neon-cyan);
-    letter-spacing: 4px;
-    text-transform: uppercase; /* Mantener el texto en mayúsculas */
-    margin-bottom: 15px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 40px;
+    color: #00f0ff;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
 }
 
 .subtitulo {
-    font-family: var(--font-pixel);
-    font-size: 0.8rem;
-    color: var(--neon-cyan);
+    font-family: 'Silkscreen', 'Press Start 2P', monospace;
+    font-size: clamp(0.8rem, 2vw, 1.05rem);
+    color: #3ef0e6;
+    text-transform: lowercase;
     letter-spacing: 1px;
-    text-transform: lowercase; /* Mantener el texto en minúsculas */
+    text-shadow: 0 0 8px rgba(45, 212, 191, 0.5);
 }
+
 
 
 .card-contenedor {
@@ -79,7 +69,7 @@ body {
     left: 0;
     width: calc(100% + 18px); /* el 100% + 18px quiere decir que el ancho de la capa rosa será igual al ancho de la tarjeta más 18px adicionales, lo que crea un efecto de borde alrededor de la tarjeta */ 
     height: calc(100% + 18px);
-    background-color: var(--layer-pink);
+    background-color: rgba(217, 38, 169, 0.7);;
     z-index: 1; /* z-index sirve para controlar la superposición de elementos, asegurando que la capa rosa esté detrás de la tarjeta */
 }
 
@@ -89,7 +79,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: var(--layer-blue);
+    background-color: rgba(67, 97, 238, 0.65);
     z-index: 2;
 }
 
@@ -97,7 +87,7 @@ body {
     position: relative;
     z-index: 3;
     width: 100%;
-    background-color: var(--bg-card);
+    background-color: #6d28d9;;
     padding: 40px 45px 30px 45px;
     box-sizing: border-box;
 }
@@ -119,8 +109,8 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    color: var(--neon-cyan);
-    font-family: var(--font-sans-pixel);
+    color: #3ef0e6; ;
+    font-family: 'Silkscreen', cursive, sans-serif;
     font-size: 1.05rem;
     font-weight: bold;
     margin-bottom: 10px;
@@ -172,19 +162,19 @@ body {
 
 .input-wrapper input {
     width: 100%;
-    background-color: var(--bg-input); 
-    border: 2px solid var(--neon-cyan);
+    background-color: #000; 
+    border: 2px solid #3ef0e6;
     border-radius: 12px;
     padding: 10px 18px;
-    color: var(--text-white);
-    font-family: var(--font-pixel);
+    color: #ffffff;
+    font-family: 'Silkscreen', cursive, sans-serif;;
     font-size: 0.72rem;
     outline: none;
 }
 
 .input-wrapper input::placeholder {  
     color: rgba(255, 255, 255, 0.85);
-    font-family: var(--font-pixel);
+    font-family: 'Silkscreen', cursive, sans-serif;;
     font-size: 0.7rem;
     text-transform: lowercase;
 }
@@ -213,12 +203,12 @@ body {
 }
 
 .cyber-btn {
-    background-color: var(--neon-pink);
-    color: var(--text-white);
+    background-color: #e040fb;
+    color: #ffffff;
     border: none;
     border-radius: 25px;
     padding: 10px 32px;
-    font-family: var(--font-pixel);
+    font-family: "Silkscreen", cursive, sans-serif;
     font-size: 0.95rem;
     cursor: pointer;
     box-shadow: 0 0 12px rgba(224, 64, 251, 0.6);
@@ -226,13 +216,13 @@ body {
 
 .cyber-link {
     text-decoration: none;
-    font-family: var(--font-sans-pixel);
+    font-family: "Silkscreen", cursive, sans-serif;
     font-size: 0.85rem;
     text-transform: none;
 }
 
-.link-soft { color: var(--text-pink-soft); }
-.link-bright { color: var(--neon-cyan); }
+.link-soft { color: #c084fc; }
+.link-bright { color: #3ef0e6; }
 
 @media (max-width: 768px) {
     .titulo { font-size: 1.5rem; }

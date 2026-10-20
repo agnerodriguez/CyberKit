@@ -1,0 +1,222 @@
+/* ==========================================================================
+   RESET & VARIABLES
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================================
+   BODY Y FONDO
+   ========================================================================== */
+body {
+    min-height: 100vh;
+    width: 100vw;
+    background-image: url('img/fondo.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Silkscreen", cursive, sans-serif;
+    position: relative;
+    overflow-x: hidden; /* overflow sirve para evitar el desbordamiento horizontal */
+}
+
+
+
+.contenedor-principal {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 650px;
+    padding: 20px;
+}
+
+/* ==========================================================================
+   ENCABEZADO (TITULO GRANDE ESTILO IMAGEN 1)
+   ========================================================================== */
+.encabezado {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.titulo-principal {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 40px;
+    color: #00f0ff;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+}
+
+.subtitulo {
+    font-family: 'Silkscreen', 'Press Start 2P', monospace;
+    font-size: clamp(0.8rem, 2vw, 1.05rem);
+    color: #3ef0e6;
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px rgba(45, 212, 191, 0.5);
+}
+
+.marco-exterior {
+    position: relative;
+    width: 550px;
+    background-color:rgba(217, 38, 169, 0.7); /* Azul de fondo */
+    padding: 0 20px; /* Margen horizontal a los lados */
+    margin: 30px 0;   /* Espacio arriba y abajo para darle aire al marco */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tarjeta-login {
+    position: relative;
+    width: 100%;
+    background-color:  rgba(67, 97, 238, 0.65); /* Tono morado/rosa */
+    padding: 35px 30px 28px 30px;
+    margin-top: -15px;    /* Sobresale hacia arriba del contenedor azul */
+    margin-bottom: -15px; /* Sobresale hacia abajo del contenedor azul */
+}
+
+.campo {
+    margin-bottom: 24px;
+}
+
+.caja-etiqueta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.icono {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.etiqueta {
+    font-family:'Silkscreen', cursive, sans-serif;
+    color: #3ef0e6;
+    font-size: 16px;
+    text-transform: lowercase;
+    letter-spacing: 0.5px;
+}
+
+.caja-entrada {
+    position: relative;
+    width: 100%;
+}
+
+.entrada {
+    width: 100%;
+    background-color: #000000;
+    border: 2px solid #3ef0e6;
+    border-radius: 25px;
+    padding: 10px 22px;
+    color: #ffffff;
+    font-family: 'Silkscreen', 'Press Start 2P', monospace;
+    font-size: 0.8rem;
+    outline: none;
+    letter-spacing: 1px;
+}
+
+.entrada::placeholder {
+    color: #ffffff;
+    font-family: 'Silkscreen', 'Press Start 2P', monospace;
+    font-size: 0.75rem;
+    text-transform: lowercase;
+}
+
+.campo-password .entrada {
+    padding-right: 55px;
+}
+
+.boton-ojito {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icono-ojito {
+    display: block;
+    width: 26px;
+    height: 26px;
+    background-image: url('iconos/vista.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.bloque-acciones {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+    gap: 20px;
+}
+
+.boton-ingresar {
+    background-color:  #72f6ff;
+    color: #000000;
+    font-family: 'Silkscreen', 'Press Start 2P', monospace;
+    font-size: 0.95rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 38px;
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.2s;
+}
+
+.boton-ingresar:hover {
+    background-color: #00f0ff;
+    transform: scale(1.03);
+}
+
+.texto-registro {
+    font-family: "Silkscreen", cursive, sans-serif;
+    font-size: 0.7rem;
+    color: #c084fc;;
+    text-align: center;
+}
+
+.enlace-crear {
+    color: #3ef0e6;
+    text-decoration: none;
+}
+
+.enlace-crear:hover {
+    color: #3ef0e6;
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .tarjeta-login {
+        padding: 20px 16px;
+    }
+    .marco-exterior::before {
+        top: -12px;
+        bottom: -12px;
+    }
+    .titulo-principal {
+        font-size: 1.6rem;
+    }
+    .entrada {
+        font-size: 0.7rem;
+        padding: 8px 16px;
+    }
+}

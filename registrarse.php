@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -81,7 +82,7 @@
 
                     <div class="form-actions">
                         <button type="submit" class="cyber-btn">Registrarse</button>
-                        <a href="login.php" class="cyber-link">
+                        <a href="inicioSesion.php" class="cyber-link">
                             <span class="link-soft">¿Ya tienes cuenta? </span><span class="link-bright">Inicia sesión</span>
                         </a>
                     </div>
