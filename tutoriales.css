@@ -23,7 +23,7 @@
 body {
     background-color: var(--bg-dark);
     /* Imagen de fondo cyberpunk con fallback a gradiente */
-    background-image: url('img/fondo.jpeg');
+    background-image: url(fondos/fondo.png);
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
