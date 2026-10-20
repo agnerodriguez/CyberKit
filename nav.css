@@ -1,0 +1,192 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.nav-contenedor {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding-top: 8px;
+}
+
+.nav-barra {
+    height: 55px;
+    width: auto; /* Se ajusta automáticamente al contenido */
+    max-width: 90%;
+    margin-top: 8px;
+    background-color: transparent;
+    border-radius: 999px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 12px;
+    position: relative;
+}
+
+.nav-lista {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    height: 100%; 
+    gap: 6px;
+}
+
+.nav-lista li {
+    width: 150px;  /* Ancho idéntico*/
+    height: 32px; /* Alto idéntico*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px; /* Forma redondeada*/
+    border: 0.5px solid transparent; /* Reserva el espacio para el borde sin descolocar el contenido */
+    background-color: transparent;
+}
+
+.nav-lista a {
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: white;
+    font-size: 14px;
+    font-family: sans-serif;
+    text-align: center;
+    z-index: 1;
+}
+
+/* Efecto hover para cada li dentro de la lista de navegación */
+.nav-lista li {
+    transition: background-color 0.3s ease; /* Transición suave opcional */
+    border-radius: 15px;  
+}
+
+.nav-lista li:hover {
+    background-color: #2b2a2c;      
+}
+
+.nav-lista li:after {
+    transition: transform 0.3s ease-in-out; 
+}
+
+.nav-lista li.activo{
+    background-color: #2b2a2c; 
+    border: 0.5px solid white;
+    border-radius: 15px;
+}
+
+.menu-hamburguesa {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #000;
+}
+
+.menu-hamburguesa .icono-cerrar {
+    display: none;
+}
+
+/* Adaptación para pantallas móviles */
+@media (max-width: 768px) {
+    .nav-contenedor {
+        padding-top: 0;
+        width: 100%;
+    }
+
+    .nav-barra {
+        width: 100%;
+        height: auto;               /* Permite que la barra crezca según su contenido */
+        min-height: 55px;           /* Altura base cerrada */
+        background-color: transparent;
+        border-radius: 0;
+        display: flex;
+        flex-wrap: wrap;            /* Obliga a la lista a caer abajo al abrirse */
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+        box-sizing: border-box;
+        position: relative;
+    }
+
+    /* Botón hamburguesa a la izquierda */
+    .menu-hamburguesa {
+        display: block;
+        z-index: 1001;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .menu-hamburguesa img {
+        width: 25px;
+        height: 25px;
+        object-fit: contain;
+    }
+
+    /* Menú desplegable en el flujo del documento */
+    .nav-lista {
+        display: none;
+        flex-direction: column;
+        align-items: flex-start;    /* Alinea las opciones a la izquierda */
+        justify-content: flex-start;
+        position: static;
+        width: 100%;
+        padding: 0;
+        margin: 10px 0 0 0;
+        z-index: 999;
+    }
+
+    .nav-barra.menu-abierto .nav-lista,
+    .nav-lista.menu-abierto {
+        display: flex;
+    }
+
+    .nav-lista li {
+        width: 100%;
+        height: 38px;
+        margin: 2px 0;
+        justify-content: flex-start;
+        background-color: transparent !important; /* Quita el fondo en móviles */
+        border: none !important;                  /* Quita los bordes en móviles */
+    }
+
+    /* Quita el fondo en hover y en estado activo para móvil */
+    .nav-lista li:hover,
+    .nav-lista li.activo {
+        background-color: transparent !important;
+        border: none !important;
+    }
+
+    .nav-lista a {
+        justify-content: flex-start; /* Alinea el texto a la izquierda */
+        padding-left: 5px;           /* Ajusta la cercanía al borde izquierdo */
+        font-size: 15px;
+    }
+
+    /* Opcional: Resaltar el texto de la opción activa para diferenciarla sin fondo */
+    .nav-lista li.activo a {
+        color: #2eff6f;
+    }
+
+    .nav-lista a::after {
+        display: none !important;
+    }
+
+    .menu-hamburguesa.abierto .icono-abrir {
+        display: none;
+    }
+
+    .menu-hamburguesa.abierto .icono-cerrar {
+        display: inline;
+    }
+}
