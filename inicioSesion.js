@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', () => {
     // Referencias únicas con los IDs de inicio de sesión
     const botonOjo = document.getElementById('login-boton-ojo'); 
@@ -20,3 +21,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+

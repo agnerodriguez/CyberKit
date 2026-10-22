@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -27,7 +26,7 @@
 
             <div class="cyber-card">
                 
-                <form action="registro.php" method="POST" id="registerForm" class="cyber-form">
+                <form action="registrarse.php" method="POST" id="registerForm" class="cyber-form">
                     
                     <div class="form-grid">
                         
@@ -71,7 +70,7 @@
                                 Crea una contraseña
                             </label>
                             <div class="input-wrapper password-wrapper">
-                                <input type="password" id="password" name="password" placeholder="escribe aqui....">
+                                <input type="password" id="password" name="contrasena" placeholder="escribe aqui....">
                                 <button type="button" class="toggle-password" id="togglePassword">
                                     <div class="icono-ojito"></div>
                                 </button>

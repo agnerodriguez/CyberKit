@@ -8,6 +8,9 @@ if (ob_get_length()) ob_clean();
 
 include("conexion.php");
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -22,77 +25,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         switch ($recurso) {
             case 'Usuarios':
                 switch ($consulta) {
-                    case 'Create': //Admin y usuario
-                        $camposObligatorios = ['nombre','email', 'edad','contrasena'];
-                        $errores = [];
+                   case 'Create': //Admin y usuario
+                        $nombre = trim($datos['nombre'] ?? '');
+                        $email = trim($datos['email'] ?? '');
+                        $edad = (int)($datos['edad'] ?? 0);
+                        $contrasena = $datos['contrasena'] ?? '';
 
-                        foreach ($camposObligatorios as $campo) {
-                            if (trim($datos[$campo] ?? '') === '') {
-                                $errores[] = $campo;
-                            }
-                        }
-
-                        if (!empty($errores)) {
+                        // Validar que no estén vacíos
+                        if ($nombre === '' || $email === '' || $edad <= 0 || $contrasena === '') {
                             http_response_code(400);
-                            echo json_encode(['error' => 'Campos requeridos vacíos: ' . implode(', ', $errores)]);
+                            echo json_encode(["error" => "Todos los campos son obligatorios"]);
                             exit;
                         }
 
-                        $nombre = trim($datos["nombre"]);
-                        $email = trim($datos["email"]);
-                        $edad = (int)$datos["edad"];
-                        $contrasena = password_hash($datos["contrasena"], PASSWORD_BCRYPT); // Encriptación segura de contraseña
+                        // 1) Verificar si el email ya existe
+                        $stmt = $conexion->prepare("SELECT id_usuario FROM usuarios WHERE email = ?");
+                        $stmt->bind_param("s", $email);
+                        $stmt->execute();
+                        $resultado = $stmt->get_result();
 
-                        // Comprobar si el email ya existe con Prepared Statement
-                        $stmt_check = $conexion->prepare("SELECT id FROM usuarios WHERE email = ?");
-                        $stmt_check->bind_param("s", $email);
-                        $stmt_check->execute();
-                        $res_check = $stmt_check->get_result();
-
-                        if ($res_check->num_rows > 0) {
+                        if ($resultado->num_rows > 0) {
                             http_response_code(409);
-                            echo json_encode(["error" => "El email ya se encuentra registrado."]);
-                            $stmt_check->close();
+                            echo json_encode(["error" => "El email ya está registrado"]);
+                            $stmt->close();
                             exit;
-                        }
-
-                        $stmt_check->close();
-
-                        // Inserción segura de usuario
-                        $stmt = $conexion->prepare("INSERT INTO usuarios (nombre, email, edad, contrasena) VALUES (?, ?, ?, ?)");
-                        $stmt->bind_param("ssis", $nombre, $email, $edad, $contrasena);
-
-                        if ($stmt->execute()) {
-                            $nuevoId = $stmt->insert_id;
-                            echo json_encode([
-                                "mensaje" => "Usuario registrado correctamente.",
-                                "idUsuario" => $nuevoId,
-                                "usuario" => $nombre,
-                                "admin" => 0
-                            ]);
-                        } else {
-                            http_response_code(500);
-                            echo json_encode(["error" => "Error: Cuenta no registrada."]);
                         }
                         $stmt->close();
-                        break;
+
+                        // 2) Hashear la contraseña ANTES de insertar
+                        $contrasena_hash = password_hash($contrasena, PASSWORD_BCRYPT);
+
+                        // 3) Insertar el usuario
+                        $stmt = $conexion->prepare("INSERT INTO usuarios (nombre, email, edad, contrasena) VALUES (?, ?, ?, ?)");
+                        $stmt->bind_param("ssis", $nombre, $email, $edad, $contrasena_hash);
+                        $stmt->execute();
+                        $id = $stmt->insert_id;
+                        $stmt->close();
+
+                        http_response_code(201);
+                        echo json_encode([
+                            "mensaje" => "Usuario creado correctamente",
+                            "id_usuario" => $id,
+                            "usuario" => $nombre,
+                            "admin" => 0
+                        ]);
+                    break;
                     
                     case 'IniciarSesion': //Admin y usuario 
                         $email = trim($datos["email"] ?? '');
-                        $nombre = trim($datos["nombre"] ?? '');
                         $contrasena = trim($datos["contrasena"] ?? '');
 
-                        $stmt = $conexion->prepare("SELECT * FROM usuarios WHERE email = ? AND nombre = ?");
-                        $stmt->bind_param("ss", $email, $nombre);
+                        if ($email === '' || $contrasena === '') {
+                            http_response_code(400);
+                            echo json_encode(["error" => "Email y contraseña son obligatorios."]);
+                            break;
+                        }
+
+                        $stmt = $conexion->prepare("SELECT * FROM usuarios WHERE email = ?");
+                        $stmt->bind_param("s", $email);
                         $stmt->execute();
                         $resultado = $stmt->get_result();
 
                         if ($fila = $resultado->fetch_assoc()) {
-                            // Verificación de hash seguro
-                            if (password_verify($contrasena, $fila['contrasena']) || $contrasena === $fila['contrasena']) { 
+                            // Verificar la contraseña con el hash guardado
+                            if (password_verify($contrasena, $fila['contrasena'])) {
                                 echo json_encode([
                                     "mensaje" => "El usuario ha ingresado correctamente",
-                                    "idUsuario" => $fila['id'],
+                                    "idUsuario" => $fila['id_usuario'],
                                     "usuario" => $fila['nombre'],
                                     "admin" => $fila['admin'] ?? 0
                                 ]);
@@ -105,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             echo json_encode(["error" => "Usuario no encontrado"]);
                         }
                         $stmt->close();
-                        break;
+                    break;
                     
                     case 'ReadUsuarioByID': //Usuario
                         $id_usuario = (int)($datos['id_usuario'] ?? $_SESSION['id'] ?? 0);
@@ -117,12 +116,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                         
                         $sql = "SELECT 
-                                    u.id,
+                                    u.id_usuario,
                                     u.nombre,
                                     u.email,
                                     u.edad
                                 FROM usuarios u
-                                WHERE u.id = ?
+                                WHERE u.id_usuario = ?
                         ";
                         $stmt = $conexion->prepare($sql);
                         
@@ -160,10 +159,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         if (!empty($nueva_pass)) {
                             $contrasena = password_hash($nueva_pass, PASSWORD_BCRYPT);
-                            $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ?, contrasena = ? WHERE id = ?");
+                            $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ?, contrasena = ? WHERE id_usuario = ?");
                             $stmt->bind_param("ssisi", $email, $nombre, $edad, $contrasena, $id);
                         } else {
-                            $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ? WHERE id = ?");
+                            $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ? WHERE id_usuario = ?");
                             $stmt->bind_param("ssii", $email, $nombre, $edad, $id);
                         }
                         
