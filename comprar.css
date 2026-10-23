@@ -1,0 +1,386 @@
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('fuentes/PressStart2P.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Michroma';
+  src: url('fuentes/Michroma-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  width: 100%;
+  background-image: url(fondos/fondo.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 20px;
+  gap: 30px;
+}
+
+.fuentePrincipal {
+  font-family: 'Press Start 2P';
+}
+
+.fuenteSecundaria {
+  font-family: 'Michroma';
+}
+
+.contenedor {
+  display: none;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px;
+  border-radius: 8px;
+}
+
+#principal.contenedor.activo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px; /* Distancia entre la columna de la izquierda y el texto */
+  align-items: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+#principal .columnaIzquierda {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start; /* Alinea el fondo hacia la izquierda */
+  align-items: center;
+}
+
+#principal .fondoProductoRosa {
+  position: relative;
+  background-color: #ff2eed99;
+  box-shadow: 0 0 12px #ff00ff;
+  width: 500px; 
+  height: 300px;
+  margin: 20px 0;
+}
+
+#principal .fondoProductoVioleta {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 95%; 
+  height: 115%;
+  background-color: #4930e899;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+}
+
+#principal .imagenProducto {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+#principal .imagenProducto img {
+  max-width: 85%;
+  max-height: 85%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.4));
+}
+
+.infoProducto {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#nombreProducto {
+  font-size: 1.4rem;
+  color: #ff00ff;
+  text-transform: uppercase;
+  line-height: 1.4;
+  text-shadow: 2px 2px 0px #5a189a, 0 0 8px #ff00ff;
+}
+
+#precio {
+  font-size: 1.3rem;
+  color: #00ffff;
+  text-shadow: 0 0 6px #00ffff;
+}
+
+.cantidad {
+  color:#00ff66;
+  font-size: 20px;
+  line-height: 1.4;
+  text-shadow: 0 0 4px rgba(0, 255, 102, 0.4);
+}
+
+.contador {
+  display: inline-flex;
+  align-items: center;
+  background-color:  white;
+  padding: 3px;
+  width: fit-content;
+}
+
+#principal .contenedorBtn {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.btnMenos,
+.btnMas {
+  background-color:  white;
+  color:  black;
+  border: none;
+  font-size: 1.2rem;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s ease;
+}
+
+.btnMenos:hover,
+.btnMas:hover {
+  background-color: #ff00ff;
+  color:  white;
+}
+
+.valor {
+  background-color: #ff00ff;
+  color:  white;
+  font-size: 1rem;
+  padding: 6px 16px;
+  min-width: 45px;
+  text-align: center;
+  margin: 0 4px;
+}
+
+#Descripcion {
+  color: #00ff66;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  text-align: left;
+  text-shadow: 0 0 4px rgba(0, 255, 102, 0.4);
+}
+
+.btnEnviar {
+  background-color: #ff00ff;
+  color:  black;
+  font-size: 0.9rem;
+  padding: 16px 40px;
+  border: 3px solid  white;
+  border-radius: 50px;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow: 0 0 15px #ff00ff, inset 0 0 8px rgba(255, 255, 255, 0.6);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.btnEnviar:hover {
+  transform: scale(1.05);
+  background-color: #ff33ff;
+  box-shadow: 0 0 25px #ff00ff, 0 0 10px #00ffff;
+}
+
+#enviarComprobante {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  background: transparent;
+  padding: 0;
+}
+
+#enviarComprobante.contenedor.activo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Capa Externa Rosa (Centrada) */
+#enviarComprobante .fondoRosa {
+  position: relative;
+  background-color: #ff2eed99;
+  box-shadow: 0 0 15px #ff00ff;
+  width: 870px;       
+  height: 435px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+/* Capa Interna Violeta (Sobresale centrada sobre el fondo rosa) */
+#enviarComprobante .fondoVioleta {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 845px;       
+  height: 460px; 
+  background-color: #4930e899;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 40px;
+}
+
+#enviarComprobante h1 {
+  color: #2eff6f;
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  text-align: center;
+  text-shadow: 0 0 10px #2eff6f;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+}
+
+/* Grilla de 2 Columnas: Cargar a la izquierda, Info a la derecha */
+#enviarComprobante .contenidoPago {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  width: 100%;
+  align-items: center;
+}
+
+/* Recuadro Verde de Cargar Foto (Alineado a la Izquierda) */
+.cargar {
+  background-color: #2eff6f;
+  border: none;
+  border-radius: 16px;
+  width: 100%;
+  height: 230px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.cargarImagen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  cursor: pointer;
+}
+
+.cargarImagen img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.textoCargar {
+  color: #000000;
+  font-size: 0.6rem;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+/* Columna de Datos ALIAS / CBU (Alineada a la Derecha) */
+.info {
+  background: transparent;
+  padding: 0 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: flex-start; /* Mantiene la alineación del texto a la izquierda dentro de su columna derecha */
+  text-align: left;
+}
+
+.info h2 {
+  color: #2eff6f;
+  font-size: 1.3rem;
+  margin-bottom: 2px;
+  text-shadow: 0 0 5px #2eff6f;
+}
+
+.info p {
+  color: #00ffff;
+  font-size: 0.85rem;
+  text-shadow: 0 0 5px #00ffff;
+  word-break: break-all;
+}
+
+/* Botón Pagar en la parte inferior dentro del recuadro violeta */
+.btnComprobante {
+  background-color: #2eff6f;
+  color: #000000;
+  font-size: 0.95rem;
+  padding: 10px 45px;
+  border: 2px solid white;
+  border-radius: 30px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.btnComprobante:hover {
+ transform: scale(1.05);
+  background-color: #2eff6f;
+  box-shadow: 0 0 25px #2eff6f, 0 0 10px #00ffff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #enviarComprobante {
+    min-height: auto;
+  }
+
+  #enviarComprobante .fondoRosa {
+    width: 95%;
+  }
+
+  #enviarComprobante .fondoVioleta {
+    position: relative;
+    top: 0;
+    left: 0;
+    transform: none;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+  }
+
+  #enviarComprobante .contenidoPago {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .info {
+    padding: 0;
+  }
+}
