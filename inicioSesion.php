@@ -75,7 +75,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicia Sesión - Cyberkit</title>
+    <title>Inicia Sesión</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
@@ -86,8 +86,8 @@
 
     <main class="contenedor-principal">
         <header class="encabezado">
-            <h1 class="titulo-principal">INICIA SESIÓN</h1>
-            <p class="subtitulo">inicia sesión para accder al cyberkit</p>
+            <h1 class="titulo-principal">INICIÁ SESIÓN</h1>
+            <p class="subtitulo">Iniciá sesión para navegar en el sitio.</p>
         </header>
 
         <div class="marco-exterior">
@@ -120,7 +120,7 @@
                     <div class="bloque-acciones">
                         <button type="submit" class="boton-ingresar">Iniciar sesión</button>
                         <p class="texto-registro">
-                            ¿No tienes cuenta? <a href="registrarse.php" class="enlace-crear">Crea una</a>
+                            ¿No tienes cuenta? <a href="registrarse.php" class="enlace-crear">¡Registrate!</a>
                         </p>
                     </div>
 

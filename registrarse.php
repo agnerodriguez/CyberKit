@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Titulo</title>
+    <title>Registrarse</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +16,7 @@
         
         <div class="cyber-header">
             <h1 class="titulo">REGISTRARSE</h1>
-            <p class="subtitulo">crea una cuenta para navegar el sitio</p>
+            <p class="subtitulo">Creá una cuenta para navegar en el sitio.</p>
         </div>
 
         <div class="card-contenedor">
@@ -82,7 +82,7 @@
                     <div class="form-actions">
                         <button type="submit" class="cyber-btn">Registrarse</button>
                         <a href="inicioSesion.php" class="cyber-link">
-                            <span class="link-soft">¿Ya tienes cuenta? </span><span class="link-bright">Inicia sesión</span>
+                            <span class="link-soft">¿Ya tienes cuenta? </span><span class="link-bright">¡Iniciá sesión!</span>
                         </a>
                     </div>
 
