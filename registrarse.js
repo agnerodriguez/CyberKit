@@ -20,3 +20,42 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('registerForm');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const datos = {
+            recurso: 'Usuarios',
+            consulta: 'Create',
+            nombre: document.getElementById('nombre').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            edad: document.getElementById('edad').value.trim(),
+            contrasena: document.getElementById('password').value
+        };
+
+        try {
+            const res = await fetch('API.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                // Éxito: redirigir o mostrar mensaje
+                alert('Usuario creado correctamente');
+                window.location.href = 'inicioSesion.php';
+            } else {
+                // Error controlado por la API
+                alert(data.error || 'Ocurrió un error');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error de conexión con el servidor');
+        }
+    });
+});

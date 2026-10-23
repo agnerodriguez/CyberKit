@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Titulo</title>
+    <title>Registrarse</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +16,7 @@
         
         <div class="cyber-header">
             <h1 class="titulo">REGISTRARSE</h1>
-            <p class="subtitulo">crea una cuenta para navegar el sitio</p>
+            <p class="subtitulo">Creá una cuenta para navegar en el sitio.</p>
         </div>
 
         <div class="card-contenedor">
@@ -26,7 +26,7 @@
 
             <div class="cyber-card">
                 
-                <form action="registro.php" method="POST" id="registerForm" class="cyber-form">
+                <form action="registrarse.php" method="POST" id="registerForm" class="cyber-form">
                     
                     <div class="form-grid">
                         
@@ -70,7 +70,7 @@
                                 Crea una contraseña
                             </label>
                             <div class="input-wrapper password-wrapper">
-                                <input type="password" id="password" name="password" placeholder="escribe aqui....">
+                                <input type="password" id="password" name="contrasena" placeholder="escribe aqui....">
                                 <button type="button" class="toggle-password" id="togglePassword">
                                     <div class="icono-ojito"></div>
                                 </button>
@@ -81,8 +81,8 @@
 
                     <div class="form-actions">
                         <button type="submit" class="cyber-btn">Registrarse</button>
-                        <a href="login.php" class="cyber-link">
-                            <span class="link-soft">¿Ya tienes cuenta? </span><span class="link-bright">Inicia sesión</span>
+                        <a href="inicioSesion.php" class="cyber-link">
+                            <span class="link-soft">¿Ya tienes cuenta? </span><span class="link-bright">¡Iniciá sesión!</span>
                         </a>
                     </div>
 

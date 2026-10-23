@@ -1,0 +1,238 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    width: 100vw;
+    background-image: url('fondos/fondo.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Silkscreen", cursive, sans-serif;
+    position: relative;
+    overflow-x: hidden;
+    padding: 20px;
+}
+
+.contenedor-principal {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 550px;
+}
+
+.encabezado {
+    text-align: center;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.titulo-principal {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(1.4rem, 4.5vw, 2.2rem); /* Fluido para compu y celular */
+    color: #00f0ff;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    word-break: break-word;
+}
+
+.subtitulo {
+    font-family: 'Silkscreen', 'Press Start 2P', monospace;
+    font-size: clamp(0.65rem, 1.8vw, 0.9rem);
+    color: #3ef0e6;
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px rgba(45, 212, 191, 0.5);
+}
+
+/* MARCO EXTERIOR (Rosa de fondo) */
+.marco-exterior {
+    position: relative;
+    width: 100%;
+    max-width: 480px; /* Controla el ancho máximo en computadoras */
+    background-color: rgba(217, 38, 169, 0.7);
+    padding: 0 16px; /* Define cuánto sobresale el rosa lateralmente respecto a la tarjeta */
+    margin: 25px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* TARJETA INTERIOR (Morada) */
+.tarjeta-login {
+    position: relative;
+    width: 100%;
+    background-color: rgba(67, 97, 238, 0.85);
+    padding: 30px 25px;
+    margin-top: -16px;    /* Sobresale verticalmente del marco rosa */
+    margin-bottom: -16px;
+}
+
+.campo {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.caja-etiqueta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.icono {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.etiqueta {
+    font-family: 'Silkscreen', cursive, sans-serif;
+    color: #3ef0e6;
+    font-size: 0.85rem;
+    text-transform: lowercase;
+    letter-spacing: 0.5px;
+}
+
+.caja-entrada {
+    position: relative;
+    width: 100%;
+}
+
+.entrada {
+    width: 100%;
+    background-color: #000000;
+    border: 2px solid #3ef0e6;
+    border-radius: 25px;
+    padding: 10px 18px;
+    color: #ffffff;
+    font-family: 'Silkscreen', 'Press Start 2P', monospace;
+    font-size: 0.75rem;
+    outline: none;
+    letter-spacing: 1px;
+}
+
+.entrada::placeholder {
+    color: #ffffff;
+    font-family: 'Silkscreen', 'Press Start 2P', monospace;
+    font-size: 0.7rem;
+    text-transform: lowercase;
+}
+
+.campo-password .entrada {
+    padding-right: 50px;
+}
+
+.boton-ojito {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icono-ojito {
+    display: block;
+    width: 24px;
+    height: 24px;
+    background-image: url('iconos/vista.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.bloque-acciones {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 25px;
+    gap: 16px;
+    width: 100%;
+}
+
+.boton-ingresar {
+    background-color: #72f6ff;
+    color: #000000;
+    font-family: 'Silkscreen', 'Press Start 2P', monospace;
+    font-size: 0.85rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 32px;
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.2s;
+}
+
+.boton-ingresar:hover {
+    background-color: #00f0ff;
+    transform: scale(1.03);
+}
+
+.texto-registro {
+    font-family: "Silkscreen", cursive, sans-serif;
+    font-size: 0.65rem;
+    color: #c084fc;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.enlace-crear {
+    color: #3ef0e6;
+    text-decoration: none;
+}
+
+.enlace-crear:hover {
+    text-decoration: underline;
+}
+
+/* RESPONSIVE PARA DISPOSITIVOS MÓVILES (≤ 500px) */
+@media (max-width: 500px) {
+    body {
+        padding: 10px;
+    }
+
+    .marco-exterior {
+        padding: 0 10px; /* Achica los bordes laterales del marco en pantallas chicas */
+        margin: 20px 0;
+    }
+
+    .tarjeta-login {
+        padding: 20px 15px;
+        margin-top: -10px;
+        margin-bottom: -10px;
+    }
+
+    .etiqueta {
+        font-size: 0.75rem;
+    }
+
+    .icono {
+        width: 22px;
+        height: 22px;
+    }
+
+    .entrada {
+        font-size: 0.65rem;
+        padding: 8px 14px;
+    }
+
+    .boton-ingresar {
+        width: 100%; /* Ocupa el ancho completo en celulares para mejor usabilidad */
+        padding: 12px 16px;
+    }
+}
