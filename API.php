@@ -1007,7 +1007,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             ]);
                         }
                         $stmt->close();
-                        break;
+                    break;
                     
                     case 'Read': // Usuario
                         $id_publicacion = (int)($datos['id_publicacion'] ?? 0);
@@ -1070,12 +1070,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         echo json_encode(["error" => "Consulta no válida"]);
                         break;
                 }
-                break;
+            break;
             
+            case 'Tutoriales':
             default:
                 http_response_code(400);
                 echo json_encode(["error" => "Recurso no válido"]);
                 break;
+            
+            
         }
     } else {
         http_response_code(400);

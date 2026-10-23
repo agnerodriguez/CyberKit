@@ -1,15 +1,9 @@
-/**
- * Controla el cambio de vistas y la apertura/cierre del reproductor de videos.
- */
-
-// Oculta las vistas y muestra la indicada por su identificador.
 function navigateTo(viewId) {
     const views = document.querySelectorAll('.seccion-vista');
     views.forEach(view => {
         view.classList.remove('activo');
     });
 
-    // Activa el destino y lleva la página al inicio para comenzar la vista.
     const targetView = document.getElementById(viewId);
     if (targetView) {
         targetView.classList.add('activo');
@@ -18,7 +12,6 @@ function navigateTo(viewId) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Completa el modal con los datos seleccionados y lo hace visible.
 function openVideoModal(title, description, videoUrl) {
     const modal = document.getElementById('modal-reproduccion-video');
     const modalTitle = document.getElementById('titulo-modal-video');
@@ -34,7 +27,6 @@ function openVideoModal(title, description, videoUrl) {
     }
 }
 
-// Oculta el modal y vacía el iframe para detener la reproducción.
 function closeVideoModal() {
     const modal = document.getElementById('modal-reproduccion-video');
     const modalIframe = document.getElementById('reproductor-iframe-modal');
@@ -43,11 +35,10 @@ function closeVideoModal() {
         modal.classList.remove('activo');
     }
     if (modalIframe) {
-        modalIframe.src = ''; // Detener la reproducción del video al cerrar
+        modalIframe.src = '';
     }
 }
 
-// Prepara los eventos del menú y del fondo del modal cuando el HTML ya cargó.
 document.addEventListener('DOMContentLoaded', () => {
     const btnTutoriales = document.getElementById('enlace-nav-tutoriales');
     if (btnTutoriales) {
@@ -57,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Un clic fuera del contenido del modal lo cierra; los clics internos no.
     const modal = document.getElementById('modal-reproduccion-video');
     if (modal) {
         modal.addEventListener('click', (e) => {
@@ -68,4 +58,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-
+// Actualiza la barra de progreso de la galería según el scroll de la página
+window.addEventListener('scroll', () => {
+    const ventanaAltura = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    if (ventanaAltura > 0) {
+        const scrollActual = window.scrollY;
+        const porcentaje = (scrollActual / ventanaAltura) * 100;
+        
+        const barraProgreso = document.querySelector('.progreso-videos');
+        if (barraProgreso) {
+            barraProgreso.style.width = porcentaje + '%';
+        }
+    }
+});
