@@ -8,9 +8,6 @@ if (ob_get_length()) ob_clean();
 
 include("conexion.php");
 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -93,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     "mensaje" => "El usuario ha ingresado correctamente",
                                     "idUsuario" => $fila['id_usuario'],
                                     "usuario" => $fila['nombre'],
-                                    "admin" => $fila['admin'] ?? 0
+                                    "admin" => (int)($fila['admin'] ?? 0)
                                 ]);
                             } else {
                                 http_response_code(401);
@@ -107,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     break;
                     
                     case 'ReadUsuarioByID': //Usuario
-                        $id_usuario = (int)($datos['id_usuario'] ?? $_SESSION['id'] ?? 0);
+                        $id_usuario = (int)($datos['id_usuario'] ?? $_SESSION['id_usuario'] ?? 0);
                         
                         if ($id_usuario === 0) {
                             http_response_code(400);
@@ -119,7 +116,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     u.id_usuario,
                                     u.nombre,
                                     u.email,
-                                    u.edad
+                                    u.edad,
+                                    u.admin
                                 FROM usuarios u
                                 WHERE u.id_usuario = ?
                         ";
@@ -132,6 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $usuario = $resultado->fetch_assoc();
 
                             if ($usuario) {
+                                $usuario['admin'] = (int)($usuario['admin'] ?? 0);
                                 echo json_encode($usuario);
                             } else {
                                 http_response_code(404);
@@ -140,18 +139,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $stmt->close();
                         } else {    
                             http_response_code(500);
-                            echo json_encode(["error" => "Error en la consulta."]);
+                            echo json_encode([
+                                "error" => "Error en la consulta.",
+                                "detallesTecnicos" => $conexion->error
+                            ]);
                         }
                         break;
 
                     case 'Update': //Usuario
-                        $id = (int)($datos["id"] ?? 0);
+                        $id_usuario = (int)($datos["id_usuario"] ?? $datos["id"] ?? 0);
                         $nombre = trim($datos["nombre"] ?? '');
                         $email = trim($datos["email"] ?? '');
                         $edad = (int)($datos["edad"] ?? 0);
                         $nueva_pass = trim($datos["contrasena"] ?? '');
+                        $tiene_admin = isset($datos["admin"]);
+                        $admin = $tiene_admin ? (int)$datos["admin"] : 0;
 
-                        if ($id <= 0) {
+                        if ($id_usuario <= 0) {
                             http_response_code(400);
                             echo json_encode(["error" => "ID de usuario requerido."]);
                             exit;
@@ -159,21 +163,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         if (!empty($nueva_pass)) {
                             $contrasena = password_hash($nueva_pass, PASSWORD_BCRYPT);
-                            $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ?, contrasena = ? WHERE id_usuario = ?");
-                            $stmt->bind_param("ssisi", $email, $nombre, $edad, $contrasena, $id);
+                            if ($tiene_admin) {
+                                $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ?, contrasena = ?, admin = ? WHERE id_usuario = ?");
+                                $stmt->bind_param("ssisii", $email, $nombre, $edad, $contrasena, $admin, $id_usuario);
+                            } else {
+                                $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ?, contrasena = ? WHERE id_usuario = ?");
+                                $stmt->bind_param("ssisi", $email, $nombre, $edad, $contrasena, $id_usuario);
+                            }
                         } else {
-                            $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ? WHERE id_usuario = ?");
-                            $stmt->bind_param("ssii", $email, $nombre, $edad, $id);
+                            if ($tiene_admin) {
+                                $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ?, admin = ? WHERE id_usuario = ?");
+                                $stmt->bind_param("ssiii", $email, $nombre, $edad, $admin, $id_usuario);
+                            } else {
+                                $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ? WHERE id_usuario = ?");
+                                $stmt->bind_param("ssii", $email, $nombre, $edad, $id_usuario);
+                            }
                         }
                         
                         if ($stmt->execute()) {
-                            echo json_encode([
-                                "mensaje" => "Usuario actualizado correctamente."
-                            ]);
+                            echo json_encode(["mensaje" => "Usuario actualizado correctamente."]);
                         } else {
                             http_response_code(500);
                             echo json_encode([
-                                "error" => "Error: Usuario no actualizado."
+                                "error" => "Error: Usuario no actualizado.",
+                                "detallesTecnicos" => $stmt->error
                             ]);
                         }
                         $stmt->close();
@@ -193,10 +206,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $descripcion = trim($datos['descripcion'] ?? '');
                         $stock = (int)($datos['stock'] ?? 0);
                         $monto = (float)($datos['monto'] ?? 0.0);
-                        $imagen = $datos['imagen'] ?? null; // Imagen recibida en formato Base64
+                        $imagen = $datos['imagen'] ?? null;
 
-                        // Comprobar si el producto ya existe
-                        $stmt_check = $conexion->prepare("SELECT id FROM productos WHERE nombre = ?");
+                        $stmt_check = $conexion->prepare("SELECT id_producto FROM productos WHERE nombre = ?");
                         $stmt_check->bind_param("s", $nombre);
                         $stmt_check->execute();
                         $res_check = $stmt_check->get_result();
@@ -209,45 +221,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                         $stmt_check->close();
 
-                        // begin_transaction(): Instrucción SQL que marca el comienzo de un bloque de operaciones que se ejecutan juntas 
                         $conexion->begin_transaction();
 
                         try {
-                            // Insert del producto (incluyendo la imagen mediumblob)
                             $stmt_prod = $conexion->prepare("INSERT INTO productos (nombre, descripcion, stock, imagen) VALUES (?, ?, ?, ?)");
                             $stmt_prod->bind_param("ssis", $nombre, $descripcion, $stock, $imagen);
 
                             if (!$stmt_prod->execute()) {
-                                //Interrumpe el flujo del programa y salta al catch si una consulta falla
-                                throw new Exception("Error al guardar el producto.");
+                                throw new Exception("Error al guardar el producto: " . $stmt_prod->error);
                             }
 
                             $nuevoIdProducto = $stmt_prod->insert_id;
                             $stmt_prod->close();
 
-                            // Insert del monto
                             $stmt_monto = $conexion->prepare("INSERT INTO monto (id_producto, importe) VALUES (?, ?)");
-                            $stmt_monto->bind_param("id", $nuevoIdProducto, $monto); // 'i' para int, 'd' para double/float
+                            $stmt_monto->bind_param("id", $nuevoIdProducto, $monto);
 
                             if (!$stmt_monto->execute()) {
-                                throw new Exception("Error al guardar el monto del producto.");
+                                throw new Exception("Error al guardar el monto del producto: " . $stmt_monto->error);
                             }
                             $stmt_monto->close();
 
-                            // Si todo sale bien, confirmamos los cambios
                             $conexion->commit();
 
-                            // Respuesta exitosa
                             echo json_encode([
                                 "mensaje" => "Producto registrado correctamente.",
-                                "idProducto" => $nuevoIdProducto,
+                                "id_producto" => $nuevoIdProducto,
                                 "nombre" => $nombre,
                                 "stock" => $stock,
                                 "monto" => $monto
                             ]);
 
                         } catch (Exception $e) {
-                            // Si ocurre algún problema, revertimos los cambios en la BD
                             $conexion->rollback();
                             error_log("Error interno: " . $e->getMessage());
 
@@ -260,24 +265,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         break;
                     
                     case 'ReadAdmin': //Admin
-                        $sql = "SELECT 
-                                    p.id,
-                                    p.nombre,
-                                    p.descripcion,
-                                    p.stock,
-                                    p.imagen,
-                                    m.importe AS monto
+                        $sql = "SELECT p.id_producto, p.nombre, p.descripcion, p.stock, p.imagen, m.importe AS monto
                                 FROM productos p
-                                INNER JOIN monto m ON p.id = m.id_producto
-                                ORDER BY p.id DESC;
-                        ";
+                                INNER JOIN monto m ON p.id_producto = m.id_producto
+                                ORDER BY p.id_producto DESC";
                         $resultado = $conexion->query($sql);
 
                         if ($resultado) {
                             $productos = [];
                             while ($fila = $resultado->fetch_assoc()) {
                                 $productos[] = [
-                                    "id" => (int)$fila['id'],
+                                    "id_producto" => (int)$fila['id_producto'],
                                     "nombre" => $fila['nombre'],
                                     "descripcion" => $fila['descripcion'],
                                     "stock" => (int)$fila['stock'],
@@ -289,30 +287,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             echo json_encode($productos);
                         } else {
                             http_response_code(500);
-                            echo json_encode(["error" => "Error al obtener la lista de productos."]);
+                            echo json_encode([
+                                "error" => "Error al obtener la lista de productos.",
+                                "detallesTecnicos" => $conexion->error
+                            ]);
                         }
                         break;
 
                     case 'ReadUsuario': //Usuario
-                        $sql = "SELECT 
-                                    p.id, 
-                                    p.nombre, 
-                                    p.descripcion, 
-                                    p.stock, 
-                                    p.imagen,
-                                    m.importe AS monto
+                        $sql = "SELECT p.id_producto, p.nombre, p.descripcion, p.stock, p.imagen, m.importe AS monto
                                 FROM productos p
-                                INNER JOIN monto m ON p.id = m.id_producto
+                                INNER JOIN monto m ON p.id_producto = m.id_producto
                                 WHERE p.stock > 0
-                                ORDER BY p.nombre ASC
-                        ";
+                                ORDER BY p.nombre ASC";
                         $resultado = $conexion->query($sql);
 
                         if ($resultado) {
                             $productos = [];
                             while ($fila = $resultado->fetch_assoc()) {
                                 $productos[] = [
-                                    "id" => (int)$fila['id'],
+                                    "id_producto" => (int)$fila['id_producto'],
                                     "nombre" => $fila['nombre'],
                                     "descripcion" => $fila['descripcion'],
                                     "stock" => (int)$fila['stock'],
@@ -324,12 +318,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             echo json_encode($productos);
                         } else {
                             http_response_code(500);
-                            echo json_encode(["error" => "Error al obtener la lista de productos."]);
+                            echo json_encode([
+                                "error" => "Error al obtener la lista de productos.",
+                                "detallesTecnicos" => $conexion->error
+                            ]);
                         }
                         break;
 
                     case 'ReadProductoByID': //Usuario
-                        $id_producto = (int)($datos['id'] ?? 0);
+                        $id_producto = (int)($datos['id_producto'] ?? $datos['id'] ?? 0);
 
                         if ($id_producto <= 0) {
                             http_response_code(400);
@@ -337,17 +334,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             exit;
                         }
 
-                        $sql = "SELECT 
-                                p.id, 
-                                p.nombre, 
-                                p.descripcion, 
-                                p.stock, 
-                                p.imagen,
-                                m.importe AS monto
-                            FROM productos p
-                            INNER JOIN monto m ON p.id = m.id_producto
-                            WHERE p.id = ?
-                        ";
+                        $sql = "SELECT p.id_producto, p.nombre, p.descripcion, p.stock, p.imagen, m.importe AS monto
+                                FROM productos p
+                                INNER JOIN monto m ON p.id_producto = m.id_producto
+                                WHERE p.id_producto = ?";
 
                         $stmt = $conexion->prepare($sql);
                         $stmt->bind_param("i", $id_producto);
@@ -357,7 +347,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if ($fila = $resultado->fetch_assoc()) {
                             http_response_code(200);
                             echo json_encode([
-                                "id" => (int)$fila['id'],
+                                "id_producto" => (int)$fila['id_producto'],
                                 "nombre" => $fila['nombre'],
                                 "descripcion" => $fila['descripcion'],
                                 "stock" => (int)$fila['stock'],
@@ -373,7 +363,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         break;
                 
                     case 'Update': //Admin
-                        $id_producto = (int)($datos['id'] ?? 0);
+                        $id_producto = (int)($datos['id_producto'] ?? $datos['id'] ?? 0);
                         $nombre = trim($datos['nombre'] ?? '');
                         $descripcion = trim($datos['descripcion'] ?? '');
                         $stock = (int)($datos['stock'] ?? 0);
@@ -386,8 +376,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             exit;
                         }
 
-                        // Comprobar si el nuevo nombre ya pertenece a OTRO producto
-                        $stmt_check = $conexion->prepare("SELECT id FROM productos WHERE nombre = ? AND id != ?");
+                        $stmt_check = $conexion->prepare("SELECT id_producto FROM productos WHERE nombre = ? AND id_producto != ?");
                         $stmt_check->bind_param("si", $nombre, $id_producto);
                         $stmt_check->execute();
                         $res_check = $stmt_check->get_result();
@@ -403,43 +392,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $conexion->begin_transaction();
 
                         try {
-                            //Update productos (se evalúa si viene una imagen nueva o no)
                             if ($imagen !== null) {
-                                $stmt_prod = $conexion->prepare("UPDATE productos SET nombre = ?, descripcion = ?, stock = ?, imagen = ? WHERE id = ?");
+                                $stmt_prod = $conexion->prepare("UPDATE productos SET nombre = ?, descripcion = ?, stock = ?, imagen = ? WHERE id_producto = ?");
                                 $stmt_prod->bind_param("ssisi", $nombre, $descripcion, $stock, $imagen, $id_producto);
                             } else {
-                                $stmt_prod = $conexion->prepare("UPDATE productos SET nombre = ?, descripcion = ?, stock = ? WHERE id = ?");
+                                $stmt_prod = $conexion->prepare("UPDATE productos SET nombre = ?, descripcion = ?, stock = ? WHERE id_producto = ?");
                                 $stmt_prod->bind_param("ssii", $nombre, $descripcion, $stock, $id_producto);
                             }
 
                             if (!$stmt_prod->execute()) {
-                                throw new Exception("Error al actualizar el producto.");
+                                throw new Exception("Error al actualizar el producto: " . $stmt_prod->error);
                             }
                             $stmt_prod->close();
 
-                            //Update monto
                             $stmt_monto = $conexion->prepare("UPDATE monto SET importe = ? WHERE id_producto = ?");
-                            $stmt_monto->bind_param("di", $monto, $id_producto); // 'd' para float/decimal
+                            $stmt_monto->bind_param("di", $monto, $id_producto);
 
                             if (!$stmt_monto->execute()) {
-                                throw new Exception("Error al actualizar el monto del producto.");
+                                throw new Exception("Error al actualizar el monto del producto: " . $stmt_monto->error);
                             }
                             $stmt_monto->close();
 
-                            // Confirmar cambios
                             $conexion->commit();
 
                             http_response_code(200);
                             echo json_encode([
                                 "mensaje" => "Producto actualizado correctamente.",
-                                "idProducto" => $id_producto,
+                                "id_producto" => $id_producto,
                                 "nombre" => $nombre,
                                 "stock" => $stock,
                                 "monto" => $monto
                             ]);
 
                         } catch (Exception $e) {
-                            // Revertir cambios ante cualquier falla
                             $conexion->rollback();
                             error_log("Error interno: " . $e->getMessage());
 
@@ -452,7 +437,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         break;
                     
                     case 'Delete': //Admin
-                        $id_producto = (int)($datos["id"] ?? 0);
+                        $id_producto = (int)($datos['id_producto'] ?? $datos['id'] ?? 0);
 
                         if ($id_producto <= 0) {
                             http_response_code(400);
@@ -460,8 +445,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             exit;
                         }
 
-                        // Verificar si el producto existe antes de intentar borrarlo
-                        $stmt_check = $conexion->prepare("SELECT id FROM productos WHERE id = ?");
+                        $stmt_check = $conexion->prepare("SELECT id_producto FROM productos WHERE id_producto = ?");
                         $stmt_check->bind_param("i", $id_producto);
                         $stmt_check->execute();
                         $res_check = $stmt_check->get_result();
@@ -474,19 +458,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                         $stmt_check->close();
 
-                        //Eliminar el producto
-                        $stmt = $conexion->prepare("DELETE FROM productos WHERE id = ?");
+                        $stmt = $conexion->prepare("DELETE FROM productos WHERE id_producto = ?");
                         $stmt->bind_param("i", $id_producto);
 
                         if ($stmt->execute()) {
                             http_response_code(200);
                             echo json_encode([
                                 "mensaje" => "Producto eliminado correctamente.",
-                                "idProducto" => $id_producto
+                                "id_producto" => $id_producto
                             ]);
                         } else {
                             http_response_code(500);
-                            echo json_encode(["error" => "Error al intentar eliminar el producto."]);
+                            echo json_encode([
+                                "error" => "Error al intentar eliminar el producto.",
+                                "detallesTecnicos" => $stmt->error
+                            ]);
                         }
 
                         $stmt->close();
@@ -502,10 +488,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'DetalleCompra':
                 switch ($consulta) {
                     case 'Create': //Usuario
-                        // Extraemos los datos recibidos desde $datos
                         $id_producto = (int)($datos['id_producto'] ?? 0);
                         $id_usuario = (int)($datos['id_usuario'] ?? 0);
-                        $id_estado = (int)($datos['estado'] ?? 3); 
+                        $id_estado = (int)($datos['estado'] ?? $datos['id_estado'] ?? 3); 
                         $cantidad = (int)($datos['cantidad'] ?? 0);
                         $imagen_comprobante = $datos['comprobante'] ?? null;
 
@@ -518,18 +503,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $conexion->begin_transaction();
 
                         try {
-                            //Insertar primero el comprobante de pago en la tabla comprobante
                             $stmt_comp = $conexion->prepare("INSERT INTO comprobante (imagen) VALUES (?)");
                             $stmt_comp->bind_param("s", $imagen_comprobante);
 
                             if (!$stmt_comp->execute()) {
-                                throw new Exception("Error al guardar el comprobante de pago.");
+                                throw new Exception("Error al guardar el comprobante de pago: " . $stmt_comp->error);
                             }
 
                             $id_comprobante = $stmt_comp->insert_id;
                             $stmt_comp->close();
 
-                            //Obtener el id_monto activo e importe para este producto
                             $stmt_monto = $conexion->prepare("SELECT id_monto, importe FROM monto WHERE id_producto = ?");
                             $stmt_monto->bind_param("i", $id_producto);
                             $stmt_monto->execute();
@@ -544,10 +527,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $precio_unitario = (float)$datos_monto['importe'];
                             $stmt_monto->close();
 
-                            //Calcular el subtotal automáticamente
                             $subtotal = $precio_unitario * $cantidad;
 
-                            //Insertar la compra asociando el nuevo $id_comprobante generado y el $id_estado (Pendiente)
                             $sql = "INSERT INTO detalleCompra (id_producto, id_usuario, id_monto, id_comprobante, id_estado, cantidad, subtotal) 
                                     VALUES (?, ?, ?, ?, ?, ?, ?)";
                             
@@ -555,14 +536,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $stmt_detalle->bind_param("iiiiiid", $id_producto, $id_usuario, $id_monto, $id_comprobante, $id_estado, $cantidad, $subtotal);
 
                             if (!$stmt_detalle->execute()) {
-                                throw new Exception("Se ha producido un error durante el registro de la compra.");
+                                throw new Exception("Se ha producido un error durante el registro de la compra: " . $stmt_detalle->error);
                             }
 
                             $id_detalleCompra = $stmt_detalle->insert_id;
                             $stmt_detalle->close();
 
-                            //Descontar stock del producto
-                            $stmt_stock = $conexion->prepare("UPDATE productos SET stock = stock - ? WHERE id = ? AND stock >= ?");
+                            $stmt_stock = $conexion->prepare("UPDATE productos SET stock = stock - ? WHERE id_producto = ? AND stock >= ?");
                             $stmt_stock->bind_param("iii", $cantidad, $id_producto, $cantidad);
                             $stmt_stock->execute();
 
@@ -571,7 +551,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                             $stmt_stock->close();
 
-                            // Confirmar transacción
                             $conexion->commit();
 
                             http_response_code(201);
@@ -588,7 +567,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             ]);
 
                         } catch (Exception $e) {
-                            // Revertir todo si falla algún paso (incluyendo la creación del comprobante)
                             $conexion->rollback();
 
                             error_log("Error interno: " . $e->getMessage());
@@ -607,21 +585,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     dc.cantidad,
                                     dc.subtotal,
                                     dc.fecha,
-                                    p.id AS id_producto,
+                                    p.id_producto,
                                     p.nombre AS producto_nombre,
                                     p.imagen AS producto_imagen,
-                                    u.id AS id_usuario,
+                                    u.id_usuario,
                                     u.nombre AS usuario_nombre,
                                     u.email AS usuario_email,
                                     m.importe AS precio_unitario,
                                     dc.id_comprobante,
                                     dc.id_estado
                                 FROM detalleCompra dc
-                                INNER JOIN productos p ON dc.id_producto = p.id
-                                INNER JOIN usuarios u ON dc.id_usuario = u.id
+                                INNER JOIN productos p ON dc.id_producto = p.id_producto
+                                INNER JOIN usuarios u ON dc.id_usuario = u.id_usuario
                                 INNER JOIN monto m ON dc.id_monto = m.id_monto
-                                ORDER BY dc.id_detalleCompra DESC
-                        ";
+                                ORDER BY dc.id_detalleCompra DESC";
 
                         $resultado = $conexion->query($sql);
 
@@ -634,12 +611,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     "subtotal" => (float)$fila['subtotal'],
                                     "fecha" => $fila['fecha'],
                                     "producto" => [
-                                        "id" => (int)$fila['id_producto'],
+                                        "id_producto" => (int)$fila['id_producto'],
                                         "nombre" => $fila['producto_nombre'],
                                         "imagen" => $fila['producto_imagen'] ? base64_encode($fila['producto_imagen']) : null
                                     ],
                                     "usuario" => [
-                                        "id" => (int)$fila['id_usuario'],
+                                        "id_usuario" => (int)$fila['id_usuario'],
                                         "nombre" => $fila['usuario_nombre'],
                                         "email"  => $fila['usuario_email']
                                     ],
@@ -673,12 +650,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $conexion->begin_transaction();
 
                         try {
-                            // Actualizar el estado del pago
                             $stmt_upd = $conexion->prepare("UPDATE detalleCompra SET id_estado = ? WHERE id_detalleCompra = ?");
                             $stmt_upd->bind_param("ii", $id_estado, $id_detalleCompra);
 
                             if (!$stmt_upd->execute()) {
-                                throw new Exception("Error al actualizar el estado de la compra.");
+                                throw new Exception("Error al actualizar el estado de la compra: " . $stmt_upd->error);
                             }
 
                             if ($stmt_upd->affected_rows === 0) {
@@ -686,7 +662,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                             $stmt_upd->close();
 
-                            // Confirmar la transacción
                             $conexion->commit();
                             
                             http_response_code(200);
@@ -707,8 +682,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                         break;
 
-                    case 'enviarMail': // Notificar estado de la compra al usuario
-                        // Requerir archivos de PHPMailer
+                    case 'enviarMail': 
                         require_once 'PHPMailer/src/Exception.php';
                         require_once 'PHPMailer/src/PHPMailer.php';
                         require_once 'PHPMailer/src/SMTP.php';
@@ -724,7 +698,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             exit;
                         }
 
-                        // Consulta para obtener la información de la compra, el producto, el usuario y el nombre del estado
                         $sql = "SELECT 
                                     dc.id_detalleCompra,
                                     dc.subtotal,
@@ -733,8 +706,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     u.email AS usuario_email,
                                     e.nombre AS estado_nombre
                                 FROM detalleCompra dc
-                                INNER JOIN productos p ON dc.id_producto = p.id
-                                INNER JOIN usuarios u ON dc.id_usuario = u.id
+                                INNER JOIN productos p ON dc.id_producto = p.id_producto
+                                INNER JOIN usuarios u ON dc.id_usuario = u.id_usuario
                                 INNER JOIN estado e ON dc.id_estado = e.id_estado
                                 WHERE dc.id_detalleCompra = ?";
 
@@ -750,27 +723,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $subtotal = $fila['subtotal'];
                             $estadoNombre = $fila['estado_nombre'];
 
-                            // Instancia de PHPMailer
                             $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
 
                             try {
-                                // Configuración UTF-8 y SMTP
                                 $mail->CharSet = 'UTF-8';
                                 $mail->Encoding = 'base64';
                                 $mail->isSMTP();
                                 $mail->Host       = 'smtp.gmail.com';
                                 $mail->SMTPAuth   = true;
                                 $mail->Username   = 'recytech.soporte@gmail.com';
-                                //¡¡¡¡¡COMPLETAR!!!!!!
-                                $mail->Password   = ''; // Contraseña de aplicación 
+                                $mail->Password   = ''; 
                                 $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
                                 $mail->Port       = 587;
 
-                                // Remitente y Destinatario
                                 $mail->setFrom('recytech.soporte@gmail.com', 'RecyTech');
                                 $mail->addAddress($emailUsuario, $nombreUsuario);
 
-                                // Asunto y Contenido del correo en formato HTML
                                 $mail->isHTML(true);
                                 $mail->Subject = 'Estado de tu compra - RecyTech';
                                 $mail->Body    = '
@@ -879,19 +847,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             exit;
                         }
 
-                        $sql = "SELECT 
-                                    p.id_publicacion,
-                                    p.contenido,
-                                    p.imagen,
-                                    p.fecha,
-                                    u.id AS id_usuario,
-                                    u.nombre AS autor_nombre,
-                                    p.id_categoria
+                        $sql = "SELECT p.id_publicacion, p.contenido, p.imagen, p.fecha, u.id_usuario, u.nombre AS autor_nombre, p.id_categoria
                                 FROM publicacion p
-                                INNER JOIN usuarios u ON p.id_usuario = u.id
+                                INNER JOIN usuarios u ON p.id_usuario = u.id_usuario
                                 WHERE p.id_categoria = ?
-                                ORDER BY p.id_publicacion DESC
-                        ";
+                                ORDER BY p.id_publicacion DESC";
 
                         $stmt = $conexion->prepare($sql);
                         $stmt->bind_param("i", $id_categoria);
@@ -1017,20 +977,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             exit;
                         }
 
-                        $sql = "SELECT 
-                                    c.id_comentario,
-                                    c.id_publicacion,
-                                    c.contenido,
-                                    c.imagen,
-                                    c.id_comentario_padre,
-                                    c.fecha,
-                                    u.id AS id_usuario,
-                                    u.nombre AS autor_nombre
+                        $sql = "SELECT c.id_comentario, c.id_publicacion, c.contenido, c.imagen, c.id_comentario_padre, c.fecha, u.id_usuario, u.nombre AS autor_nombre
                                 FROM comentario c
-                                INNER JOIN usuarios u ON c.id_usuario = u.id
+                                INNER JOIN usuarios u ON c.id_usuario = u.id_usuario
                                 WHERE c.id_publicacion = ?
-                                ORDER BY c.fecha ASC
-                        ";
+                                ORDER BY c.fecha ASC";
 
                         $stmt = $conexion->prepare($sql);
                         $stmt->bind_param("i", $id_publicacion);
@@ -1071,11 +1022,181 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 break;
             
+            case 'Tutoriales':
+                switch ($consulta) {
+                    case 'Read': //Admin
+                        $sql = "SELECT id_tutorial, nombre, descripcion, archivo FROM tutoriales ORDER BY id_tutorial DESC";
+
+                        $resultado = $conexion->query($sql);
+
+                        if ($resultado) {
+                            $detalles = [];
+                            while ($fila = $resultado->fetch_assoc()) {
+                                $detalles[] = [
+                                    "id_tutorial" => (int)$fila['id_tutorial'],
+                                    "nombre" => $fila['nombre'],
+                                    "descripcion" => $fila['descripcion'],
+                                    "archivo" => $fila['archivo'],
+                                ];
+                            }
+
+                            http_response_code(200);
+                            echo json_encode($detalles);
+                        } else {
+                            http_response_code(500);
+                            echo json_encode([
+                                "error" => "Error al mostrar los tutoriales.",
+                                "detallesTecnicos" => $conexion->error
+                            ]);
+                        }
+                        break;
+                    
+                    case 'ReadByID': //Usuario
+                        $id_tutorial = (int)($datos['id_tutorial'] ?? $datos['id'] ?? 0);
+
+                        if ($id_tutorial <= 0) {
+                            http_response_code(400);
+                            echo json_encode(["error" => "Tutorial no encontrado."]);
+                            exit;
+                        }
+
+                        $sql = "SELECT id_tutorial, nombre, descripcion, archivo FROM tutoriales WHERE id_tutorial = ?";
+
+                        $stmt = $conexion->prepare($sql);
+                        $stmt->bind_param("i", $id_tutorial);
+                        $stmt->execute();
+                        $resultado = $stmt->get_result();
+
+                        if ($fila = $resultado->fetch_assoc()) {
+                            http_response_code(200);
+                            echo json_encode([
+                                "id_tutorial" => (int)$fila['id_tutorial'],
+                                "nombre" => $fila['nombre'],
+                                "descripcion" => $fila['descripcion'],
+                                "archivo" => $fila['archivo'],
+                            ]);
+                        } else {
+                            http_response_code(404);
+                            echo json_encode(["error" => "Tutorial no encontrado."]);
+                        }
+
+                        $stmt->close();
+                        break;
+
+                    case 'Create': //Admin
+                        $nombre = trim($datos['nombre'] ?? '');
+                        $descripcion = trim($datos['descripcion'] ?? '');
+                        $archivo = trim($datos['archivo'] ?? '');
+
+                        $stmt = $conexion->prepare("INSERT INTO tutoriales (nombre, descripcion, archivo) VALUES (?, ?, ?)");
+                        $stmt->bind_param("sss", $nombre, $descripcion, $archivo);
+
+                        if ($stmt->execute()) {
+                            $id_tutorial = $stmt->insert_id;
+                            http_response_code(201);
+                            echo json_encode([
+                                "mensaje" => "Tutorial agregado correctamente.",
+                                "id_tutorial" => $id_tutorial,
+                                "nombre" => $nombre,
+                                "descripcion" => $descripcion,
+                                "archivo" => $archivo
+                            ]);
+                        } else {
+                            http_response_code(500);
+                            echo json_encode([
+                                "error" => "Error al agregar el tutorial.",
+                                "detallesTecnicos" => $stmt->error
+                            ]);
+                        }
+                        $stmt->close();
+                        break;
+
+                    case 'Update': //Admin
+                        $id_tutorial = (int)($datos['id_tutorial'] ?? $datos['id'] ?? 0);
+                        $nombre = trim($datos['nombre'] ?? '');
+                        $descripcion = trim($datos['descripcion'] ?? '');
+                        $archivo = trim($datos['archivo'] ?? '');
+                        
+                        if ($id_tutorial <= 0) {
+                            http_response_code(400);
+                            echo json_encode(["error" => "Tutorial no encontrado."]);
+                            exit;
+                        }
+
+                        $stmt_check = $conexion->prepare("SELECT id_tutorial FROM tutoriales WHERE nombre = ? AND id_tutorial != ?");
+                        $stmt_check->bind_param("si", $nombre, $id_tutorial);
+                        $stmt_check->execute();
+                        $res_check = $stmt_check->get_result();
+
+                        if ($res_check->num_rows > 0) {
+                            http_response_code(409);
+                            echo json_encode(["error" => "Ya existe otro tutorial registrado con ese nombre."]);
+                            $stmt_check->close();
+                            exit;
+                        }
+                        $stmt_check->close();
+
+                        $stmt = $conexion->prepare("UPDATE tutoriales SET nombre = ?, descripcion = ?, archivo = ? WHERE id_tutorial = ?");
+                        $stmt->bind_param("sssi", $nombre, $descripcion, $archivo, $id_tutorial);
+
+                        if ($stmt->execute()) {
+                            echo json_encode([
+                                "mensaje" => "Tutorial actualizado correctamente."
+                            ]);
+                        } else {
+                            http_response_code(500);
+                            echo json_encode([
+                                "error" => "Error: Tutorial no actualizado.",
+                                "detallesTecnicos" => $stmt->error
+                            ]);
+                        }
+                        $stmt->close();
+                        break;
+
+                    case 'Delete': //Admin
+                        $id_tutorial = (int)($datos['id_tutorial'] ?? $datos['id'] ?? 0);
+
+                        if ($id_tutorial <= 0) {
+                            http_response_code(400);
+                            echo json_encode(["error" => "ID de tutorial no válido."]);
+                            exit;
+                        }
+
+                        $stmt = $conexion->prepare("DELETE FROM tutoriales WHERE id_tutorial = ?");
+                        $stmt->bind_param("i", $id_tutorial);
+                        if ($stmt->execute()) {
+                            if ($stmt->affected_rows > 0) {
+                                http_response_code(200);
+                                echo json_encode([
+                                    "mensaje" => "Tutorial eliminado correctamente.",
+                                    "id_tutorial" => $id_tutorial
+                                ]);
+                            } else {
+                                http_response_code(404);
+                                echo json_encode(["error" => "El tutorial no existe o ya fue eliminado."]);
+                            }
+                        } else {
+                            http_response_code(500);
+                            echo json_encode([
+                                "error" => "Error al eliminar el tutorial.",
+                                "detallesTecnicos" => $stmt->error
+                            ]);
+                        }
+                        $stmt->close();
+                        break;
+                    
+                    default:
+                        http_response_code(400);
+                        echo json_encode(["error" => "Consulta no válida"]);
+                        break;
+                }
+                break;
+
             default:
                 http_response_code(400);
                 echo json_encode(["error" => "Recurso no válido"]);
                 break;
-        }
+        }   
     } else {
         http_response_code(400);
         echo json_encode(["error" => "El JSON enviado no es válido."]);

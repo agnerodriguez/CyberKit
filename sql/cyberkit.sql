@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-10-2026 a las 17:52:30
+-- Tiempo de generación: 23-10-2026 a las 02:12:47
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -32,6 +32,14 @@ CREATE TABLE `categoria` (
   `nombre` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `categoria`
+--
+
+INSERT INTO `categoria` (`id_categoria`, `nombre`) VALUES
+(1, 'dudas'),
+(2, 'compartir');
+
 -- --------------------------------------------------------
 
 --
@@ -40,11 +48,12 @@ CREATE TABLE `categoria` (
 
 CREATE TABLE `comentario` (
   `id_comentario` int(8) NOT NULL,
-  `id_publicacion` int(8) DEFAULT NULL,
-  `id_usuario` int(8) DEFAULT NULL,
+  `id_publicacion` int(8) NOT NULL,
+  `id_usuario` int(8) NOT NULL,
   `id_comentario_padre` int(8) DEFAULT NULL,
-  `contenido` varchar(255) DEFAULT NULL,
-  `fecha` datetime DEFAULT NULL
+  `contenido` varchar(255) NOT NULL,
+  `imagen` mediumblob DEFAULT NULL,
+  `fecha` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -66,12 +75,14 @@ CREATE TABLE `comprobante` (
 
 CREATE TABLE `detallecompra` (
   `id_detalleCompra` int(8) NOT NULL,
-  `id_producto` int(8) DEFAULT NULL,
-  `id_usuario` int(8) DEFAULT NULL,
-  `id_monto` int(8) DEFAULT NULL,
-  `id_comprobante` int(8) DEFAULT NULL,
-  `id_estado` int(8) DEFAULT NULL,
-  `cantidad` int(3) DEFAULT NULL
+  `id_producto` int(8) NOT NULL,
+  `id_usuario` int(8) NOT NULL,
+  `id_monto` int(8) NOT NULL,
+  `id_comprobante` int(8) NOT NULL,
+  `id_estado` int(8) NOT NULL,
+  `cantidad` int(3) NOT NULL,
+  `subtotal` float NOT NULL,
+  `fecha` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -85,6 +96,15 @@ CREATE TABLE `estadopago` (
   `nombre` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `estadopago`
+--
+
+INSERT INTO `estadopago` (`id_estado`, `nombre`) VALUES
+(1, 'Pago'),
+(2, 'Pendiente'),
+(3, 'Impago');
+
 -- --------------------------------------------------------
 
 --
@@ -93,9 +113,9 @@ CREATE TABLE `estadopago` (
 
 CREATE TABLE `monto` (
   `id_monto` int(8) NOT NULL,
-  `id_producto` int(8) DEFAULT NULL,
-  `importe` float DEFAULT NULL,
-  `fecha_actualizacion` date DEFAULT NULL
+  `id_producto` int(8) NOT NULL,
+  `importe` float NOT NULL,
+  `fecha_actualizacion` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -108,7 +128,8 @@ CREATE TABLE `productos` (
   `id_producto` int(8) NOT NULL,
   `nombre` varchar(50) DEFAULT NULL,
   `descripcion` varchar(255) DEFAULT NULL,
-  `stock` int(4) DEFAULT NULL
+  `stock` int(4) DEFAULT NULL,
+  `imagen` mediumblob NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -119,11 +140,24 @@ CREATE TABLE `productos` (
 
 CREATE TABLE `publicacion` (
   `id_publicacion` int(8) NOT NULL,
-  `id_usuario` int(8) DEFAULT NULL,
-  `id_categoria` int(8) DEFAULT NULL,
-  `contenido` varchar(255) DEFAULT NULL,
-  `fecha` datetime DEFAULT NULL,
+  `id_usuario` int(8) NOT NULL,
+  `id_categoria` int(8) NOT NULL,
+  `contenido` varchar(255) NOT NULL,
+  `fecha` datetime NOT NULL,
   `imagen` mediumblob DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tutoriales`
+--
+
+CREATE TABLE `tutoriales` (
+  `id` int(8) NOT NULL,
+  `nombre` varchar(30) NOT NULL,
+  `descripcion` varchar(255) NOT NULL,
+  `archivo` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -137,7 +171,8 @@ CREATE TABLE `usuarios` (
   `nombre` varchar(50) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `edad` int(2) DEFAULT NULL,
-  `contrasena` varchar(255) DEFAULT NULL
+  `contrasena` varchar(255) DEFAULT NULL,
+  `admin` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -155,9 +190,9 @@ ALTER TABLE `categoria`
 --
 ALTER TABLE `comentario`
   ADD PRIMARY KEY (`id_comentario`),
-  ADD KEY `id_publicacion` (`id_publicacion`),
   ADD KEY `id_usuario` (`id_usuario`),
-  ADD KEY `id_comentario_padre` (`id_comentario_padre`);
+  ADD KEY `fk_comentario_publicacion` (`id_publicacion`),
+  ADD KEY `fk_comentario_comentario_padre` (`id_comentario_padre`);
 
 --
 -- Indices de la tabla `comprobante`
@@ -187,7 +222,7 @@ ALTER TABLE `estadopago`
 --
 ALTER TABLE `monto`
   ADD PRIMARY KEY (`id_monto`),
-  ADD KEY `id_producto` (`id_producto`);
+  ADD KEY `fk_monto_productos` (`id_producto`);
 
 --
 -- Indices de la tabla `productos`
@@ -204,6 +239,12 @@ ALTER TABLE `publicacion`
   ADD KEY `id_categoria` (`id_categoria`);
 
 --
+-- Indices de la tabla `tutoriales`
+--
+ALTER TABLE `tutoriales`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -217,7 +258,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `categoria`
 --
 ALTER TABLE `categoria`
-  MODIFY `id_categoria` int(8) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_categoria` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `comentario`
@@ -241,7 +282,7 @@ ALTER TABLE `detallecompra`
 -- AUTO_INCREMENT de la tabla `estadopago`
 --
 ALTER TABLE `estadopago`
-  MODIFY `id_estado` int(8) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_estado` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `monto`
@@ -262,6 +303,12 @@ ALTER TABLE `publicacion`
   MODIFY `id_publicacion` int(8) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `tutoriales`
+--
+ALTER TABLE `tutoriales`
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -275,9 +322,9 @@ ALTER TABLE `usuarios`
 -- Filtros para la tabla `comentario`
 --
 ALTER TABLE `comentario`
-  ADD CONSTRAINT `comentario_ibfk_1` FOREIGN KEY (`id_publicacion`) REFERENCES `publicacion` (`id_publicacion`),
   ADD CONSTRAINT `comentario_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `comentario_ibfk_3` FOREIGN KEY (`id_comentario_padre`) REFERENCES `comentario` (`id_comentario`);
+  ADD CONSTRAINT `fk_comentario_comentario_padre` FOREIGN KEY (`id_comentario_padre`) REFERENCES `comentario` (`id_comentario`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_comentario_publicacion` FOREIGN KEY (`id_publicacion`) REFERENCES `publicacion` (`id_publicacion`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `detallecompra`
@@ -293,7 +340,7 @@ ALTER TABLE `detallecompra`
 -- Filtros para la tabla `monto`
 --
 ALTER TABLE `monto`
-  ADD CONSTRAINT `monto_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`);
+  ADD CONSTRAINT `fk_monto_productos` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `publicacion`
