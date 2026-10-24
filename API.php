@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         switch ($recurso) {
             case 'Usuarios':
                 switch ($consulta) {
-                   case 'Create': //Admin y usuario
+                    case 'Create': //Admin y usuario
                         $nombre = trim($datos['nombre'] ?? '');
                         $email = trim($datos['email'] ?? '');
                         $edad = (int)($datos['edad'] ?? 0);
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             exit;
                         }
 
-                        // 1) Verificar si el email ya existe
+                        // Verificar si el email ya existe
                         $stmt = $conexion->prepare("SELECT id_usuario FROM usuarios WHERE email = ?");
                         $stmt->bind_param("s", $email);
                         $stmt->execute();
@@ -49,10 +49,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                         $stmt->close();
 
-                        // 2) Hashear la contraseña ANTES de insertar
+                        // Hashear la contraseña ANTES de insertar
                         $contrasena_hash = password_hash($contrasena, PASSWORD_BCRYPT);
 
-                        // 3) Insertar el usuario
+                        // Insertar el usuario
                         $stmt = $conexion->prepare("INSERT INTO usuarios (nombre, email, edad, contrasena) VALUES (?, ?, ?, ?)");
                         $stmt->bind_param("ssis", $nombre, $email, $edad, $contrasena_hash);
                         $stmt->execute();
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             "usuario" => $nombre,
                             "admin" => 0
                         ]);
-                    break;
+                        break;
                     
                     case 'IniciarSesion': //Admin y usuario 
                         $email = trim($datos["email"] ?? '');
@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             echo json_encode(["error" => "Usuario no encontrado"]);
                         }
                         $stmt->close();
-                    break;
+                        break;
                     
                     case 'ReadUsuarioByID': //Usuario
                         $id_usuario = (int)($datos['id_usuario'] ?? $_SESSION['id_usuario'] ?? 0);
@@ -201,13 +201,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             case 'Productos':
                 switch ($consulta) {
-                    case 'Create': //Admin
+                    case 'Create': // Admin
                         $nombre = trim($datos['nombre'] ?? '');
                         $descripcion = trim($datos['descripcion'] ?? '');
                         $stock = (int)($datos['stock'] ?? 0);
                         $monto = (float)($datos['monto'] ?? 0.0);
-                        $imagen = $datos['imagen'] ?? null;
+                        $imagenBase64 = $datos['imagen'] ?? null;
 
+                        // Validar que el producto no exista por nombre
                         $stmt_check = $conexion->prepare("SELECT id_producto FROM productos WHERE nombre = ?");
                         $stmt_check->bind_param("s", $nombre);
                         $stmt_check->execute();
@@ -221,19 +222,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                         $stmt_check->close();
 
+                        // Validar que la imagen venga en el JSON (ya que la columna NO permite NULOS)
+                        if (empty($imagenBase64)) {
+                            http_response_code(400);
+                            echo json_encode(["error" => "La imagen del producto es obligatoria."]);
+                            exit;
+                        }
+
                         $conexion->begin_transaction();
 
                         try {
+                            // Insertar con una ruta temporal para cumplir con el NOT NULL de MySQL
+                            $rutaTemporal = 'pendiente';
                             $stmt_prod = $conexion->prepare("INSERT INTO productos (nombre, descripcion, stock, imagen) VALUES (?, ?, ?, ?)");
-                            $stmt_prod->bind_param("ssis", $nombre, $descripcion, $stock, $imagen);
+                            $stmt_prod->bind_param("ssis", $nombre, $descripcion, $stock, $rutaTemporal);
 
                             if (!$stmt_prod->execute()) {
                                 throw new Exception("Error al guardar el producto: " . $stmt_prod->error);
                             }
 
+                            // Obtener el ID autogenerado
                             $nuevoIdProducto = $stmt_prod->insert_id;
                             $stmt_prod->close();
 
+                            // Insertar el monto asociado
                             $stmt_monto = $conexion->prepare("INSERT INTO monto (id_producto, importe) VALUES (?, ?)");
                             $stmt_monto->bind_param("id", $nuevoIdProducto, $monto);
 
@@ -242,19 +254,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                             $stmt_monto->close();
 
+                            // Procesar y guardar la imagen física en la carpeta productos/
+                            $directorioDestino = 'productos/';
+
+                            if (!is_dir($directorioDestino)) {
+                                mkdir($directorioDestino, 0755, true);
+                            }
+
+                            $extension = 'jpg';
+                            if (preg_match('/^data:image\/(\w+);base64,/', $imagenBase64, $coincidencias)) {
+                                $extCapturada = strtolower($coincidencias[1]);
+                                $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+                                
+                                if (in_array($extCapturada, $extensionesPermitidas)) {
+                                    $extension = ($extCapturada === 'jpeg') ? 'jpg' : $extCapturada;
+                                }
+                                
+                                $imagenBase64 = substr($imagenBase64, strpos($imagenBase64, ',') + 1);
+                            }
+
+                            $datosBinarios = base64_decode($imagenBase64);
+
+                            if ($datosBinarios === false) {
+                                throw new Exception("El formato de la imagen Base64 no es válido.");
+                            }
+
+                            $nombreArchivo = 'producto_' . $nuevoIdProducto . '.' . $extension;
+                            $rutaBD = $directorioDestino . $nombreArchivo;
+
+                            // Escribir archivo en disco
+                            if (file_put_contents($rutaBD, $datosBinarios) === false) {
+                                throw new Exception("No se pudo escribir la imagen en la carpeta productos.");
+                            }
+
+                            // Actualizar el registro sustituyendo 'pendiente' por la ruta final
+                            $stmt_img = $conexion->prepare("UPDATE productos SET imagen = ? WHERE id_producto = ?");
+                            $stmt_img->bind_param("si", $rutaBD, $nuevoIdProducto);
+                            
+                            if (!$stmt_img->execute()) {
+                                throw new Exception("Error al actualizar la ruta final de la imagen: " . $stmt_img->error);
+                            }
+                            $stmt_img->close();
+
                             $conexion->commit();
 
+                            http_response_code(201);
                             echo json_encode([
                                 "mensaje" => "Producto registrado correctamente.",
                                 "id_producto" => $nuevoIdProducto,
                                 "nombre" => $nombre,
                                 "stock" => $stock,
-                                "monto" => $monto
+                                "monto" => $monto,
+                                "imagen" => $rutaBD
                             ]);
 
                         } catch (Exception $e) {
                             $conexion->rollback();
-                            error_log("Error interno: " . $e->getMessage());
+
+                            // Limpiar archivo físico si se llegó a crear antes del error
+                            if (isset($rutaBD) && file_exists($rutaBD)) {
+                                unlink($rutaBD);
+                            }
 
                             http_response_code(500);
                             echo json_encode([
@@ -280,7 +340,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     "descripcion" => $fila['descripcion'],
                                     "stock" => (int)$fila['stock'],
                                     "monto" => (float)$fila['monto'],
-                                    "imagen" => $fila['imagen'] ? base64_encode($fila['imagen']) : null
+                                    "imagen" => $fila['imagen']
                                 ];
                             }
                             http_response_code(200);
@@ -311,7 +371,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     "descripcion" => $fila['descripcion'],
                                     "stock" => (int)$fila['stock'],
                                     "monto" => (float)$fila['monto'],
-                                    "imagen" => $fila['imagen'] ? base64_encode($fila['imagen']) : null
+                                    "imagen" => $fila['imagen']
                                 ];
                             }
                             http_response_code(200);
@@ -352,7 +412,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 "descripcion" => $fila['descripcion'],
                                 "stock" => (int)$fila['stock'],
                                 "monto" => (float)$fila['monto'],
-                                "imagen" => $fila['imagen'] ? base64_encode($fila['imagen']) : null
+                                "imagen" => $fila['imagen']
                             ]);
                         } else {
                             http_response_code(404);
@@ -368,7 +428,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $descripcion = trim($datos['descripcion'] ?? '');
                         $stock = (int)($datos['stock'] ?? 0);
                         $monto = (float)($datos['monto'] ?? 0.0);
-                        $imagen = $datos['imagen'] ?? null;
+                        $imagenBase64 = $datos['imagen'] ?? null;
 
                         if ($id_producto <= 0) {
                             http_response_code(400);
@@ -392,9 +452,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $conexion->begin_transaction();
 
                         try {
-                            if ($imagen !== null) {
+                            $rutaBD = null;
+
+                            // Si enviaron una nueva imagen en Base64 para actualizar
+                            if (!empty($imagenBase64) && strpos($imagenBase64, 'productos/') === false) {
+                                $directorioDestino = 'productos/';
+
+                                if (!is_dir($directorioDestino)) {
+                                    mkdir($directorioDestino, 0755, true);
+                                }
+
+                                $extension = 'jpg';
+                                if (preg_match('/^data:image\/(\w+);base64,/', $imagenBase64, $coincidencias)) {
+                                    $extCapturada = strtolower($coincidencias[1]);
+                                    $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+                                    if (in_array($extCapturada, $extensionesPermitidas)) {
+                                        $extension = ($extCapturada === 'jpeg') ? 'jpg' : $extCapturada;
+                                    }
+                                    $imagenBase64 = substr($imagenBase64, strpos($imagenBase64, ',') + 1);
+                                }
+
+                                $datosBinarios = base64_decode($imagenBase64);
+
+                                if ($datosBinarios !== false) {
+                                    $nombreArchivo = 'producto_' . $id_producto . '.' . $extension;
+                                    $rutaBD = $directorioDestino . $nombreArchivo;
+                                    file_put_contents($rutaBD, $datosBinarios);
+                                }
+                            }
+
+                            if ($rutaBD !== null) {
                                 $stmt_prod = $conexion->prepare("UPDATE productos SET nombre = ?, descripcion = ?, stock = ?, imagen = ? WHERE id_producto = ?");
-                                $stmt_prod->bind_param("ssisi", $nombre, $descripcion, $stock, $imagen, $id_producto);
+                                $stmt_prod->bind_param("ssisi", $nombre, $descripcion, $stock, $rutaBD, $id_producto);
                             } else {
                                 $stmt_prod = $conexion->prepare("UPDATE productos SET nombre = ?, descripcion = ?, stock = ? WHERE id_producto = ?");
                                 $stmt_prod->bind_param("ssii", $nombre, $descripcion, $stock, $id_producto);
@@ -445,7 +534,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             exit;
                         }
 
-                        $stmt_check = $conexion->prepare("SELECT id_producto FROM productos WHERE id_producto = ?");
+                        // Obtener la ruta de la imagen antes de borrar para eliminar el archivo físico
+                        $stmt_check = $conexion->prepare("SELECT imagen FROM productos WHERE id_producto = ?");
                         $stmt_check->bind_param("i", $id_producto);
                         $stmt_check->execute();
                         $res_check = $stmt_check->get_result();
@@ -456,12 +546,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $stmt_check->close();
                             exit;
                         }
+
+                        $fila = $res_check->fetch_assoc();
+                        $rutaImagen = $fila['imagen'] ?? null;
                         $stmt_check->close();
 
                         $stmt = $conexion->prepare("DELETE FROM productos WHERE id_producto = ?");
                         $stmt->bind_param("i", $id_producto);
 
                         if ($stmt->execute()) {
+                            // Borrar la imagen de la carpeta física si existía
+                            if ($rutaImagen && file_exists($rutaImagen)) {
+                                unlink($rutaImagen);
+                            }
+
                             http_response_code(200);
                             echo json_encode([
                                 "mensaje" => "Producto eliminado correctamente.",
@@ -613,7 +711,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     "producto" => [
                                         "id_producto" => (int)$fila['id_producto'],
                                         "nombre" => $fila['producto_nombre'],
-                                        "imagen" => $fila['producto_imagen'] ? base64_encode($fila['producto_imagen']) : null
+                                        "imagen" => $fila['producto_imagen'] // Corregido: envía la ruta limpia almacenada
                                     ],
                                     "usuario" => [
                                         "id_usuario" => (int)$fila['id_usuario'],
@@ -938,8 +1036,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             exit;
                         }
 
+                        // Corregido: sintaxis de consulta y bind_param alineadas
                         if ($id_comentario_padre <= 0) {
-                            $sql = "INSERT INTO comentario (id_publicacion, id_usuario, contenido, imagen, id_comentario_padre) VALUES (?, ?, ?, ?, NULL)";
+                            $sql = "INSERT INTO comentario (id_publicacion, id_usuario, contenido, imagen) VALUES (?, ?, ?, ?)";
                             $stmt = $conexion->prepare($sql);
                             $stmt->bind_param("iiss", $id_publicacion, $id_usuario, $contenido, $imagen);
                         } else {
@@ -999,7 +1098,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     "fecha" => $fila['fecha'],
                                     "id_usuario" => (int)$fila['id_usuario'],
                                     "autor_nombre" => $fila['autor_nombre'],
-                                    "imagen" => $fila['imagen'] ? base64_encode($fila['imagen']) : null
+                                    "imagen" => $fila['imagen']
                                 ];
                             }
 
