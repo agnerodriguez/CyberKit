@@ -1,19 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
     const togglePasswordBtn = document.getElementById('togglePassword'); 
     const passwordInput = document.getElementById('password'); 
-    
-    const iconoOjito = document.querySelector('.icono-ojito'); // Buscamos la clase exacta que está en el HTML: .icono-ojito
+    const iconoOjito = document.querySelector('.icono-ojito');
 
     if (togglePasswordBtn && passwordInput && iconoOjito) {
         togglePasswordBtn.addEventListener('click', () => {
-            const esPassword = passwordInput.getAttribute('type') === 'password'; // verificamos si el tipo actual es "password"
+            const esPassword = passwordInput.getAttribute('type') === 'password';
             
-            // Si actualmente es "password", lo pasamos a "text" (para mostrar la contraseña)
             if (esPassword) {
                 passwordInput.setAttribute('type', 'text');
                 iconoOjito.style.backgroundImage = "url('iconos/ojo-cerrado.png')";
             } else {
-                // Si actualmente es "text", lo pasamos a "password" (para ocultar la contraseña)
                 passwordInput.setAttribute('type', 'password');
                 iconoOjito.style.backgroundImage = "url('iconos/vista.png')";
             }
@@ -23,6 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registerForm');
+
+    if (!form) return;
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -43,19 +42,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(datos)
             });
 
-            const data = await res.json();
+            const textoRespuesta = await res.text();
+            let data;
+
+            try {
+                data = JSON.parse(textoRespuesta);
+            } catch (jsonErr) {
+                console.error("Respuesta no válida del servidor:", textoRespuesta);
+                alert("Error en el formato de respuesta del servidor.");
+                return;
+            }
 
             if (res.ok) {
-                // Éxito: redirigir o mostrar mensaje
                 alert('Usuario creado correctamente');
                 window.location.href = 'inicioSesion.php';
             } else {
-                // Error controlado por la API
-                alert(data.error || 'Ocurrió un error');
+                alert(data.error || 'Ocurrió un error al registrarse.');
             }
         } catch (err) {
             console.error(err);
-            alert('Error de conexión con el servidor');
+            alert('Error de conexión con el servidor.');
         }
     });
 });

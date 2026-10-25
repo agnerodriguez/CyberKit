@@ -1,12 +1,15 @@
 <?php
-// Desactivar la impresión de warnings/errors HTML en la salida JSON
-ini_set('display_errors', 0);
-error_reporting(0);
+// Iniciar búfer para capturar cualquier salida no deseada
+ob_start();
 
-// Limpiar cualquier buffer o espacio en blanco previo
-if (ob_get_length()) ob_clean();
+// Desactivar la impresión de warnings/errors HTML en la salida JSON
+error_reporting(0);
+ini_set('display_errors', 0);
 
 include("conexion.php");
+
+// Limpiar cualquier buffer o espacio en blanco previo (por ejemplo de conexion.php)
+if (ob_get_length()) ob_clean();
 
 header("Content-Type: application/json; charset=UTF-8");
 
@@ -359,7 +362,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 FROM productos p
                                 INNER JOIN monto m ON p.id_producto = m.id_producto
                                 WHERE p.stock > 0
-                                ORDER BY p.nombre ASC";
+                                ORDER BY p.nombre ASC
+                        ";
                         $resultado = $conexion->query($sql);
 
                         if ($resultado) {
@@ -412,7 +416,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 "descripcion" => $fila['descripcion'],
                                 "stock" => (int)$fila['stock'],
                                 "monto" => (float)$fila['monto'],
-                                "imagen" => $fila['imagen']
+                                /* ==============================================================================
+                                *  DESCOMENTAR CUANDO SE CARGUE Y LEA LA IMAGEN DESDE LA BD / API:
+                                * ==============================================================================
+                                * "imagen" => $fila['imagen']
+                                * ============================================================================== */
                             ]);
                         } else {
                             http_response_code(404);
@@ -585,22 +593,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             case 'DetalleCompra':
                 switch ($consulta) {
-                    case 'Create': //Usuario
+                    case 'Create': // Usuario
                         $id_producto = (int)($datos['id_producto'] ?? 0);
                         $id_usuario = (int)($datos['id_usuario'] ?? 0);
                         $id_estado = (int)($datos['estado'] ?? $datos['id_estado'] ?? 3); 
                         $cantidad = (int)($datos['cantidad'] ?? 0);
+                        $subtotal = (float)($datos['subtotal'] ?? 0.0); // Recibido del cliente
                         $imagen_comprobante = $datos['comprobante'] ?? null;
 
-                        if ($id_producto <= 0 || $id_usuario <= 0 || $id_estado <= 0 || $cantidad <= 0 || empty($imagen_comprobante)) {
+                        if ($id_producto <= 0 || $id_usuario <= 0 || $id_estado <= 0 || $cantidad <= 0 || $subtotal <= 0 || empty($imagen_comprobante)) {
                             http_response_code(400);
-                            echo json_encode(["error" => "Datos no válidos o falta el comprobante de pago."]);
+                            echo json_encode(["error" => "Datos no válidos, subtotal incorrecto o falta el comprobante de pago."]);
                             exit;
                         }
 
                         $conexion->begin_transaction();
 
                         try {
+                            // 1. Guardar comprobante
                             $stmt_comp = $conexion->prepare("INSERT INTO comprobante (imagen) VALUES (?)");
                             $stmt_comp->bind_param("s", $imagen_comprobante);
 
@@ -611,22 +621,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $id_comprobante = $stmt_comp->insert_id;
                             $stmt_comp->close();
 
-                            $stmt_monto = $conexion->prepare("SELECT id_monto, importe FROM monto WHERE id_producto = ?");
+                            // 2. Obtener solo el id_monto asociado al producto (para mantener la integridad referencial)
+                            $stmt_monto = $conexion->prepare("SELECT id_monto FROM monto WHERE id_producto = ?");
                             $stmt_monto->bind_param("i", $id_producto);
                             $stmt_monto->execute();
                             $res_monto = $stmt_monto->get_result();
 
                             if ($res_monto->num_rows === 0) {
-                                throw new Exception("El producto no tiene un precio/monto asignado.");
+                                throw new Exception("El producto no tiene un registro de monto asignado.");
                             }
 
                             $datos_monto = $res_monto->fetch_assoc();
                             $id_monto = (int)$datos_monto['id_monto'];
-                            $precio_unitario = (float)$datos_monto['importe'];
                             $stmt_monto->close();
 
-                            $subtotal = $precio_unitario * $cantidad;
-
+                            // 3. Insertar detalle con el subtotal recibido desde el cliente
                             $sql = "INSERT INTO detalleCompra (id_producto, id_usuario, id_monto, id_comprobante, id_estado, cantidad, subtotal) 
                                     VALUES (?, ?, ?, ?, ?, ?, ?)";
                             
@@ -640,6 +649,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $id_detalleCompra = $stmt_detalle->insert_id;
                             $stmt_detalle->close();
 
+                            // 4. Descontar stock
                             $stmt_stock = $conexion->prepare("UPDATE productos SET stock = stock - ? WHERE id_producto = ? AND stock >= ?");
                             $stmt_stock->bind_param("iii", $cantidad, $id_producto, $cantidad);
                             $stmt_stock->execute();
@@ -671,7 +681,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             http_response_code(500);
                             echo json_encode([
-                                "error"            => "Error al procesar la compra.",
+                                "error" => "Error al procesar la compra.",
                                 "detallesTecnicos" => $e->getMessage()
                             ]);
                         }
@@ -1298,11 +1308,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }   
             
             
-        }
     } else {
         http_response_code(400);
         echo json_encode(["error" => "El JSON enviado no es válido."]);
     }
+
 } else {
     http_response_code(405);
     echo json_encode(["error" => "Método no permitido."]);

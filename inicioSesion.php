@@ -20,7 +20,6 @@
         $consulta = $_POST["consulta"] ?? 'IniciarSesion';
 
         $datos = [
-            "mensaje" => "Usuario recibido correctamente",
             "email" => $email,
             "contrasena" => $contrasena,
             "recurso" => $recurso,
@@ -38,8 +37,8 @@
             "http" => [
                 "header"  => "Content-Type: application/json\r\n",
                 "method"  => "POST",
-                "content"  => $payload,
-                "ignore_errors" => true
+                "content" => $payload,
+                "ignore_errors" => true // Capturar la respuesta JSON incluso si hay un código HTTP de error (401, 404, etc.)
             ]
         ];
 
@@ -49,23 +48,19 @@
         if ($resultado !== false) {
             $respuesta = json_decode($resultado, true);
 
-            if (isset($respuesta['mensaje'])) {
-                $_SESSION['id'] = $respuesta['id_usuario'];
+            if (isset($respuesta['idUsuario'])) {
+                $_SESSION['id_usuario'] = $respuesta['idUsuario'];
                 $_SESSION['usuario'] = $respuesta['usuario'];
                 $_SESSION['admin'] = $respuesta['admin'] ?? 0;
                 header('Location: inicio.php');
                 exit;
             } else {
-                $mensajeError = $respuesta['error'];
-
-                $errorDetalle = $respuesta['error'] ?? "Error desconocido de la API." . htmlspecialchars($resultado);
-                $scriptConsola = consoleError($errorDetalle); 
+                $mensajeError = $respuesta['error'] ?? "Error desconocido en la respuesta.";
+                $scriptConsola = consoleError($mensajeError); 
             }
         } else {
             $mensajeError = "No se pudo realizar la llamada HTTP a la API.";
-
-            $errorDetalle = "Error de red o file_get_contents falló al conectar a: " . $urlApi;
-            $scriptConsola = consoleError($errorDetalle); 
+            $scriptConsola = consoleError("Error de red al conectar a " . $urlApi); 
         }
     }
 ?>
@@ -92,15 +87,21 @@
 
         <div class="marco-exterior">
             <div class="tarjeta-login">
+                <?php if (!empty($mensajeError)): ?>
+                    <p style="color: red; text-align: center; font-weight: bold; margin-bottom: 15px;">
+                        <?php echo htmlspecialchars($mensajeError); ?>
+                    </p>
+                <?php endif; ?>
+
                 <form id="login-form" method="POST">
                     
                     <div class="campo">
                         <div class="caja-etiqueta">
                             <img src="iconos/avatar.png" alt="Usuario" class="icono">
-                            <label for="login-usuario" class="etiqueta">nombre de usuario o email</label>
+                            <label for="login-usuario" class="etiqueta">email</label>
                         </div>
                         <div class="caja-entrada">
-                            <input type="text" id="login-usuario" name="email" class="entrada" placeholder="escribe aqui...." required>
+                            <input type="email" id="login-usuario" name="email" class="entrada" placeholder="escribe aqui...." required>
                         </div>
                     </div>
 
@@ -129,6 +130,7 @@
         </div>
     </main>
 
+    <?php echo $scriptConsola; ?>
     <script src="inicioSesion.js"></script>
 </body>
 </html>

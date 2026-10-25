@@ -49,7 +49,7 @@ body {
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  padding: 30px;
+  padding: 10px;
   border-radius: 8px;
 }
 
@@ -112,6 +112,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  max-width: 900px;
+  width: 150%;
 }
 
 #nombreProducto {
@@ -130,7 +132,7 @@ body {
 
 .cantidad {
   color:#00ff66;
-  font-size: 20px;
+  font-size: 16px;
   line-height: 1.4;
   text-shadow: 0 0 4px rgba(0, 255, 102, 0.4);
 }
@@ -356,23 +358,85 @@ body {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-  #enviarComprobante {
-    min-height: auto;
+@media screen and (max-width: 768px) {
+  /* Orden de la vista principal: Producto arriba, Datos al medio, Botón abajo */
+  #principal.contenedor.activo {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding: 15px;
   }
 
-  #enviarComprobante .fondoRosa {
-    width: 95%;
+  /* Imagen arriba */
+  #principal .columnaIzquierda {
+    order: 1;
+    justify-content: flex-start;
   }
 
-  #enviarComprobante .fondoVioleta {
-    position: relative;
-    top: 0;
-    left: 0;
-    transform: none;
+  #principal .fondoProductoRosa {
     width: 100%;
-    height: 100%;
-    padding: 20px;
+    max-width: 100%;
+    height: 240px;
+  }
+
+  /* Datos al medio (alineados a la izquierda) */
+  .infoProducto {
+    order: 2;
+    width: 100%;
+    align-items: flex-start;
+    text-align: left;
+    gap: 15px;
+  }
+
+  #Descripcion {
+    text-align: left;
+  }
+
+  /* Botón Comprar abajo */
+  #principal .contenedorBtn {
+    order: 3;
+    margin-top: 10px;
+    justify-content: center;
+  }
+
+  #enviarComprobante {
+    width: 100%;
+    padding: 40px 0;
+  }
+
+  /* El fondo rosa actúa como la base centrada */
+  #enviarComprobante .fondoRosa {
+    position: relative;
+    width: 100%;            /* Ancho adaptable al celular */
+    max-width: 500px;      /* Ancho máximo para evitar deformaciones */
+    height: 600px;         /* Alto base del marco rosa */
+    margin: 0 auto;        /* Centrado horizontal en la pantalla */
+  }
+
+  /* El fondo violeta se centra MÁS ALTO y MÁS ANGOSTO sobre el rosa */
+  #enviarComprobante .fondoVioleta {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centrado vertical y horizontal exacto */
+    
+    width: 96% !important;   /* MENOS ANCHO que el rosa (88% vs 100%) */
+    height: 105% !important; /* MÁS ALTO que el rosa (118% vs 100%), sobresale igual arriba y abajo */
+    
+    box-sizing: border-box !important;
+    padding: 20px 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #enviarComprobante h1 {
+    font-size: 1rem !important; 
+    line-height: 1.3 !important;
+    margin-bottom: 10px !important;
+    text-align: center;
+    width: 100%;
   }
 
   #enviarComprobante .contenidoPago {
@@ -382,5 +446,65 @@ body {
 
   .info {
     padding: 0;
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+@media screen and (min-width: 1920px) {
+  .contenedor {
+    max-width: 95vw;
+  }
+
+  #principal.contenedor.activo {
+    max-width: 1200px;
+    gap: 40px;
+  }
+
+  #principal .fondoProductoRosa {
+    max-width: 100%;
+  }
+
+  #enviarComprobante {
+    max-width: 1000px;
+  }
+
+  #enviarComprobante .fondoRosa {
+    max-width: 100%;
+  }
+
+  /* Escalado proporcional para pantallas grandes sin tocar tu CSS base */
+  @media (min-width: 1600px) {
+    #principal.contenedor.activo,
+    #enviarComprobante {
+      zoom: 1.25;
+    }
+  }
+
+  @media (min-width: 2560px) {
+    #principal.contenedor.activo,
+    #enviarComprobante {
+      zoom: 1.6;
+    }
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  #enviarComprobante {
+    width: 90vw;
+    max-width: 1000px;
+  }
+
+  #enviarComprobante .fondoRosa {
+    width: 100%;
+    max-width: 870px;
+    height: auto;
+    min-height: 435px;
+    aspect-ratio: 2 / 1; /* Mantiene la proporción perfecta al achicarse o agrandarse */
+  }
+
+  #enviarComprobante .fondoVioleta {
+    width: 97%;
+    height: 106%;
   }
 }
