@@ -1,0 +1,175 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-image: url(fondos/fondo.png);
+    background-size: cover;
+    background-attachment: fixed;
+    font-family: 'Share Tech Mono', monospace;
+    color: #ffffff;
+    overflow-x: hidden;
+}
+
+/* 1. ENCABEZADO Y CAJA ROSA CON LUZ NEÓN */
+.encabezado {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+    margin-bottom: 40px;
+}
+
+.title-box-pink {
+    border: 3px solid #ff00ff;
+    background-color: rgba(255, 0, 255, 0.08);
+    box-shadow: 0 0 15px #ff00ff, inset 0 0 15px rgba(255, 0, 255, 0.2);
+    padding: 25px 50px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.titulo {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 45px;
+    color: #ff00ff;
+    text-shadow: 0 0 10px #d946ef, 0 0 20px rgba(217, 70, 239, 0.5);
+    margin-bottom: 12px;
+}
+
+.subtitulo {
+    font-family: 'Press Start 2P', monospace;
+    color: #00ff66;
+    font-size: 14px;
+    line-height: 1.4;
+    text-shadow: 0 0 4px rgba(0, 255, 102, 0.4); 
+}
+
+/* 2. CARRUSEL DINÁMICO ESTILO APPLE */
+.products-carousel-section {
+    width: 100%;
+    margin-bottom: 60px;
+}
+
+.carousel-container {
+    display: flex;
+    justify-content: center;
+    gap: 35px;
+    overflow-x: auto;
+    padding: 20px 40px;
+    scroll-behavior: smooth;
+}
+
+/* Scrollbar personalizado para el carrusel */
+.carousel-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.carousel-container::-webkit-scrollbar-thumb {
+    background: #ff00ff;
+    border-radius: 10px;
+}
+
+.product-item {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 120px;
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+}
+
+.product-item:hover {
+    transform: translateY(-8px);
+}
+
+.product-image {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.3));
+}
+
+.product-name {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 15px;
+    color: #ffffff;
+}
+
+/* 3. SECCIÓN ESTÁTICA CON BORDES PÚRPURA */
+.info-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-bottom: 60px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+}
+
+.image-card {
+    border: 4px solid #8b00ff;
+    box-shadow: 0 0 15px #8b00ff;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #000;
+}
+
+.image-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+.text-card {
+    padding: 10px;
+}
+
+.card-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    color: #ff00ff;
+    margin-bottom: 10px;
+    text-shadow: 0 0 8px #d946ef;
+}
+
+.card-subtitle {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: #00ff66;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.card-text {
+    font-size: 16px;
+    color: #00ff66;
+    line-height: 1.6;
+    text-shadow: 0 0 3px rgba(0, 255, 102, 0.3);
+}
+
+/* RESPONSIVE / CELULARES */
+@media (max-width: 768px) {
+    .titulo {
+        font-size: 26px;
+    }
+    .subtitulo {
+        font-size: 10px;
+    }
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+    .carousel-container {
+        justify-content: flex-start;
+    }
+}

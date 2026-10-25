@@ -130,7 +130,7 @@
         </div>
     </main>
 
-    <?php echo $scriptConsola; ?>
+    <?php echo $scriptConsola; ?> 
     <script src="inicioSesion.js"></script>
 </body>
 </html>

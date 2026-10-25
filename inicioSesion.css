@@ -14,7 +14,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: "Silkscreen", cursive, sans-serif;
     position: relative;
     overflow-x: hidden;
     padding: 20px;
@@ -42,7 +41,7 @@ body {
     color: #00f0ff;
     letter-spacing: 2px;
     margin-bottom: 12px;
-    word-break: break-word;
+    word-break: break-word; 
 }
 
 .subtitulo {

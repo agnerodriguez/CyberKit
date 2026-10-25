@@ -1,3 +1,77 @@
+<?php
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+
+    $mensajeError = "";
+    $scriptConsola = "";
+
+    function consoleError($mensaje) {
+        $jsMensaje = json_encode("Error de la API: " . $mensaje);
+        return "<script>console.error($jsMensaje);</script>";
+    }
+
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+        $nombre = trim($_POST["nombre"] ?? '');
+        $email  = trim($_POST["email"] ?? '');
+        $edad   = trim($_POST["edad"] ?? '');
+        $contrasena = $_POST["contrasena"] ?? '';
+
+        $datos = [
+            "mensaje"    => "Usuario recibido correctamente",
+            "nombre"     => $nombre,
+            "email"      => $email,
+            "edad"       => $edad,
+            "contrasena" => $contrasena,
+            "recurso"    => "Usuarios",
+            "consulta"   => "Create"
+        ];
+
+        $payload = json_encode($datos);
+
+        // Construir la URL codificando espacios y caracteres especiales
+        $protocolo = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+        $host = $_SERVER['HTTP_HOST'];
+        $rutaLimpia = implode('/', array_map('rawurlencode', explode('/', dirname($_SERVER['PHP_SELF']))));
+        $urlApi = $protocolo . $host . $rutaLimpia . "/API.php";
+
+        $opciones = [
+            "http" => [
+                "header"  => "Content-Type: application/json\r\n",
+                "method"  => "POST",
+                "content" => $payload,
+                "ignore_errors" => true
+            ]
+        ];
+
+        $contexto = stream_context_create($opciones);
+        $resultado = @file_get_contents($urlApi, false, $contexto);
+
+        if ($resultado !== false) {
+            $respuesta = json_decode($resultado, true);
+
+            if (!empty($respuesta['error'])) {
+                $mensajeError = $respuesta['error'];
+                $scriptConsola = consoleError($mensajeError);
+            } elseif (isset($respuesta['idUsuario'])) {
+                $_SESSION['id_usuario'] = $respuesta['idUsuario'];
+                $_SESSION['usuario'] = $respuesta['usuario'] ?? $nombre;
+                $_SESSION['admin'] = $respuesta['admin'] ?? 0;
+                header("Location: inicioSesion.php");
+                exit;
+            } else {
+                $mensajeError = "Respuesta inesperada de la API.";
+                $scriptConsola = consoleError(htmlspecialchars($resultado));
+            }
+        } else {
+            $mensajeError = "No se pudo realizar la llamada HTTP a la API.";
+            $scriptConsola = consoleError("Error de red o file_get_contents falló al conectar a: " . $urlApi);
+        }
+    }
+?>
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -25,6 +99,11 @@
             <div class="blue-layer"></div>
 
             <div class="cyber-card">
+                <?php if (!empty($mensajeError)): ?>
+                    <p style="color: red; text-align: center; font-weight: bold; margin-bottom: 15px;">
+                        <?php echo htmlspecialchars($mensajeError); ?>
+                    </p>
+                <?php endif; ?>
                 
                 <form action="registrarse.php" method="POST" id="registerForm" class="cyber-form">
                     
