@@ -245,6 +245,8 @@
         </div>
     </div>
 
+    <?php include 'footer.php'; ?>
+    
     <script src="tutoriales.js"></script>
 </body>
 </html>

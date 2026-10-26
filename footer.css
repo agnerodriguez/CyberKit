@@ -1,0 +1,223 @@
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('fuentes/PressStart2P.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Michroma';
+  src: url('fuentes/Michroma-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+footer.contenedor {
+    background-color: #4930e899;
+    color: #ffffff;
+    padding: 20px 100px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 80px;
+    margin-top: auto; 
+    width: 100%;
+    box-sizing: border-box;
+}
+
+footer.contenedor *, 
+footer.contenedor *::before, 
+footer.contenedor *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+footer.contenedor .fuentePrincipal {
+  font-family: 'Press Start 2P', sans-serif;
+}
+
+footer.contenedor .fuenteSecundaria {
+  font-family: 'Michroma', sans-serif;
+}
+
+footer.contenedor .columna-izquierda {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 400px;
+}
+
+footer.contenedor .redes, 
+footer.contenedor .navegacion {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+footer.contenedor .redes {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap; 
+}
+
+footer.contenedor .fondoIg,
+footer.contenedor .fondoMail {
+    display: flex;
+    width: 40px;
+    height: 30px;
+    background-color: #75c3f0bf;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+footer.contenedor .fondoSuperpuestoIg,
+footer.contenedor .fondoSuperpuestoMail {
+    width: 35px;
+    height: 40px;
+    background-color: #75c3f0bf;
+    position: relative; 
+    z-index: 2;         
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+footer.contenedor .navegacion li {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+footer.contenedor .navegacion h2 {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    margin-top: 0;
+    color: #2eff6f;
+    text-shadow: 0 0 4px rgba(0, 255, 102, 0.4);
+}
+
+footer.contenedor .navegacion, 
+footer.contenedor a {
+    text-decoration: none;
+    color: white;
+}
+
+footer.contenedor .navegacion a,
+footer.contenedor .navegacion li {
+    transition: color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+footer.contenedor .navegacion a:hover,
+footer.contenedor .navegacion li:hover {
+    color: #2eff6f; 
+    text-shadow: 0 0 8px #2eff6f;
+    transform: translateX(5px); 
+}
+
+footer.contenedor .logo {
+    width: 100px;  
+    height: 100px; 
+}
+
+footer.contenedor .logo img {
+    width: 100%;       
+    height: 100%;      
+    object-fit: contain; 
+    display: block;
+}
+
+footer.contenedor .redes img {
+    width: 20px;
+    height: 20px;
+}
+
+footer.contenedor .reconocimiento p {
+    margin: 0;
+    line-height: 1.4;
+    font-size: 0.95rem;
+}
+
+/* Responsive */
+@media screen and (min-width: 768px) {
+    footer.contenedor {
+        width: 100%;
+        max-width: 100%;
+        padding: clamp(20px, 2.5vw, 40px) clamp(20px, 4vw, 80px);
+        justify-content: space-around;
+        gap: clamp(20px, 3vw, 60px);
+    }
+
+    footer.contenedor .columna-izquierda {
+        flex: 1 1 300px;
+        max-width: 450px;
+    }
+
+    footer.contenedor .navegacion {
+        flex: 0 1 auto;
+    }
+
+    footer.contenedor .logo {
+        width: clamp(90px, 7vw, 140px);
+        height: clamp(90px, 7vw, 140px);
+    }
+
+    footer.contenedor .logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    footer.contenedor .navegacion h2 {
+        font-size: clamp(1rem, 1.2vw, 1.5rem);
+    }
+
+    footer.contenedor .navegacion li, 
+    footer.contenedor .reconocimiento p, 
+    footer.contenedor .fuenteSecundaria {
+        font-size: clamp(0.8rem, 0.9vw, 1.05rem);
+    }
+}
+
+@media screen and (max-width: 767px) {
+    footer.contenedor {
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 30px 20px;
+        gap: 30px;
+    }
+
+    footer.contenedor .columna-izquierda,
+    footer.contenedor .navegacion {
+        max-width: 100%;
+        width: 100%;
+        align-items: flex-start;
+    }
+
+    footer.contenedor .navegacion h2 {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+
+    footer.contenedor .navegacion li {
+        margin-bottom: 10px;
+        font-size: 0.85rem;
+    }
+
+    footer.contenedor .reconocimiento p {
+        font-size: 0.85rem;
+    }
+}
