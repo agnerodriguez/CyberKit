@@ -238,20 +238,29 @@ body {
     gap: 20px;
 }
 
+/* --- Lista de Publicaciones a todo lo ancho --- */
+.preguntas-lista {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Tarjeta de publicación  */
 .post-card {
-    background: rgba(73, 48, 232, 0.35);
-    border: 2px solid #00ffff;
+    background: #0e0c0cd1 !important;
+    border: 2px solid #00ffff; /* Borde neón brillante */
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-    width: 100%; /* Estirado a todo el ancho disponible */
+    width: 100%;
 }
 
 .post-header {
     display: flex;
     justify-content: space-between;
     font-size: 0.8rem;
-    color: #00ffff;
+    color: #5d166e;
     border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
     padding-bottom: 8px;
     margin-bottom: 12px;
@@ -273,13 +282,14 @@ body {
     margin-bottom: 15px;
 }
 
-/* Comentarios */
+/* Sección de comentarios también con fondo negro y bordes grises en su input */
 .comentarios-seccion {
-    background: rgba(0, 0, 0, 1);
+    background: #000000b4 !important; /* Fondo negro */
     padding: 15px;
     border-radius: 6px;
-    border: 1px solid rgba(0, 255, 255, 0.3);
+    border: 1px solid rgba(128, 128, 128, 0.4); /* Borde gris sutil */
     border-left: 3px solid #2eff6f;
+    margin-top: 15px;
 }
 
 .comentario-item {
@@ -299,12 +309,21 @@ body {
     margin-top: 15px;
 }
 
+/* Inputs de comentarios con fondo negro y bordes grises */
 .crear-comentario-box input {
     flex: 1;
+    background: #000000de !important;
+    border: 2px solid #757575 !important; /* Borde gris */
+    color: #ffffff;
     padding: 8px 12px;
     font-size: 0.85rem;
+    border-radius: 4px;
+    outline: none;
 }
 
+.crear-comentario-box input:focus {
+    border-color: #00ffff !important;
+}
 .cargando, .sin-datos, .error {
     text-align: center;
     font-family: 'Press Start 2P', monospace;
