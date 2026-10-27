@@ -73,18 +73,6 @@ body {
     flex-shrink: 0;
 }
 
-.collage-derecha img {
-    position: absolute;
-    border-radius: 8px;
-    object-fit: cover;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
-    border: 2px solid #ff00ff;
-}
-
-.img1 { width: 240px; height: 160px; top: 0; left: 0; z-index: 1; }
-.img2 { width: 220px; height: 150px; bottom: 0; right: 0; z-index: 2; }
-.img3 { width: 180px; height: 120px; top: 40px; right: 30px; z-index: 3; }
-
 /* --- SECCIÓN FORO (Ocupa todo el ancho de la pantalla) --- */
 .foro-seccion {
     width: 100%;
@@ -248,8 +236,8 @@ body {
 
 /* Tarjeta de publicación  */
 .post-card {
-    background: #0e0c0cd1 !important;
-    border: 2px solid #00ffff; /* Borde neón brillante */
+    background: #000000!important;
+    border: 2px solid #ff00ff;
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
@@ -284,11 +272,11 @@ body {
 
 /* Sección de comentarios también con fondo negro y bordes grises en su input */
 .comentarios-seccion {
-    background: #000000b4 !important; /* Fondo negro */
+    background: #000000 !important; /* Fondo negro */
     padding: 15px;
     border-radius: 6px;
     border: 1px solid rgba(128, 128, 128, 0.4); /* Borde gris sutil */
-    border-left: 3px solid #2eff6f;
+    border-left: 3px solid #00ffff;
     margin-top: 15px;
 }
 

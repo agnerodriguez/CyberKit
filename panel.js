@@ -192,6 +192,20 @@ function eliminarProducto(id) {
     });
 }
 
+
+function enviarEmail () {
+    fetch('API.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            recurso: 'DetalleCompra',
+            consulta: 'EnviarEmail'
+        })
+    })
+    .then(res => res.json())
+    
+}
+
 //Ver pagos
 let todosLosPagos = []; // Variable global que almacena todos los registros de pagos
 
@@ -224,7 +238,7 @@ function mostrarPagos(pagos) {
     const tbody = document.getElementById('tablapagos');
     const mensaje = document.getElementById('mensajeFiltrosPagos');
     if (!tbody) return;
-    
+
     tbody.innerHTML = ''; 
 
     if (pagos.length === 0) {
@@ -248,12 +262,11 @@ function mostrarPagos(pagos) {
     pagos.forEach(pago => {
         const fila = document.createElement('tr');
 
-        // Como la nueva API devuelve el objeto producto y la ruta de la imagen del comprobante
-        let comprobanteHTML = '<span style="color: #94a3b8;">Sin imagen</span>';
-        // Nota: Asegúrate de que tu API devuelva la ruta de la imagen del comprobante o ajusta según lo guardes.
-        if (pago.producto && pago.producto.imagen) {
+        // Muestra la imagen del comprobante (Base64) en lugar de la foto del producto
+        let comprobanteHTML = '<span style="color: #94a3b8;">Imagen no disponible/span>';
+        if (pago.comprobante) {
             comprobanteHTML = `
-                <img src="${escapeHtml(pago.producto.imagen)}" alt="Comprobante" class="comprobante" style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px; cursor: pointer;">
+                <img src="${escapeHtml(pago.comprobante)}" alt="Comprobante" class="comprobante" style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px; cursor: pointer;" onclick="window.open('${escapeHtml(pago.comprobante)}')">
             `;
         }
 

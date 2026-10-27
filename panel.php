@@ -64,9 +64,7 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="tablaProductosAdmin">
-                                <!-- Se llena dinámicamente mediante JS -->
-                            </tbody>
+                            <tbody id="tablaProductosAdmin"></tbody>
                         </table>
                     </div>
                 </div>
@@ -138,7 +136,7 @@
                         </thead>
                         <tbody id="tablapagos">
                             <tr>
-                                <td colspan="7" style="text-align: center;">Cargando pagos...</td>
+                                <td colspan="7" style="text-align: center;"></td>
                             </tr>
                         </tbody>
                     </table>

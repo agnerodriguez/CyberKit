@@ -19,12 +19,6 @@
         <h2>¡SÉ PARTE DE LA CYBER-COMUNIDAD!</h2>
         <h1>NUESTRO FORO</h1>
       </header>
-      <div class="collage-derecha">
-          <img src="img/cyberdesk-1.jpg" class="img1 kit-1" alt="Cyberkit 1">
-          <img src="img/cyberdesk-2.jpg" class="img2 kit-2" alt="Cyberkit 2">
-          <img src="img/cyberdesk-3.jpg" class="img3 kit-3" alt="Cyberkit 3">
-      </div>
-    </div>
   </section>
 
   <!-- SECCIÓN FORO -->

@@ -316,180 +316,57 @@ html, body {
     background: #fecaca;
 }
 
-/* Tarjetas e Inicio */
-.cards {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-bottom: 30px;
-}
-
-.card-chica {
-    margin-top: 5%;
-    flex: 1;
-    min-width: 180px;
-    background: #0049acd4;
-    color: #a9cd46;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.card-numero {
-    font-size: 1rem;
-    color: #a9cd46;
-}
-
-.valor-icono {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-}
-
-.valor-icono img {
-    width: 15%;
-}
-
-.listados {
-    margin-top: 10%;
-    width: 100%;
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.card-listado {
-    flex: 1;
-    min-width: 280px;
-    background: #0049acd4;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.listado-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-.listado-item {
-    color: #a9cd46;
-    margin-bottom: 10px;
-}
-
-.listado-item strong {
-    font-size: 0.8rem;
-    color: #a9cd46;
-    font-family: 'Tamrin';
-}
-
-.listado-header h4, .item-dato, .ver-todos {
-    color: #a9cd46;
-}
-
-.item-dato {
-    font-size: 0.7rem;
-}
-
-/* Sección Pagos (Estilo idéntico a Cooperadora Actual) */
+/* --- ESTILO PARA PAGOS (Adaptado al diseño de Productos) --- */
 #verPagos.pagos-card {
-    background: #0049acd4;
-    border-radius: 10px;
-    padding: 20px 25px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    color: #b8d46e;
-    box-sizing: border-box;
-    width: 100%;
-    max-width: 1050px;
-    margin: 20px auto 40px auto;
+    background: #f8fafc !important;
+    border-radius: 12px !important;
+    padding: 25px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+    max-width: 1100px !important;
+    margin: 0 auto !important;
+    overflow-y: auto !important;
+    max-height: 90vh !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: #334155 !important;
 }
 
 #verPagos .pagos-header {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start !important;
     align-items: center;
-    margin-bottom: 15px;
-    min-height: 40px;
+    margin-bottom: 0 !important;
+    min-height: auto !important;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
 }
 
 #verPagos .titulo-pagos {
-    margin: 0;
-    text-align: center;
-    color: #a9cd46;
-    font-size: 1.4rem;
-    font-weight: normal;
+    text-align: left !important;
+    color: #334155 !important;
+    font-size: 1.5rem !important;
+    font-weight: normal !important;
 }
 
-/* Tabla con estructura idéntica a sociosAlumnos / sociosVoluntarios */
-.tabla-pagos-contenedor {
-    width: 100%;
-    max-height: 400px;
-    overflow-y: auto;
-    overflow-x: auto;
-    margin-top: 15px;
-}
-.tabla-pagos {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: auto;
-    color: #a9cd46;
-}
-
-.tabla-pagos th,
-.tabla-pagos td {
-    padding: 14px 10px;
-    border: 2px solid #a9cd46;
-    text-align: center;
-    vertical-align: middle;
-    font-size: 14px;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-}
-
-.tabla-pagos th {
-    font-weight: normal;
-    background: rgba(0, 73, 172, 0.7);
-    position: sticky;
-    top: 0;
-    z-index: 2;
-}
-
-/* Control del tamaño de los elementos dentro de las celdas */
-.tabla-pagos td img,
-.tabla-pagos .comprobante-preview {
-    width: 45px;
-    height: 45px;
-    object-fit: cover;
-    border-radius: 4px;
-    display: block;
-    margin: 0 auto;
-}
-
-.tabla-pagos select.estado {
-    padding: 5px 8px;
-    color: #a9cd46;
-    background: #0049ac;
-    border: 1px solid #a9cd46;
-    border-radius: 4px;
-    font-family: 'Tamrin', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    outline: none;
-}
-
-.tabla-pagos select.estado option {
-    background: #0049ac;
-    color: #a9cd46;
+/* Tarjeta contenedora para los filtros y la tabla (Estilo idéntico a card-tabla-productos) */
+#verPagos .card-tabla-pagos,
+.filtros-pagos {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px 25px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 
 .filtros-pagos {
     display: flex;
     flex-wrap: wrap;
-    align-items: end;
+    align-items: flex-end;
     gap: 15px;
-    margin: 20px 0;
+    margin: 0 !important;
 }
 
 .filtro-grupo {
@@ -499,108 +376,127 @@ html, body {
 }
 
 .filtro-grupo label {
-    font-weight: bold;
+    font-weight: normal !important;
+    font-size: 14px;
+    color: #475569;
 }
 
 .filtro-grupo select {
-    padding: 9px 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    padding: 10px 14px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    font-size: 14px !important;
+    color: #1e293b !important;
+    background: #ffffff;
+    outline: none;
 }
 
 .filtrar,
 .limpiar-filtros {
-    padding: 10px 16px;
-    border: none;
-    border-radius: 6px;
+    padding: 10px 22px !important;
+    border: none !important;
+    border-radius: 6px !important;
     cursor: pointer;
+    font-size: 14px !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 41px;
 }
 
 .filtrar {
-    background-color: #a9cd46;
-    color: white;
+    background-color: #475569 !important;
+    color: white !important;
+    transition: background 0.2s;
+}
+
+.filtrar:hover {
+    background-color: #334155 !important;
 }
 
 .limpiar-filtros {
-    background-color: #6c757d;
-    color: white;
+    background-color: #94a3b8 !important;
+    color: white !important;
+    transition: background 0.2s;
 }
 
-#mensajeFiltrosPagos {
-    margin: 8px 0 15px;
+.limpiar-filtros:hover {
+    background-color: #64748b !important;
 }
 
-/* Selector/Dropdown del Estado (Pendiente, Aprobado, etc.) */
-.tabla-pagos select.estado {
-    padding: 6px 12px;
-    color: #a9cd46;
-    background: #0049acd4;
-    border: 1px solid #a9cd46;
-    border-radius: 4px;
-    font-family: 'Tamrin', sans-serif;
+/* Contenedor y diseño de la tabla de pagos */
+.tabla-pagos-contenedor {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    max-height: none !important;
+    margin-top: 0 !important;
+    background: #ffffff;
+}
+
+.tabla-pagos {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
     font-size: 14px;
+    color: #334155 !important;
+}
+
+.tabla-pagos th {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    padding: 14px 16px !important;
+    font-weight: bold !important;
+    border: none !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    text-align: left !important;
+}
+
+.tabla-pagos td {
+    padding: 12px 16px !important;
+    border: none !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    text-align: left !important;
+    color: #334155 !important;
+    vertical-align: middle;
+}
+
+.tabla-pagos tr:hover {
+    background: #f8fafc !important;
+}
+
+/* Estilo de los selects de estado dentro de la tabla de pagos */
+.tabla-pagos select.estado {
+    padding: 6px 12px !important;
+    color: #334155 !important;
+    background: #e2e8f0 !important;
+    border: none !important;
+    border-radius: 4px !important;
+    font-family: inherit !important;
+    font-size: 13px !important;
     cursor: pointer;
     outline: none;
+    transition: background 0.2s;
+}
+
+.tabla-pagos select.estado:hover {
+    background: #cbd5e1 !important;
 }
 
 .tabla-pagos select.estado option {
-    background: #0049ac;
-    color: #a9cd46;
+    background: #ffffff;
+    color: #334155;
 }
 
+/* Imágenes y comprobantes en la tabla */
+.tabla-pagos td img,
+.tabla-pagos .comprobante-preview,
 .comprobante-miniatura {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.comprobante-miniatura:hover {
-    transform: scale(1.1);
-}
-
-.visor-comprobante {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.85);
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-}
-
-.imagen-comprobante-grande {
-    max-width: 90%;
-    max-height: 90%;
-    object-fit: contain;
-    border-radius: 8px;
-    cursor: default;
-}
-
-.cerrar-comprobante {
-    position: absolute;
-    top: 20px;
-    right: 35px;
-    color: white;
-    font-size: 45px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.cerrar-comprobante:hover {
-    color: #ccc;
-}
-
-.msj-error {
-    text-align:center; 
-    font-family:Tamrin; 
-    font-size:12px; 
-    color: red; 
-    margin-top: 10px;
+    width: 45px !important;
+    height: 45px !important;
+    object-fit: cover !important;
+    border-radius: 4px !important;
+    display: block !important;
+    margin: 0 !important;
 }
