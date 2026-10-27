@@ -6,41 +6,78 @@
   <title>Cyberkit - Nuestro Foro</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap"rel="stylesheet">
-  <!-- CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Michroma&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="foro.css">
 </head>
 <body>
+
+  <!-- SECTION INICIO -->
   <section class="inicio">
-    <!-- CONTENIDO PRINCIPAL -->
+    <?php include 'nav.php'; ?>
     <div class="cyber-content">
-      <!-- TEXTOS -->
       <header class="foro-header">
-        <h2>¡SE PARTE DE LA CYBER-COMUNIDAD!</h2>
+        <h2>¡SÉ PARTE DE LA CYBER-COMUNIDAD!</h2>
         <h1>NUESTRO FORO</h1>
       </header>
-        <!-- COLLAGE DE IMÁGENES -->
-        <div class="collage">
-          <img src="img/cyberdesk-1.jpg" class="img-kit kit-top-left" alt="Cyberkit">
-          <img src="img/cyberdesk-2.jpg" class="img-kit kit-top-right" alt="Cyberkit">
-          <img src="img/cyberdesk-3.jpg" class="img-kit kit-bottom" alt="Cyberkit">
-        </div>
+      <div class="collage-derecha">
+          <img src="img/cyberdesk-1.jpg" class="img1 kit-1" alt="Cyberkit 1">
+          <img src="img/cyberdesk-2.jpg" class="img2 kit-2" alt="Cyberkit 2">
+          <img src="img/cyberdesk-3.jpg" class="img3 kit-3" alt="Cyberkit 3">
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="inicio">
-      <div class="cyber-content">
-        <header class="preguntas-header">
-          <h1>Preguntas y Respuesta</h1>
-          <h2>¡Sube tus preguntas y responde las de la comunidad!</h2>
-        </header>
-      </div>
-      <div class="preguntas-lista">
-
-      </div>
-    </section>
-
-    <?php include 'footer.php'; ?>
+  <!-- SECCIÓN FORO -->
+  <section class="foro-seccion">
     
-  </body>
+    <!-- CABECERA ALINEADA A LA IZQUIERDA -->
+    <div class="foro-controles-top">
+      <div class="preguntas-header">
+        <h1>Comunidad Cyberkit</h1>
+        <h2>¡Consulta tus dudas o comparte los resultados de tu kit!</h2>
+      </div>
+
+      <div class="foro-top-bar">
+        <div class="filtro-categoria">
+          <label for="selectCategoria">Ver sección:</label>
+          <select id="selectCategoria" onchange="cargarPublicaciones()">
+            <option value="1">Dudas</option>
+            <option value="2">Compartir (Proyectos / Kits)</option>
+          </select>
+        </div>
+
+        <!-- Botón para alternar la visibilidad del formulario -->
+        <button class="btn-cyber" onclick="alternarFormulario()">+ Hacer tu publicación</button>
+      </div>
+    </div>
+
+    <!-- FORMULARIO OCULTO INICIALMENTE -->
+    <div id="contenedorFormularioPost" class="crear-post-card" style="display: none;">
+      <h3>Crear nueva publicación</h3>
+      
+      <div style="margin-bottom: 10px;">
+        <label for="postCategoriaSelect" style="margin-right: 10px; font-size: 0.8rem;">Publicar en:</label>
+        <select id="postCategoriaSelect" style="padding: 5px;">
+          <option value="1">Dudas</option>
+          <option value="2">Compartir (Proyectos / Kits)</option>
+        </select>
+      </div>
+
+      <textarea id="nuevoPostContenido" placeholder="Escribe tu duda o describe tu proyecto/kit..."></textarea>
+      
+      <div style="margin-bottom: 10px;">
+        <label for="nuevoPostImagen" style="font-size: 0.8rem; color: #ff00ff;">Adjuntar foto (opcional para tu kit):</label><br>
+        <input type="file" id="nuevoPostImagen" accept="image/*" style="margin-top: 5px;">
+      </div>
+
+      <button class="btn-cyber" onclick="crearPublicacion()">PUBLICAR</button>
+    </div>
+
+    <!-- CONTENEDOR DE LISTA DE PUBLICACIONES Y COMENTARIOS (ABAJO) -->
+    <div id="preguntasLista" class="preguntas-lista" style="margin-top: 20px;"></div>
+  </section>
+
+  <script src="foro.js"></script>
+</body>
+<?php include 'footer.php'; ?>
 </html>

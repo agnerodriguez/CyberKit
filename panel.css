@@ -1,0 +1,606 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Evita que la página completa se desplace verticalmente */
+    font-family: 'Tamrin', sans-serif;
+    background: white;
+}
+
+/* Control estricto de Secciones/Formularios */
+.formulario {
+    display: none !important;
+}
+
+.formulario.activo {
+    display: block !important;
+    width: 100%;
+    height: 100%;
+}
+
+.contenedor {
+    display: flex;
+    height: 100vh; /* Ocupa exactamente el alto visible del navegador */
+    width: 100vw;
+    overflow: hidden;
+}
+
+.sideBar {
+    width: 320px;
+    min-width: 320px;
+    flex-shrink: 0;
+    min-height: 100vh;
+    background: #45024bfa;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.sideBar .logo {
+    margin: 0 0 10px 10px;
+}
+
+.sideBar .logo img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: #fff;
+    object-fit: contain;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.sideBar nav {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sideBar nav button {
+    display: flex;
+    align-items: center;
+    gap: 18px; /* Espacio entre el ícono y el texto */
+    width: 100%;
+    padding: 8px 10px;
+    background: transparent;
+    border: none;
+    color: #ffffff; /* Azul intenso visto en la imagen */
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.sideBar nav button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(3px);
+}
+
+/* Ajuste unificado del tamaño de todos los íconos de la sidebar */
+.sideBar nav button img {
+    width: 48px !important;  /* Tamaño uniforme e idéntico al de la imagen */
+    height: 48px !important;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* Contenido Principal */
+.contenido {
+    flex: 1;
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    box-sizing: border-box;
+    overflow: hidden; /* Mantiene fijos los bordes de la sección central */
+}
+
+/* Control de Secciones/Formularios */
+.formulario {
+    display: none;
+}
+
+.formulario.activo {
+    display: block;
+}
+
+/* --- ESTILO PARA PRODUCTOS --- */
+.productos-cards {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    max-width: 1100px;
+    margin: 0 auto;
+    overflow-y: auto;
+    max-height: 90vh;
+}
+
+.productos-header h2 {
+    color: #334155;
+    font-size: 1.5rem;
+    font-weight: normal;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+/* Formulario de Productos */
+/* Contenedor general que ocupa todo el ancho junto al sidebar */
+.productos-cards {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px 0;
+    overflow-y: auto; /* Scroll vertical para todo el contenido si es necesario */
+}
+
+/* Bloque 1: Formulario de Registro/Edición */
+.card-formulario-producto {
+    background: #ffffff;
+    border: 1px solid #ffffff;
+    border-radius: 12px;
+    padding: 20px 25px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.productos-header h2 {
+    color: #334155;
+    font-size: 1.4rem;
+    font-weight: normal;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 8px;
+}
+
+/* Grilla del Formulario */
+.form-producto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+}
+
+.form-producto-grid input,
+.form-producto-grid textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #1e293b;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-producto-grid input:focus,
+.form-producto-grid textarea:focus {
+    border-color: #64748b;
+}
+
+.form-producto-grid textarea {
+    grid-column: 1 / -1; /* Ocupa todo el ancho */
+    resize: vertical;
+    height: 70px;
+}
+
+.form-acciones {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+/* Botones de formulario */
+.btn-guardar {
+    background-color: #475569;
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.btn-guardar:hover {
+    background-color: #334155;
+}
+
+.btn-cancelar {
+    background-color: #94a3b8;
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-cancelar:hover {
+    background-color: #64748b;
+}
+
+/* Bloque 2: Tabla de Listado de Productos (Abajo por separado) */
+.card-tabla-productos {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px 25px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.card-tabla-productos h3 {
+    color: #334155;
+    font-size: 1.2rem;
+    font-weight: normal;
+    margin-bottom: 15px;
+}
+
+.tabla-productos-contenedor {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.tabla-productos {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 14px;
+    color: #334155;
+}
+
+.tabla-productos th {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 14px 16px;
+    font-weight: bold;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tabla-productos td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.tabla-productos tr:hover {
+    background: #f8fafc;
+}
+
+/* Botones dentro de la tabla */
+.btn-accion-editar {
+    background: #e2e8f0;
+    color: #334155;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    margin-right: 5px;
+    transition: background 0.2s;
+}
+
+.btn-accion-editar:hover {
+    background: #cbd5e1;
+}
+
+.btn-accion-eliminar {
+    background: #fee2e2;
+    color: #991b1b;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.btn-accion-eliminar:hover {
+    background: #fecaca;
+}
+
+/* Tarjetas e Inicio */
+.cards {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.card-chica {
+    margin-top: 5%;
+    flex: 1;
+    min-width: 180px;
+    background: #0049acd4;
+    color: #a9cd46;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card-numero {
+    font-size: 1rem;
+    color: #a9cd46;
+}
+
+.valor-icono {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.valor-icono img {
+    width: 15%;
+}
+
+.listados {
+    margin-top: 10%;
+    width: 100%;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.card-listado {
+    flex: 1;
+    min-width: 280px;
+    background: #0049acd4;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.listado-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.listado-item {
+    color: #a9cd46;
+    margin-bottom: 10px;
+}
+
+.listado-item strong {
+    font-size: 0.8rem;
+    color: #a9cd46;
+    font-family: 'Tamrin';
+}
+
+.listado-header h4, .item-dato, .ver-todos {
+    color: #a9cd46;
+}
+
+.item-dato {
+    font-size: 0.7rem;
+}
+
+/* Sección Pagos (Estilo idéntico a Cooperadora Actual) */
+#verPagos.pagos-card {
+    background: #0049acd4;
+    border-radius: 10px;
+    padding: 20px 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    color: #b8d46e;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1050px;
+    margin: 20px auto 40px auto;
+}
+
+#verPagos .pagos-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    min-height: 40px;
+}
+
+#verPagos .titulo-pagos {
+    margin: 0;
+    text-align: center;
+    color: #a9cd46;
+    font-size: 1.4rem;
+    font-weight: normal;
+}
+
+/* Tabla con estructura idéntica a sociosAlumnos / sociosVoluntarios */
+.tabla-pagos-contenedor {
+    width: 100%;
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: auto;
+    margin-top: 15px;
+}
+.tabla-pagos {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+    color: #a9cd46;
+}
+
+.tabla-pagos th,
+.tabla-pagos td {
+    padding: 14px 10px;
+    border: 2px solid #a9cd46;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 14px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.tabla-pagos th {
+    font-weight: normal;
+    background: rgba(0, 73, 172, 0.7);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+/* Control del tamaño de los elementos dentro de las celdas */
+.tabla-pagos td img,
+.tabla-pagos .comprobante-preview {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+    margin: 0 auto;
+}
+
+.tabla-pagos select.estado {
+    padding: 5px 8px;
+    color: #a9cd46;
+    background: #0049ac;
+    border: 1px solid #a9cd46;
+    border-radius: 4px;
+    font-family: 'Tamrin', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+}
+
+.tabla-pagos select.estado option {
+    background: #0049ac;
+    color: #a9cd46;
+}
+
+.filtros-pagos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.filtro-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filtro-grupo label {
+    font-weight: bold;
+}
+
+.filtro-grupo select {
+    padding: 9px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.filtrar,
+.limpiar-filtros {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.filtrar {
+    background-color: #a9cd46;
+    color: white;
+}
+
+.limpiar-filtros {
+    background-color: #6c757d;
+    color: white;
+}
+
+#mensajeFiltrosPagos {
+    margin: 8px 0 15px;
+}
+
+/* Selector/Dropdown del Estado (Pendiente, Aprobado, etc.) */
+.tabla-pagos select.estado {
+    padding: 6px 12px;
+    color: #a9cd46;
+    background: #0049acd4;
+    border: 1px solid #a9cd46;
+    border-radius: 4px;
+    font-family: 'Tamrin', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+}
+
+.tabla-pagos select.estado option {
+    background: #0049ac;
+    color: #a9cd46;
+}
+
+.comprobante-miniatura {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.comprobante-miniatura:hover {
+    transform: scale(1.1);
+}
+
+.visor-comprobante {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.imagen-comprobante-grande {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    border-radius: 8px;
+    cursor: default;
+}
+
+.cerrar-comprobante {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: white;
+    font-size: 45px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.cerrar-comprobante:hover {
+    color: #ccc;
+}
+
+.msj-error {
+    text-align:center; 
+    font-family:Tamrin; 
+    font-size:12px; 
+    color: red; 
+    margin-top: 10px;
+}
