@@ -22,7 +22,7 @@ body {
     margin-bottom: 40px;
 }
 
-.title-box-pink {
+.tituloro {
     border: 3px solid #ff00ff;
     background-color: rgba(255, 0, 255, 0.08);
     box-shadow: 0 0 15px #ff00ff, inset 0 0 15px rgba(255, 0, 255, 0.2);
@@ -47,7 +47,6 @@ body {
     text-shadow: 0 0 4px rgba(0, 255, 102, 0.4); 
 }
 
-/* 2. CARRUSEL DINÁMICO ESTILO APPLE */
 .products-carousel-section {
     width: 100%;
     margin-bottom: 60px;
@@ -62,8 +61,7 @@ body {
     scroll-behavior: smooth;
 }
 
-/* Scrollbar personalizado para el carrusel */
-.carousel-container::-webkit-scrollbar {
+.carousel-container::-webkit-scrollbar { 
     height: 6px;
 }
 
@@ -101,75 +99,10 @@ body {
     color: #ffffff;
 }
 
-/* 3. SECCIÓN ESTÁTICA CON BORDES PÚRPURA */
-.info-section {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 20px;
-    margin-bottom: 60px;
-}
-
-.grid-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    align-items: center;
-}
-
-.image-card {
-    border: 4px solid #8b00ff;
-    box-shadow: 0 0 15px #8b00ff;
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: #000;
-}
-
-.image-card img {
-    width: 100%;
-    height: auto;
-    display: block;
-    object-fit: cover;
-}
-
-.text-card {
-    padding: 10px;
-}
-
-.card-title {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 18px;
-    color: #ff00ff;
-    margin-bottom: 10px;
-    text-shadow: 0 0 8px #d946ef;
-}
-
-.card-subtitle {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
-    color: #00ff66;
-    display: block;
-    margin-bottom: 15px;
-}
-
-.card-text {
-    font-size: 16px;
-    color: #00ff66;
-    line-height: 1.6;
-    text-shadow: 0 0 3px rgba(0, 255, 102, 0.3);
-}
-
-/* RESPONSIVE / CELULARES */
+/* Responsive */
 @media (max-width: 768px) {
-    .titulo {
-        font-size: 26px;
-    }
-    .subtitulo {
-        font-size: 10px;
-    }
-    .grid-container {
+    .info-row {
         grid-template-columns: 1fr;
-    }
-    .carousel-container {
-        justify-content: flex-start;
+        gap: 25px;
     }
 }

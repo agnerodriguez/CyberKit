@@ -48,21 +48,28 @@
         $contexto = stream_context_create($opciones);
         $resultado = @file_get_contents($urlApi, false, $contexto);
 
-        if ($resultado !== false) {
+         if ($resultado !== false) {
             $respuesta = json_decode($resultado, true);
 
-            if (!empty($respuesta['error'])) {
+            if (!is_array($respuesta)) {
+                $mensajeError = "La API no devolvió JSON válido.";
+                $scriptConsola = consoleError(htmlspecialchars($resultado));
+            } elseif (!empty($respuesta['error'])) {
                 $mensajeError = $respuesta['error'];
                 $scriptConsola = consoleError($mensajeError);
-            } elseif (isset($respuesta['idUsuario'])) {
-                $_SESSION['id_usuario'] = $respuesta['idUsuario'];
-                $_SESSION['usuario'] = $respuesta['usuario'] ?? $nombre;
-                $_SESSION['admin'] = $respuesta['admin'] ?? 0;
-                header("Location: inicioSesion.php");
-                exit;
             } else {
-                $mensajeError = "Respuesta inesperada de la API.";
-                $scriptConsola = consoleError(htmlspecialchars($resultado));
+                $idUsuario = $respuesta['id_usuario'] ?? null;
+
+                if ($idUsuario !== null) {
+                    $_SESSION['id_usuario'] = $idUsuario;
+                    $_SESSION['usuario']    = $respuesta['usuario'] ?? $nombre;
+                    $_SESSION['admin']      = $respuesta['admin'] ?? 0;
+                    header("Location: inicioSesion.php");
+                    exit;
+                } else {
+                    $mensajeError = "La cuenta se creó, pero la API no devolvió el ID. Iniciá sesión.";
+                    $scriptConsola = consoleError("Respuesta sin id: " . htmlspecialchars($resultado));
+                }
             }
         } else {
             $mensajeError = "No se pudo realizar la llamada HTTP a la API.";
