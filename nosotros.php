@@ -25,7 +25,7 @@
                     <!-- Cambia 'icono-check.png' por la ruta de tu icono descargado -->
                     <img src="iconos/cheque.png" alt="Icono Check" class="icono">
                     <p class="texto">
-                        Somos desarrolladoras y nos gusta la educación y promover conocimiento para que más personas exploten su potencial
+                       Somos desarrolladoras y nos gusta la educación y promover conocimiento para que más personas exploten su potencial.
                     </p>
                 </div>
 
@@ -35,7 +35,7 @@
                 <div class="caja-informacion">
                     <img src="iconos/estrella.png" alt="Icono Estrella" class="icono">
                     <p class="texto">
-                        Brindar a los usuarios la posibilidad de adquirir conocimientos informáticos, fomentar el pensamiento crítico en un contexto del creciente uso de la inteligencia artificial, y fomentar el cuidado del ambiente
+                        Brindar a los usuarios la posibilidad de adquirir conocimientos informáticos, fomentar el pensamiento crítico en un contexto del creciente uso de la inteligencia artificial, y fomentar el cuidado del ambiente.
                     </p>
                 </div>
 
@@ -46,15 +46,14 @@
                 <h2 class="subtitulo-redes">Nuestras Redes Sociales</h2>
                 
                 <div class="item-red">
-                    <img src="iconos/instagram.png" alt="Instagram" class="icono-red">
+                    <img src="iconos/ig.png" alt="Instagram" class="icono-red">
                     <span class="texto-red">CyberComunity</span>
                 </div>
 
                 <div class="item-red">
-                    <img src="iconos/arroba.png" alt="Email" class="icono-red">
+                    <img src="iconos/arroba (2).png" alt="Email" class="icono-red">
                     <span class="texto-red">CyberComunity@gmail.com</span>
                 </div>
-
             </div>
         </div>
     </section>

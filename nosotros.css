@@ -99,6 +99,11 @@ body {
     flex-shrink: 0;
 }
 
+.icono:hover
+{
+    transform: scale(1.05);
+}
+
 .texto {
     font-size: 1.2rem;
     line-height: 1.4;
@@ -121,8 +126,8 @@ body {
 }
 
 .icono-red {
-    width: 55px;
-    height: 55px;
+    width: 50px;
+    height: 50px;
     object-fit: contain;
     flex-shrink: 0;
 }
