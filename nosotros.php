@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="nosotros.css">
 </head>
 <body>
-
+    <?php include("nav.php"); ?>
     <section class="seccion-nosotros">
         <div class="encabezado">
             <h1 class="titulo-principal">NOSOTROS</h1>
@@ -56,9 +56,8 @@
                 </div>
 
             </div>
-
         </div>
     </section>
-
+    <?php include 'footer.php'; ?>
 </body>
 </html>

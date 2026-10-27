@@ -45,35 +45,8 @@
                     <p style="color: #00ff66;">No hay productos disponibles.</p>
                 <?php endif; ?>
             </div>
-<<<<<<< Updated upstream
-            <div class="info-card text-card">
-                <h2 class="card-title">Escribe tu sección aquí</h2>
-                <span class="card-subtitle">[SUBTÍTULO 01]</span>
-                <p class="card-text">
-                    El contenido visual es un lenguaje transversal, universal, como la música. 
-                    Somos capaces de entender imágenes de hace millones de años, incluso de otras culturas.
-                </p>
-            </div>
-
-            <!-- Fila 2: Texto izquierda, Imagen derecha -->
-            <div class="info-card text-card">
-                <h2 class="card-title">Escribe tu sección aquí</h2>
-                <span class="card-subtitle">[SUBTÍTULO 02]</span>
-                <p class="card-text">
-                    El contenido visual es un lenguaje transversal, universal, como la música. 
-                    Somos capaces de entender imágenes de hace millones de años, incluso de otras culturas.
-                </p>
-            </div>
-            <div class="info-card image-card">
-                <img src="fondos/seccion2.png" alt="Proyecto 2">
-            </div>
-
-        </div>
-    </section>
+        </section>
 
     <?php include 'footer.php'; ?>
-=======
-        </section>
->>>>>>> Stashed changes
 </body>
 </html>
