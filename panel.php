@@ -80,47 +80,18 @@
                 <!-- Filtros de pagos -->
                 <div class="filtros-pagos">
                     <div class="filtro-grupo">
-                        <label for="filtroMes">Mes:</label>
-                        <select id="filtroMes">
-                            <option value="">Todos los meses</option>
-                            <option value="Enero">Enero</option>
-                            <option value="Febrero">Febrero</option>
-                            <option value="Marzo">Marzo</option>
-                            <option value="Abril">Abril</option>
-                            <option value="Mayo">Mayo</option>
-                            <option value="Junio">Junio</option>
-                            <option value="Julio">Julio</option>
-                            <option value="Agosto">Agosto</option>
-                            <option value="Septiembre">Septiembre</option>
-                            <option value="Octubre">Octubre</option>
-                            <option value="Noviembre">Noviembre</option>
-                            <option value="Diciembre">Diciembre</option>
-                        </select>
-                    </div>
-
-                    <div class="filtro-grupo">
                         <label for="filtroEstado">Estado:</label>
                         <select id="filtroEstado">
                             <option value="">Todos los estados</option>
                             <option value="1">Pagado</option>
-                            <option value="2">Impago</option>
-                            <option value="3">Pendiente</option>
+                            <option value="2">Pendiente</option>
+                            <option value="3">Impago</option>
                         </select>
                     </div>
-
-                    <button type="button" class="filtrar" onclick="filtrarPagos()">
-                        <img id="iconoFiltro" src="iconos/filtro-vacio.png" alt="Filtro vacío" width="24" height="24"><br>
-                        Filtrar 
-                    </button>
-
-                    <button type="button" class="limpiar-filtros" onclick="limpiarFiltrosPagos()"><br>
-                        Limpiar <br>
-                        filtros 
-                    </button>
+                    <button type="button" class="filtrar" onclick="filtrarPagos()">Filtrar</button>
+                    <button type="button" class="limpiar-filtros" onclick="limpiarFiltrosPagos()"> Limpiar filtros </button>
                 </div>
-                
                 <p id="mensajeFiltrosPagos"></p>
-
                 <div class="tabla-pagos-contenedor">
                     <table class="tabla-pagos">
                         <thead>

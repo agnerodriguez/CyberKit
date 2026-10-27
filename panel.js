@@ -254,7 +254,7 @@ function mostrarPagos(pagos) {
         }
         return;
     }
-    
+
     if (mensaje) {
         mensaje.textContent = `Se encontraron ${pagos.length} pago(s).`;
     }
@@ -313,7 +313,7 @@ function cambiarEstadoPago(idDetalleCompra, idEstado) {
                 pagoEncontrado.id_estado = parseInt(idEstado);
             }
             if (mensaje) {
-                mensaje.style.color = '#a9cd46';
+                mensaje.style.color = 'blue';
                 mensaje.textContent = res.mensaje;
             }
         } else if (res.error) {
@@ -330,6 +330,29 @@ function cambiarEstadoPago(idDetalleCompra, idEstado) {
         }
         console.error(err);
     });
+}
+
+// Función para filtrar los pagos por estado
+function filtrarPagos() {
+    const selectEstado = document.getElementById('filtroEstado');
+    if (!selectEstado) return;
+    const valorFiltro = selectEstado.value;
+
+    // Si no se selecciona nada (opción vacia), muestra todos
+    if (valorFiltro === "") {
+        mostrarPagos(todosLosPagos);
+        return;
+    }
+
+    const estadoBusqueda = parseInt(valorFiltro);
+
+    // Filtra el array global segun el id_estado
+    const pagosFiltrados = todosLosPagos.filter(pago => {
+        return parseInt(pago.id_estado) === estadoBusqueda;
+    });
+
+    // Renderiza la tabla con los resultados filtrados
+    mostrarPagos(pagosFiltrados);
 }
 
 // Limpiar filtros de pagos
