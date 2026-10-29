@@ -13,7 +13,7 @@ body {
     overflow-x: hidden;
 }
 
-
+/* ENCABEZADO */
 .encabezado {
     display: flex;
     justify-content: center;
@@ -47,62 +47,122 @@ body {
     text-shadow: 0 0 4px rgba(0, 255, 102, 0.4); 
 }
 
-.products-carousel-section {
-    width: 100%;
-    margin-bottom: 60px;
-}
-
-.carousel-container {
-    display: flex;
-    justify-content: center;
-    gap: 35px;
-    overflow-x: auto;
-    padding: 20px 40px;
-    scroll-behavior: smooth;
-}
-
-.carousel-container::-webkit-scrollbar { 
-    height: 6px;
-}
-
-.carousel-container::-webkit-scrollbar-thumb {
-    background: #ff00ff;
-    border-radius: 10px;
-}
-
-.product-item {
-    flex: 0 0 auto;
+/* CONTENEDOR PRINCIPAL */
+.contenedor {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto 60px auto;
     display: flex;
     flex-direction: column;
+    gap: 60px;
+}
+
+/* TARJETA DE PRODUCTO Y EFECTO ZIGZAG */
+.tarjeta-producto {
+    display: flex;
+    flex-direction: row;
     align-items: center;
-    width: 120px;
+    justify-content: space-between;
+    gap: 30px;
+    width: 100%;
+}
+
+.tarjeta-producto:nth-child(even) { /*nth-child(even) le indica al navegador los elementos pares ylos coloca en la posicion contraria al del contendor de arriba  */
+    flex-direction: row-reverse;
+}
+
+.marco-externo {
+    width: 48%;
+    flex-shrink: 0;
+    background-color: rgba(106, 0, 184, 0.35);
+    border: 5px solid #d946ef;
+    padding: 10px;
+    box-shadow: 0 0 15px rgba(217, 70, 239, 0.5);
+    box-sizing: border-box;
+}
+
+.marco-interno {
+    border: none;
+    padding: 0;
+}
+
+.marco-interno img {
+    max-width: 100%;
+    width: 100%;
+    display: block;
+    height: auto;   
+}
+
+
+/* INFORMACIÓN Y TEXTO */
+.info {
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+}
+
+.titulo-producto {
+    font-family: 'Press Start 2P', monospace;
+    color: #ff00ff;
+    font-size: 1.5rem;
+    text-shadow: 0 0 8px #ff00ff;
+    text-transform: uppercase;
+}
+
+.descripcion-producto {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #00ff66;
+    font-weight: 600;
+    text-align: justify;
+    overflow-wrap: break-word;
+}
+
+/* CONTENEDOR Y BOTÓN */
+.contenedorBtn {
+    display: flex;
+    justify-content: flex-start; /* Se pega al lado de la imagen en impares */
+    margin-top: 5px;
+}
+
+/* Cuando la tarjeta es par, el botón se alinea a la derecha para seguir junto a la imagen */
+.tarjeta-producto:nth-child(even) .contenedorBtn {
+    justify-content: flex-end;
+}
+
+.btnEnviar {
+    background-color: #ff00ff;
+    color: black;
+    font-size: 0.75rem;
+    padding: 10px 24px;
+    border: 2px solid white;
+    border-radius: 50px;
     cursor: pointer;
-    text-align: center;
-    transition: transform 0.2s ease-in-out;
+    text-transform: uppercase;
+    box-shadow: 0 0 12px #ff00ff, inset 0 0 6px rgba(255, 255, 255, 0.6);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-.product-item:hover {
-    transform: translateY(-8px);
+.btnEnviar:hover {
+    transform: scale(1.05);
+    background-color: #ff33ff;
+    box-shadow: 0 0 20px #ff00ff, 0 0 8px #00ffff;
 }
 
-.product-image {
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
-    margin-bottom: 10px;
-    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.3));
-}
-
-.product-name {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 15px;
-    color: #ffffff;
-}
-
-/* Responsive */
+/* ADAPTABILIDAD A CELULARES */
 @media (max-width: 768px) {
-    .info-row {
-        grid-template-columns: 1fr;
-        gap: 25px;
+    .tarjeta-producto {
+        flex-direction: column !important;
+    }
+
+    .marco-externo, .info {
+        width: 100%;
+    }
+
+    .contenedorBtn,
+    .tarjeta-producto:nth-child(even) .contenedorBtn {
+        justify-content: center;
     }
 }
