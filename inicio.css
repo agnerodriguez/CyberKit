@@ -7,10 +7,14 @@
 body {
     background-image: url(fondos/fondo.png);
     background-size: cover;
+    background-position: center;
     background-attachment: fixed;
-    font-family: 'Share Tech Mono', monospace;
-    color: #ffffff;
+    font-family: 'Rajdhani', 'Orbitron', sans-serif;
+    min-height: 100vh;
     overflow-x: hidden;
+    position: relative;
+     display: flex;
+    flex-direction: column;
 }
 
 /* ENCABEZADO */
@@ -55,6 +59,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 60px;
+    flex: 1;
 }
 
 /* TARJETA DE PRODUCTO Y EFECTO ZIGZAG */
@@ -151,8 +156,39 @@ body {
     box-shadow: 0 0 20px #ff00ff, 0 0 8px #00ffff;
 }
 
-/* ADAPTABILIDAD A CELULARES */
+footer.contenedor {
+    margin-top: auto;
+    margin-bottom: 0;  /* saca el margin-bottom de 60px que hereda de .contenedor */
+    flex: 0;           /* evita que el flex:1 de .contenedor lo estire raro */
+}
+
 @media (max-width: 768px) {
+    /* TÍTULO */
+    .titulo {
+        font-size: 24px;
+        word-break: break-word;
+    }
+
+    .tituloro {
+        padding: 15px 20px;
+    }
+
+    .subtitulo {
+        font-size: 10px;
+    }
+
+    /* ENCABEZADO: menos margen muerto */
+    .encabezado {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    /* CONTENEDOR: menos separación entre tarjetas */
+    .contenedor {
+        gap: 40px;
+    }
+
+    /* TARJETAS: apiladas en columna */
     .tarjeta-producto {
         flex-direction: column !important;
     }
