@@ -2,6 +2,7 @@
 // Iniciar búfer para capturar cualquier salida no deseada
 ob_start();
 
+session_start();
 // Desactivar la impresión de warnings/errors HTML en la salida JSON
 error_reporting(0);
 ini_set('display_errors', 0);
@@ -913,7 +914,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'Publicacion':
                 switch ($consulta) {
                     case 'Create': // Usuario
-                        $id_usuario = (int)($datos['id_usuario'] ?? 0);
+                       if (!isset($_SESSION['id_usuario'])) {
+                            http_response_code(401);
+                            echo json_encode(["error" => "No autorizado. Inicia sesión nuevamente."]);
+                            exit;
+                        }
+                        $id_usuario = (int)$_SESSION['id_usuario'];
                         $id_categoria = (int)($datos['id_categoria'] ?? 0);
                         $contenido = trim($datos['contenido'] ?? '');
                         $imagen = $datos['imagen'] ?? null;
