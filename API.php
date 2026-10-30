@@ -1041,7 +1041,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 switch ($consulta) {
                     case 'Create': // Usuario
                         $id_publicacion = (int)($datos['id_publicacion'] ?? 0);
-                        $id_usuario = (int)($datos['id_usuario'] ?? 0);
+
+                        if (!isset($_SESSION['id_usuario'])) {
+                            http_response_code(401);
+                            echo json_encode(["error" => "No autorizado. Inicia sesión nuevamente."]);
+                            exit;
+                        }
+                        $id_usuario = (int)$_SESSION['id_usuario'];
                         $contenido = trim($datos['contenido'] ?? '');
                         $imagen = $datos['imagen'] ?? null;
                         $id_comentario_padre = (int)($datos['id_comentario_padre'] ?? 0);
