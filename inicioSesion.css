@@ -199,6 +199,53 @@ body {
     text-decoration: underline;
 }
 
+.linkOlvido {
+    margin: 1px 0 0 0;
+    align-self: flex-start;
+    font-size: 10px;
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+.linkOlvido a {
+    text-decoration: none;
+}
+.modal-olvido {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    
+    /* Centrado Flexbox universal */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999; /* Asegura que esté por encima de todo */
+}
+
+/* Caja blanca/verde del modal */
+.modal-contenido {
+    background: #a9cd46;
+    padding: 30px 25px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 380px;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    
+    /* Disposición interna centrada */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    
+    /* Animación suave */
+    animation: modalEntrada 0.25s ease-out forwards;
+}
+
 /* RESPONSIVE PARA DISPOSITIVOS MÓVILES (≤ 500px) */
 @media (max-width: 500px) {
     body {

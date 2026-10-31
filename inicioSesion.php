@@ -79,7 +79,7 @@
 <body>
     <div class="lineas-crt"></div>
 
-    <main class="contenedor-principal">
+    <div class="contenedor-principal">
         <header class="encabezado">
             <h1 class="titulo-principal">INICIÁ SESIÓN</h1>
             <p class="subtitulo">Iniciá sesión para navegar en el sitio.</p>
@@ -116,6 +116,10 @@
                                 <span class="icono-ojito"></span>
                             </button>
                         </div>
+                        <p class="linkOlvido"><a href="#" id="btnOlvido">Olvidé mi contraseña</a></p>
+                        <?php if (isset($mensajeError)): ?>
+                            <p class="error"><?= $mensajeError ?></p>
+                        <?php endif; ?>
                     </div>
 
                     <div class="bloque-acciones">
@@ -128,7 +132,27 @@
                 </form>
             </div>
         </div>
-    </main>
+    </div>
+
+    <div id="modalOlvido" class="modal-olvido" style="display: none;">
+        <div class="modal-contenido">
+            <span class="cerrar-modal" id="cerrarModal">&times;</span>
+            <h3 style="text-align: center; margin-bottom: 10px; font-family: 'Tamrin'; font-size: 18px;">Recuperar Contraseña</h3>
+            <p style="text-align: center; font-size: 12px; margin-bottom: 15px; color: black; font-family: 'Tamrin';">
+                Ingrese el email. Se restablecerá la contraseña y se enviarán los datos a su correo electrónico.
+            </p>
+            
+            <form id="formOlvido">
+                <div class="grupoInput">
+                    <label for="contiOlvido" class="label">Email</label>
+                    <input type="text" id="contOlvido" name="email" required placeholder="Ingrese su email" class="input">
+                </div>
+                <button type="submit" class="btn" style="margin-top: 15px;">Enviar correo</button>
+            </form>
+            
+            <p id="mensajeModal"></p>
+        </div>
+    </div>
 
     <?php echo $scriptConsola; ?> 
     <script src="inicioSesion.js"></script>
