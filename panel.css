@@ -43,16 +43,13 @@ html, body {
 }
 
 .sideBar .logo {
-    margin: 0 0 10px 10px;
+    margin-left: 101px;
 }
 
 .sideBar .logo img {
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
-    background: #fff;
+    width: 70%;
+    height: 90%;
     object-fit: contain;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 .sideBar nav {
@@ -71,7 +68,7 @@ html, body {
     padding: 8px 10px;
     background: transparent;
     border: none;
-    color: #ffffff; /* Azul intenso visto en la imagen */
+    color: #ffffff;
     font-size: 1.4rem;
     font-weight: bold;
     text-align: left;
@@ -87,7 +84,7 @@ html, body {
 
 /* Ajuste unificado del tamaño de todos los íconos de la sidebar */
 .sideBar nav button img {
-    width: 48px !important;  /* Tamaño uniforme e idéntico al de la imagen */
+    width: 48px !important;
     height: 48px !important;
     object-fit: contain;
     flex-shrink: 0;
@@ -316,7 +313,7 @@ html, body {
     background: #fecaca;
 }
 
-/* --- ESTILO PARA PAGOS (Adaptado al diseño de Productos) --- */
+/* --- ESTILO PARA PAGOS  --- */
 #verPagos.pagos-card {
     background: #f8fafc !important;
     border-radius: 12px !important;

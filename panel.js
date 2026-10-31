@@ -28,7 +28,6 @@ function mostrar(id) {
         .forEach(f => f.classList.remove('activo'));
     formulario.classList.add('activo');
 
-    //Garantiza que al entrar a la sección de "Gráficos" o "Ver Pagos", 
     // se vuelva a consultar a la API.php y se rendericen los datos más recientes para los graficos.
     if (id === 'verPagos') {
         cargarPagos();
@@ -40,40 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarPagos();
 });
 
-function enviarDatosAPI(id, nombre, descripcion, stock, monto, imagenBase64, esEdicion) {
-    const payload = {
-        recurso: 'Productos',
-        consulta: esEdicion ? 'Update' : 'Create',
-        nombre: nombre,
-        descripcion: descripcion,
-        stock: stock,
-        monto: monto,
-        imagen: imagenBase64
-    };
+// ==============================
+// PRODUCTOS
+// ==============================
 
-    if (esEdicion) {
-        payload.id_producto = parseInt(id);
-    }
-
-    fetch('API.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.mensaje) {
-            alert(data.mensaje);
-            limpiarFormularioProducto();
-            cargarProductosAdmin(); // Refresca la tabla del panel al instante
-        } else {
-            alert("Error: " + (data.error || "No se pudo procesar la solicitud"));
-        }
-    })
-    .catch(err => console.error("Error en la petición:", err));
-}
-
-// Mostrar productos en la tabla
 function cargarProductosAdmin() {
     fetch('API.php', {
         method: 'POST',
@@ -139,20 +108,51 @@ function guardarProducto() {
         alert("El nombre del producto es obligatorio.");
         return;
     }
-
     const esEdicion = id !== "";
 
-    // Si el administrador selecciona una imagen nueva, la convierte a Base64
+    // Función interna encargada de estructurar el payload y hacer la petición
+    const procesarEnvio = (imagenBase64) => {
+        const payload = {
+            recurso: 'Productos',
+            consulta: esEdicion ? 'Update' : 'Create',
+            nombre: nombre,
+            descripcion: descripcion,
+            stock: stock,
+            monto: monto,
+            imagen: imagenBase64
+        };
+
+        if (esEdicion) {
+            payload.id_producto = parseInt(id);
+        }
+
+        fetch('API.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.mensaje) {
+                alert(data.mensaje);
+                limpiarFormularioProducto();
+                cargarProductosAdmin(); // Refresca la tabla del panel al instante
+            } else {
+                alert("Error: " + (data.error || "No se pudo procesar la solicitud"));
+            }
+        })
+        .catch(err => console.error("Error en la petición:", err));
+    };
+
+    // Si el administrador selecciona una imagen nueva, se procesa a Base64; de lo contrario se envía null
     if (archivoInput.files && archivoInput.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            const base64String = e.target.result; // Contiene el data:image/...;base64,...
-            enviarDatosAPI(id, nombre, descripcion, stock, monto, base64String, esEdicion);
+            procesarEnvio(e.target.result);
         };
         reader.readAsDataURL(archivoInput.files[0]);
     } else {
-        // Si no selecciona imagen (por ejemplo, al editar sin cambiarla), mandamos null
-        enviarDatosAPI(id, nombre, descripcion, stock, monto, null, esEdicion);
+        procesarEnvio(null);
     }
 }
 
@@ -192,21 +192,10 @@ function eliminarProducto(id) {
     });
 }
 
+// ==============================
+// PAGOS
+// ==============================
 
-function enviarEmail () {
-    fetch('API.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            recurso: 'DetalleCompra',
-            consulta: 'EnviarEmail'
-        })
-    })
-    .then(res => res.json())
-    
-}
-
-//Ver pagos
 let todosLosPagos = []; // Variable global que almacena todos los registros de pagos
 
 // Función para buscar los datos de compras al servidor
@@ -238,9 +227,7 @@ function mostrarPagos(pagos) {
     const tbody = document.getElementById('tablapagos');
     const mensaje = document.getElementById('mensajeFiltrosPagos');
     if (!tbody) return;
-
     tbody.innerHTML = ''; 
-
     if (pagos.length === 0) {
         tbody.innerHTML = `
             <tr>
@@ -254,7 +241,7 @@ function mostrarPagos(pagos) {
         }
         return;
     }
-
+    
     if (mensaje) {
         mensaje.textContent = `Se encontraron ${pagos.length} pago(s).`;
     }
@@ -263,7 +250,7 @@ function mostrarPagos(pagos) {
         const fila = document.createElement('tr');
 
         // Muestra la imagen del comprobante (Base64) en lugar de la foto del producto
-        let comprobanteHTML = '<span style="color: #94a3b8;">Imagen no disponible/span>';
+        let comprobanteHTML = '<span style="color: #94a3b8;">Sin imagen</span>';
         if (pago.comprobante) {
             comprobanteHTML = `
                 <img src="${escapeHtml(pago.comprobante)}" alt="Comprobante" class="comprobante" style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px; cursor: pointer;" onclick="window.open('${escapeHtml(pago.comprobante)}')">
@@ -295,6 +282,8 @@ function mostrarPagos(pagos) {
 // Función para cambiar el estado del pago en la base de datos
 function cambiarEstadoPago(idDetalleCompra, idEstado) {
     const mensaje = document.getElementById('mensajePagos');
+    
+    // Actualiza el estado mediante la API
     fetch('API.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -312,10 +301,26 @@ function cambiarEstadoPago(idDetalleCompra, idEstado) {
             if (pagoEncontrado) {
                 pagoEncontrado.id_estado = parseInt(idEstado);
             }
+            
             if (mensaje) {
-                mensaje.style.color = 'blue';
+                mensaje.style.color = '#0d8a42';
                 mensaje.textContent = res.mensaje;
             }
+
+            // Si el estado es "Pagado" (1) llama al archivo para enviar el correo
+            if (parseInt(idEstado) === 1) {
+                fetch('enviar_correo.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id_detalleCompra: parseInt(idDetalleCompra) })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.mensaje || data.error);
+                })
+                .catch(err => console.error("Error al enviar correo:", err));
+            }
+
         } else if (res.error) {
             if (mensaje) {
                 mensaje.style.color = 'red';
@@ -343,7 +348,6 @@ function filtrarPagos() {
         mostrarPagos(todosLosPagos);
         return;
     }
-
     const estadoBusqueda = parseInt(valorFiltro);
 
     // Filtra el array global segun el id_estado
@@ -360,4 +364,136 @@ function limpiarFiltrosPagos() {
     const filtroEstado = document.getElementById('filtroEstado');
     if (filtroEstado) filtroEstado.value = '';
     mostrarPagos(todosLosPagos);
+}
+
+// ==============================
+// TUTORIALES
+// ==============================
+
+document.addEventListener('DOMContentLoaded', () => {
+    cargarTutorialesAdmin();
+});
+
+// Cargar listado de tutoriales en la tabla del panel
+function cargarTutorialesAdmin() {
+    fetch('API.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recurso: 'Tutoriales', consulta: 'Read' })
+    })
+    .then(res => res.json())
+    .then(tutoriales => {
+        const tbody = document.getElementById('tablaTutorialesAdmin');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (!Array.isArray(tutoriales) || tutoriales.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay tutoriales registrados.</td></tr>';
+            return;
+        }
+
+        tutoriales.forEach(tut => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>#${tut.id_tutorial}</td>
+                <td><strong>${escapeHtml(tut.nombre)}</strong></td>
+                <td>${escapeHtml(tut.descripcion || '-')}</td>
+                <td><a href="${escapeHtml(tut.archivo)}" target="_blank" style="color: #0d8a42; text-decoration: underline;">Ver enlace</a></td>
+                <td>
+                    <button type="button" class="btn-accion-editar" onclick='prepararEdicionTutorial(${JSON.stringify(tut)})'>Editar</button>
+                    <button type="button" class="btn-accion-eliminar" onclick="eliminarTutorial(${tut.id_tutorial})">Eliminar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    })
+    .catch(err => console.error("Error al cargar tutoriales:", err));
+}
+
+// Guardar o Actualizar Tutorial
+function guardarTutorial() {
+    const id = document.getElementById('tutId').value;
+    const nombre = document.getElementById('tutNombre').value.trim();
+    const descripcion = document.getElementById('tutDescripcion').value.trim();
+    const archivo = document.getElementById('tutArchivo').value.trim();
+
+    if (!nombre) {
+        alert("El título/nombre del tutorial es obligatorio.");
+        return;
+    }
+
+    const esEdicion = id !== "";
+    const payload = {
+        recurso: 'Tutoriales',
+        consulta: esEdicion ? 'Update' : 'Create',
+        nombre: nombre,
+        descripcion: descripcion,
+        archivo: archivo
+    };
+
+    if (esEdicion) {
+        payload.id_tutorial = parseInt(id);
+    }
+
+    fetch('API.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.mensaje) {
+            alert(data.mensaje);
+            limpiarFormularioTutorial();
+            cargarTutorialesAdmin();
+        } else {
+            alert("Error: " + (data.error || "No se pudo procesar la solicitud"));
+        }
+    })
+    .catch(err => console.error("Error en la petición de tutoriales:", err));
+}
+
+// Cargar datos en el formulario para editar
+function prepararEdicionTutorial(tut) {
+    document.getElementById('tutId').value = tut.id_tutorial;
+    document.getElementById('tutNombre').value = tut.nombre;
+    document.getElementById('tutDescripcion').value = tut.descripcion;
+    document.getElementById('tutArchivo').value = tut.archivo;
+    document.getElementById('tituloFormTutorial').textContent = "Editar Tutorial #" + tut.id_tutorial;
+    document.getElementById('btnCancelarEdicionTut').style.display = 'inline-block';
+}
+
+// Limpiar formulario de tutoriales
+function limpiarFormularioTutorial() {
+    document.getElementById('tutId').value = '';
+    document.getElementById('tutNombre').value = '';
+    document.getElementById('tutDescripcion').value = '';
+    document.getElementById('tutArchivo').value = '';
+    document.getElementById('tituloFormTutorial').textContent = "Registrar Nuevo Tutorial";
+    document.getElementById('btnCancelarEdicionTut').style.display = 'none';
+}
+
+// Eliminar tutorial
+function eliminarTutorial(id) {
+    if (!confirm("¿Estás seguro de eliminar este tutorial?")) return;
+
+    fetch('API.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            recurso: 'Tutoriales',
+            consulta: 'Delete',
+            id_tutorial: parseInt(id)
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.mensaje) {
+            alert(data.mensaje);
+            cargarTutorialesAdmin();
+        } else {
+            alert(data.error || "Error al eliminar el tutorial.");
+        }
+    })
+    .catch(err => console.error("Error al eliminar:", err));
 }

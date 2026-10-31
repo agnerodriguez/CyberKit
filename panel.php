@@ -12,7 +12,7 @@
         <!-- Sidebar -->
         <aside class="sideBar">
             <div class="logo">
-                <a href="inicio.php"><img src="iconos/logo.jpg" alt="Logo"></a>
+                <a href="inicio.php"><img src="iconos/logoEmpresa.png" alt="Logo"></a>
             </div>
             <nav>
                 <button onclick="mostrar('productos')"><img src="iconos/productos.png" alt="moneda" style= "width: 19%">Productos</button>
@@ -26,13 +26,12 @@
 
             <!-- Productos -->
             <div id="productos" class="formulario tarjeta productos-cards">
-                
+
                 <!-- Bloque de arriba: formulario de agregar / editar -->
                 <div class="card-formulario-producto">
                     <div class="productos-header">
                         <h2 id="tituloFormProducto">Registrar Nuevo Producto</h2>
                     </div>
-                    
                     <input type="hidden" id="prodId" value="">
                     
                     <div class="form-producto-grid">
@@ -115,9 +114,47 @@
             </div>
 
             <!-- Tutoriales -->
-            <div id="Tutoriales" class="formulario tarjeta tutoriales-cards">
-                
+            <div id="tutoriales" class="formulario tarjeta tutoriales-cards">
+
+                <!-- Bloque de arriba: formulario de agregar / editar tutorial -->
+                <div class="card-formulario-tutorial">
+                    <div class="productos-header">
+                        <h2 id="tituloFormTutorial">Registrar Nuevo Tutorial</h2>
+                    </div>
+                    <input type="hidden" id="tutId" value="">
+                    
+                    <div class="form-producto-grid">
+                        <input type="text" id="tutNombre" placeholder="Título del tutorial">
+                        <input type="text" id="tutArchivo" placeholder="Enlace o ruta del archivo/video">
+                        <textarea id="tutDescripcion" placeholder="Descripción del tutorial..." style="grid-column: span 2;"></textarea>
+                        
+                        <div class="form-acciones" style="grid-column: span 2;">
+                            <button type="button" class="btn-guardar" onclick="guardarTutorial()">Guardar Tutorial</button>
+                            <button type="button" id="btnCancelarEdicionTut" class="btn-cancelar" style="display:none;" onclick="limpiarFormularioTutorial()">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOQUE ABAJO: Tabla con el listado completo de tutoriales -->
+                <div class="card-tabla-productos">
+                    <h3>Listado de Tutoriales</h3>
+                    <div class="tabla-productos-contenedor">
+                        <table class="tabla-productos">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Título</th>
+                                    <th>Descripción</th>
+                                    <th>Archivo / Enlace</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaTutorialesAdmin"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
+            
         </main>
     </div>
     <script src="panel.js"></script>
