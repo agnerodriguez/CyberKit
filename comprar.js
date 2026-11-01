@@ -131,7 +131,7 @@ function obtenerDatosProducto() {
         try {
             data = JSON.parse(textoRespuesta);
         } catch (e) {
-            console.error("Error nativo del servidor (PHP HTML):", textoRespuesta);
+            console.error("Error nativo del servidor:", textoRespuesta);
             throw new Error("Respuesta no válida del servidor.");
         }
 
@@ -159,14 +159,10 @@ function obtenerDatosProducto() {
 
         document.getElementById('Descripcion').textContent = producto.descripcion;
 
-        /* ==============================================================================
-        *  DESCOMENTAR CUANDO SE CARGUE LA IMAGEN DESDE LA BASE DE DATOS / API:
-        * ==============================================================================
-        * const contenedorImagen = document.getElementById('imagen');
-        * if (contenedorImagen && producto.imagen) {
-        *     contenedorImagen.innerHTML = `<img src="${producto.imagen}" alt="${producto.nombre}">`;
-        * }
-        * ============================================================================== */
+        const contenedorImagen = document.getElementById('imagen');
+        if (contenedorImagen && producto.imagen) {
+            contenedorImagen.innerHTML = `<img src="${producto.imagen}" alt="${producto.nombre}">`;
+        }
 
         // Resetear contador y subtotal
         count = 0;
@@ -225,7 +221,7 @@ function enviarPagoAPI() {
         const payload = {
             recurso: "DetalleCompra",
             consulta: "Create",
-            id_producto: 1, // idProducto,
+            id_producto: idProducto,
             id_usuario: idUsuario,
             cantidad: cantidad,
             subtotal: subtotalCalculado, // Enviamos el subtotal directamente
@@ -252,7 +248,7 @@ function enviarPagoAPI() {
                 if (data.detallesTecnicos) {
                     console.error("Detalles técnicos API:", data.detallesTecnicos);
                 }
-                throw new Error(data.error || "Error al procesar el registro del pago.");
+                throw new Error(data.error || "Error al procesar la compra.");
             }
 
             return data;

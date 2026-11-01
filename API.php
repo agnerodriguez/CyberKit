@@ -417,11 +417,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 "descripcion" => $fila['descripcion'],
                                 "stock" => (int)$fila['stock'],
                                 "monto" => (float)$fila['monto'],
-                                /* ==============================================================================
-                                *  DESCOMENTAR CUANDO SE CARGUE Y LEA LA IMAGEN DESDE LA BD / API:
-                                * ==============================================================================
-                                * "imagen" => $fila['imagen']
-                                * ============================================================================== */
+                                "imagen" => $fila['imagen']
                             ]);
                         } else {
                             http_response_code(404);
@@ -644,7 +640,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $stmt_detalle->bind_param("iiiiiid", $id_producto, $id_usuario, $id_monto, $id_comprobante, $id_estado, $cantidad, $subtotal);
 
                             if (!$stmt_detalle->execute()) {
-                                throw new Exception("Se ha producido un error durante el registro de la compra: " . $stmt_detalle->error);
+                                throw new Exception("Se ha producido un error durante la compra: " . $stmt_detalle->error);
                             }
 
                             $id_detalleCompra = $stmt_detalle->insert_id;
@@ -664,7 +660,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             http_response_code(201);
                             echo json_encode([
-                                "mensaje" => "Registro de pago/compra creado exitosamente.",
+                                "mensaje" => "Compra creada exitosamente.",
                                 "id_detalleCompra" => $id_detalleCompra,
                                 "id_producto" => $id_producto,
                                 "id_usuario" => $id_usuario,
@@ -840,12 +836,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $mail->isSMTP();
                                 $mail->Host       = 'smtp.gmail.com';
                                 $mail->SMTPAuth   = true;
-                                $mail->Username   = 'recytech.soporte@gmail.com';
-                                $mail->Password   = ''; 
+                                $mail->Username   = 'recytech.support@gmail.com';
+                                $mail->Password   = 'ucha mqaw vkeo kltt'; 
                                 $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
                                 $mail->Port       = 587;
 
-                                $mail->setFrom('recytech.soporte@gmail.com', 'RecyTech');
+                                $mail->setFrom('recytech.support@gmail.com', 'RecyTech');
                                 $mail->addAddress($emailUsuario, $nombreUsuario);
 
                                 $mail->isHTML(true);
@@ -1318,8 +1314,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(["error" => "Recurso no válido"]);
                 break;
         }   
-            
-            
+
     } else {
         http_response_code(400);
         echo json_encode(["error" => "El JSON enviado no es válido."]);

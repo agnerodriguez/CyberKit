@@ -52,6 +52,7 @@
                 $_SESSION['id_usuario'] = $respuesta['idUsuario'];
                 $_SESSION['usuario'] = $respuesta['usuario'];
                 $_SESSION['admin'] = $respuesta['admin'] ?? 0;
+
                 header('Location: inicio.php');
                 exit;
             } else {

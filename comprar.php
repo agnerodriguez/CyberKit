@@ -35,7 +35,7 @@
             <div class="columnaIzquierda">
                 <div class="fondoProductoRosa">
                     <div class="fondoProductoVioleta">
-                        <div id="imagen" class="imagenProducto"><img src="productos/CyberKit.png" alt=""></div>
+                        <div id="imagen" class="imagenProducto"></div>
                     </div>
                 </div>
             </div>

@@ -3,7 +3,6 @@
         session_start();
     }
 
-
     $mensajeError = "";
     $scriptConsola = "";
 
@@ -14,18 +13,18 @@
 
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $nombre = trim($_POST["nombre"] ?? '');
-        $email  = trim($_POST["email"] ?? '');
-        $edad   = trim($_POST["edad"] ?? '');
+        $email = trim($_POST["email"] ?? '');
+        $edad = trim($_POST["edad"] ?? '');
         $contrasena = $_POST["contrasena"] ?? '';
 
         $datos = [
-            "mensaje"    => "Usuario recibido correctamente",
-            "nombre"     => $nombre,
-            "email"      => $email,
-            "edad"       => $edad,
+            "mensaje" => "Usuario recibido correctamente",
+            "nombre" => $nombre,
+            "email" => $email,
+            "edad" => $edad,
             "contrasena" => $contrasena,
-            "recurso"    => "Usuarios",
-            "consulta"   => "Create"
+            "recurso" => "Usuarios",
+            "consulta" => "Create"
         ];
 
         $payload = json_encode($datos);
@@ -38,8 +37,8 @@
 
         $opciones = [
             "http" => [
-                "header"  => "Content-Type: application/json\r\n",
-                "method"  => "POST",
+                "header" => "Content-Type: application/json\r\n",
+                "method" => "POST",
                 "content" => $payload,
                 "ignore_errors" => true
             ]
@@ -61,10 +60,13 @@
                 $idUsuario = $respuesta['id_usuario'] ?? null;
 
                 if ($idUsuario !== null) {
+                    // Guardar los datos en la sesión activa del navegador
                     $_SESSION['id_usuario'] = $idUsuario;
-                    $_SESSION['usuario']    = $respuesta['usuario'] ?? $nombre;
-                    $_SESSION['admin']      = $respuesta['admin'] ?? 0;
-                    header("Location: inicioSesion.php");
+                    $_SESSION['usuario'] = $respuesta['usuario'] ?? $nombre;
+                    $_SESSION['admin'] = $respuesta['admin'] ?? 0;
+
+                    // Redirigir directamente al inicio con la sesión ya iniciada
+                    header("Location: inicio.php");
                     exit;
                 } else {
                     $mensajeError = "La cuenta se creó, pero la API no devolvió el ID. Iniciá sesión.";

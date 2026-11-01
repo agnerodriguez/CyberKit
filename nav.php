@@ -21,10 +21,6 @@ $pagina_actual = basename($_SERVER['PHP_SELF']);
                 <a href="inicio.php" onclick="Seleccionado(this)">Inicio</a>
             </li>
 
-            <li class="<?= $pagina_actual == 'comprar.php' ? 'activo' : '' ?>">
-                <a href="comprar.php" onclick="Seleccionado(this)">Comprar</a>
-            </li>
-
             <li class="<?= $pagina_actual == 'tutoriales.php' ? 'activo' : '' ?>">
                 <a href="tutoriales.php" onclick="Seleccionado(this)">Tutoriales</a>
             </li>
@@ -41,7 +37,7 @@ $pagina_actual = basename($_SERVER['PHP_SELF']);
                 <?php if (isset($_SESSION['usuario'])): ?>
                     <a href="cuenta.php" onclick="Seleccionado(this)">Cuenta</a>
                 <?php else: ?>
-                    <a href="iniciarSesion.php">Cuenta</a>
+                    <a href="inicioSesion.php">Cuenta</a>
                 <?php endif; ?>  
             </li>
 
