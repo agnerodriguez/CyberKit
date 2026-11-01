@@ -250,10 +250,10 @@ function mostrarPagos(pagos) {
         const fila = document.createElement('tr');
 
         // Muestra la imagen del comprobante (Base64) en lugar de la foto del producto
-        let comprobanteHTML = '<span style="color: #94a3b8;"></span>';
+        let comprobanteHTML = '<span style="color: #94a3b8;">Sin imagen</span>';
         if (pago.comprobante) {
             comprobanteHTML = `
-                <img src="${escapeHtml(pago.comprobante)}" alt="Comprobante" class="comprobante" style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px; cursor: pointer;" onclick="window.open('${escapeHtml(pago.comprobante)}')">
+                <img src="${escapeHtml(pago.comprobante)}" alt="Comprobante" class="comprobante" style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px; cursor: pointer;" onclick="verComprobante('${escapeHtml(pago.comprobante)}')">
             `;
         }
 
@@ -368,6 +368,18 @@ function limpiarFiltrosPagos() {
     const filtroEstado = document.getElementById('filtroEstado');
     if (filtroEstado) filtroEstado.value = '';
     mostrarPagos(todosLosPagos);
+}
+
+function verComprobante(base64) {
+    const ventana = window.open();
+    ventana.document.write(`
+        <html>
+            <head><title>Comprobante de Pago - RecyTech</title></head>
+            <body style="margin:0; background:#1e1e1e; display:flex; justify-content:center; align-items:center; height:100vh;">
+                <img src="${base64}" style="max-width:100%; max-height:100%; object-fit:contain; border-radius: 6px;">
+            </body>
+        </html>
+    `);
 }
 
 // ==============================
