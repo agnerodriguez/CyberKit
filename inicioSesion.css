@@ -200,11 +200,12 @@ body {
 }
 
 .linkOlvido {
-    margin: 1px 0 0 0;
-    align-self: flex-start;
-    font-size: 10px;
-    font-family: sans-serif;
+    margin: 8px 0 0 0;
+    font-size: 8px;
+    font-family: "Silkscreen", cursive, sans-serif;
     font-weight: bold;
+    color: #3ef0e6;
+    text-decoration: none;
 }
 
 .linkOlvido a {
