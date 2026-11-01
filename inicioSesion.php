@@ -137,20 +137,30 @@
     <div id="modalOlvido" class="modal-olvido" style="display: none;">
         <div class="modal-contenido">
             <span class="cerrar-modal" id="cerrarModal">&times;</span>
-            <h3 style="text-align: center; margin-bottom: 10px; font-family: 'Tamrin'; font-size: 18px;">Recuperar Contraseña</h3>
-            <p style="text-align: center; font-size: 12px; margin-bottom: 15px; color: black; font-family: 'Tamrin';">
-                Ingrese el email. Se restablecerá la contraseña y se enviarán los datos a su correo electrónico.
-            </p>
-            
+
+            <div class="encabezado-modal">
+                <h3 class="titulo-modal">Recuperar Contraseña</h3>
+                <p class="subtitulo-modal">ingresá tu email y te enviamos una clave provisional</p>
+            </div>
+
             <form id="formOlvido">
-                <div class="grupoInput">
-                    <label for="contiOlvido" class="label">Email</label>
-                    <input type="text" id="contOlvido" name="email" required placeholder="Ingrese su email" class="input">
+                <div class="campo">
+                    <div class="caja-etiqueta">
+                        <img src="iconos/gmail.png" alt="" class="icono">
+                        <span class="etiqueta">email</span>
+                    </div>
+                    <div class="caja-entrada">
+                        <input type="email" id="emailOlvido" name="email" required
+                            placeholder="escribe aquí..." class="entrada">
+                    </div>
                 </div>
-                <button type="submit" class="btn" style="margin-top: 15px;">Enviar correo</button>
+
+                <div class="bloque-acciones">
+                    <button type="submit" class="boton-ingresar">Enviar correo</button>
+                </div>
             </form>
-            
-            <p id="mensajeModal"></p>
+
+            <p id="mensajeModal" class="mensaje-modal"></p>
         </div>
     </div>
 

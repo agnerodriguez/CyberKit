@@ -218,33 +218,83 @@ body {
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.65);
     backdrop-filter: blur(4px);
-    
-    /* Centrado Flexbox universal */
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 99999; /* Asegura que esté por encima de todo */
+    z-index: 99999;
 }
 
-/* Caja blanca/verde del modal */
 .modal-contenido {
-    background: #a9cd46;
-    padding: 30px 25px;
-    border-radius: 16px;
-    width: 90%;
-    max-width: 380px;
     position: relative;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    
-    /* Disposición interna centrada */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    width: 90%;
+    max-width: 420px;
+    background-color: rgba(67, 97, 238, 0.55);
+    padding: 30px 25px;
+    border: none;
+    border-radius: 4px;
     box-sizing: border-box;
-    
-    /* Animación suave */
-    animation: modalEntrada 0.25s ease-out forwards;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 30px rgba(217, 38, 169, 0.35);
 }
+
+
+.cerrar-modal {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    color: #3ef0e6;
+    font-family: 'Silkscreen', monospace;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.cerrar-modal:hover {
+    color: #72f6ff;
+}
+
+.encabezado-modal {
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+.titulo-modal {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(0.85rem, 3vw, 1.1rem);
+    color: #00f0ff;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.subtitulo-modal {
+    font-family: 'Silkscreen', monospace;
+    font-size: 0.6rem;
+    color: #3ef0e6;
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px rgba(45, 212, 191, 0.5);
+    line-height: 1.5;
+}
+
+.mensaje-modal {
+    font-family: 'Silkscreen', monospace;
+    font-size: 0.65rem;
+    text-align: center;
+    margin-top: 18px;
+    line-height: 1.5;
+    min-height: 1em;
+    color: #c084fc;
+}
+
+.mensaje-modal.exito {
+    color: #3ef0e6;
+}
+
+.mensaje-modal.error {
+    color: #ff6b9d;
+}
+
 
 /* RESPONSIVE PARA DISPOSITIVOS MÓVILES (≤ 500px) */
 @media (max-width: 500px) {

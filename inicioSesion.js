@@ -23,64 +23,58 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+    const btnOlvido = document.getElementById("btnOlvido");
+    const modalOlvido = document.getElementById("modalOlvido");
+    const cerrarModal = document.getElementById("cerrarModal");
+    const formOlvido = document.getElementById("formOlvido");
+    const mensajeModal = document.getElementById("mensajeModal");
 
-    // Selección de elementos del DOM por sus IDs
-    const btnOlvido = document.getElementById("btnOlvido");         // Enlace/Botón "Olvidé mi contraseña"
-    const modalOlvido = document.getElementById("modalOlvido");     // Contenedor principal del modal
-    const cerrarModal = document.getElementById("cerrarModal");     // Botón 'X' para cerrar el modal
-    const formOlvido = document.getElementById("formOlvido");       // Formulario de recuperación de clave
-    const mensajeModal = document.getElementById("mensajeModal");   // Párrafo para mostrar respuestas/errores
-
-    // Evento para abrir el modal
     btnOlvido.addEventListener("click", (e) => {
-        e.preventDefault();                // Evita que la página recargue o navegue al hacer clic en el enlace
-        mensajeModal.textContent = "";     // Limpia mensajes previos
-        modalOlvido.style.display = "flex"; // Muestra la ventana modal usando flexbox
+        e.preventDefault();
+        mensajeModal.textContent = "";
+        modalOlvido.style.display = "flex";
     });
 
-    // Evento para cerrar el modal al hacer clic en la 'X'
     cerrarModal.addEventListener("click", () => {
-        modalOlvido.style.display = "none"; // Oculta el modal
+        modalOlvido.style.display = "none";
     });
 
-    // Evento para cerrar el modal al hacer clic en el fondo oscuro (fuera del cuadro blanco)
     window.addEventListener("click", (e) => {
         if (e.target === modalOlvido) {
-            modalOlvido.style.display = "none"; // Oculta el modal si el clic fue en el overlay
+            modalOlvido.style.display = "none";
         }
     });
 
-    // Evento para procesar el envío del formulario mediante Fetch (AJAX)
     formOlvido.addEventListener("submit", async (e) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    const email = document.getElementById("contOlvido").value.trim();
+        const emailInput = document.getElementById("emailOlvido").value.trim();
 
-    const formData = new FormData();
-    formData.append("email", email);
+        const formData = new FormData();
+        formData.append("email", emailInput);
 
-    mensajeModal.style.color = "black";
-    mensajeModal.textContent = "Procesando envío...";
+        mensajeModal.style.color = "black";
+        mensajeModal.textContent = "Procesando envío...";
 
-    try {
-        const respuesta = await fetch("enviarMail.php", {
-            method: "POST",
-            body: formData
-        });
+        try {
+            const respuesta = await fetch("enviarMail.php", {
+                method: "POST",
+                body: formData
+            });
 
-        const textoRespuesta = await respuesta.text();
+            const textoRespuesta = await respuesta.text();
 
-        if (respuesta.ok) {
-            mensajeModal.style.color = "black";
-            mensajeModal.textContent = textoRespuesta;
-        } else {
+            if (respuesta.ok) {
+                mensajeModal.style.color = "black";
+                mensajeModal.textContent = textoRespuesta;
+            } else {
+                mensajeModal.style.color = "red";
+                mensajeModal.textContent = textoRespuesta || "Ocurrió un error al procesar.";
+            }
+        } catch (error) {
             mensajeModal.style.color = "red";
-            mensajeModal.textContent = textoRespuesta || "Ocurrió un error al procesar.";
+            mensajeModal.textContent = "Error de conexión con el servidor.";
         }
-    } catch (error) {
-        mensajeModal.style.color = "red";
-        mensajeModal.textContent = "Error de conexión con el servidor.";
-    }
-});
+    });
 });
 
