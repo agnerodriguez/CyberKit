@@ -59,9 +59,11 @@ function cargarPublicaciones() {
             id_categoria: parseInt(idCategoria)
         })
     })
+
     // Convierte la respuesta del servidor a formato JSON
     .then(respuesta => respuesta.json())
     .then(publicaciones => {
+
         // Limpia el contenedor antes de mostrar los resultados
         contenedor.innerHTML = '';
 
@@ -76,10 +78,11 @@ function cargarPublicaciones() {
             contenedor.appendChild(renderizarPublicacion(post));
         });
     })
+
     // Maneja los errores que ocurran durante la solicitud
     .catch(error => {
         console.error('Error al cargar publicaciones:', error);
-        contenedor.innerHTML = '<p class="error">Ocurrió un error al conectar con el servidor.</p>';
+        contenedor.innerHTML = '<p> class="error">Ocurrió un error al conectar con el servidor. </p>';
     });
 }
 
@@ -92,36 +95,27 @@ function crearPublicacion() {
     const archivoInput = document.getElementById('nuevoPostImagen');
     const usuario = getUsuarioSesion();
 
-    // Verifica que el contenido no este vacio
     if (!contenido) {
         alert('Por favor escribe algo antes de publicar.');
         return;
     }
-
     
-    // Comprueba si se seleccionó una imagen para adjuntar
     if (archivoInput && archivoInput.files && archivoInput.files[0]) {
-        // Crea un lector para procesar el archivo seleccionado
         const reader = new FileReader();
 
-        // Se ejecuta cuando termina la lectura de la imagen
         reader.onload = function(e) {
-            // Obtiene la cadena Base64 de la imagen.
-            const base64String = e.target.result.split(',')[1];
-
-            // Envía los datos de la publicación junto con la imagen
+            // e.target.result contiene todo el dataURL (ej: data:image/jpeg;base64,/9j/4AAQ...)
+            const base64String = e.target.result;
             enviarPostAPI(usuario.id, parseInt(idCategoria), contenido, base64String);
         };
 
-        // Lee el archivo como una URL de datos
         reader.readAsDataURL(archivoInput.files[0]);
     } else {
-        // Si no se seleccionó una imagen, envía la publicación sin ella
         enviarPostAPI(usuario.id, parseInt(idCategoria), contenido, null);
     }
 }
 
-// ENVIAR PUBLICACIÓN A LA API
+// ENVIAR PUBLICACION A LA API
 // Recibe los datos de la publicación y los envía al servidor para guardarlos
 function enviarPostAPI(idUsuario, idCategoria, contenido, imagenBase64) {
     fetch(API_URL, {
@@ -208,7 +202,10 @@ function cargarComentarios(idPublicacion) {
                 // Inserta el nombre del autor y el contenido del comentario
                 // escapeHtml protege el texto para que no se interprete como HTML
                 item.innerHTML = `
-                    <strong style="font-size: 13px;">${escapeHtml(com.autor_nombre)}:</strong> <span style="font-size: 13px;">${escapeHtml(com.contenido)}</span>
+                    <strong style="font-size: 13px;">
+                    <img src="iconos/usuarioRosa.png" alt="usuario" style= "width: 1%">
+                    ${escapeHtml(com.autor_nombre)}
+                    :</strong> <span style="font-size: 13px;">${escapeHtml(com.contenido)}</span>
                 `;
 
                 // Agrega el comentario al contenedor
@@ -275,37 +272,32 @@ function crearComentario(idPublicacion) {
     });
 }
 
-// RENDERIZAR TARJETA DE PUBLICACIÓN
 // Construye el elemento visual que contiene los datos de una publicación, su autor, su fecha, su imagen y la sección para responder.
+// RENDERIZAR TARJETA DE PUBLICACIÓN
 function renderizarPublicacion(post) {
-    // Crea el contenedor principal de la publicación
     const card = document.createElement('div');
     card.className = 'post-card';
 
-    // Define los estilos visuales de la tarjeta
-    card.style.background = 'rgba(255,255,255,0.05)';
-    card.style.padding = '15px';
-    card.style.borderRadius = '8px';
-    card.style.marginBottom = '15px';
-
-    // Inicializa el contenido HTML de la imagen
     let imagenHTML = '';
-
-    // Si la publicación tiene una imagen, prepara su etiqueta HTML
     if (post.imagen) {
         imagenHTML = `<div style="margin: 10px 0;"><img src="data:image/jpeg;base64,${post.imagen}" style="max-width: 100%; max-height: 350px; border-radius: 6px;"></div>`;
     }
 
-    // Construye el contenido de la tarjeta con los datos recibidos
     card.innerHTML = `
-        <div class="post-header" style="display: flex; justify-content: space-between; font-size: 13px; color: #aaa; margin-bottom: 8px;">
-            <span class="post-autor">👤 ${escapeHtml(post.autor_nombre || 'Anónimo')}</span>
-            <span class="post-fecha">🕒 ${escapeHtml(post.fecha || 'Reciente')}</span>
+        <div class="post-header" style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #aaa; margin-bottom: 8px;">
+            <span class="post-autor"> <img src="iconos/usuarioCeleste.png" alt="usuario" style= "width: 2.5%"> ${escapeHtml(post.autor_nombre || 'Anónimo')}</span>
+            
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <!-- Botón al lado de la fecha/hora -->
+                <button class="btn-cyber-sm" onclick="alternarComentarios(${post.id_publicacion})" id="btn-ver-respuestas-${post.id_publicacion}">Ver respuestas</button>
+                <span class="post-fecha">🕒 ${escapeHtml(post.fecha || 'Reciente')}</span>
+            </div>
         </div>
         <p class="post-contenido" style="font-size: 16px; margin-bottom: 10px;">${escapeHtml(post.contenido)}</p>
         ${imagenHTML}
-        
-        <div class="comentarios-seccion" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+
+        <!-- Sección de comentarios oculta por defecto -->
+        <div id="comentarios-seccion-${post.id_publicacion}" class="comentarios-seccion" style="display: none; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
             <div id="comentarios-lista-${post.id_publicacion}" class="comentarios-lista" style="margin-bottom: 10px;"></div>
             <div class="crear-comentario-box" style="display: flex; gap: 8px;">
                 <input type="text" id="input-comentario-${post.id_publicacion}" placeholder="Escribe una respuesta..." style="flex: 1; padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
@@ -314,26 +306,38 @@ function renderizarPublicacion(post) {
         </div>
     `;
 
-    // Carga los comentarios correspondientes a esta publicación
-    cargarComentarios(post.id_publicacion);
-
-    // Devuelve la tarjeta creada para que pueda agregarse al foro
+    // muestra las respuestas cuando el usuario haga clic explicitamente en el boton
     return card;
 }
 
-// ALTERNAR VISIBILIDAD DEL FORMULARIO
-// Muestra u oculta el formulario para crear una publicación
-function alternarFormulario() {
-    // Obtiene el contenedor del formulario
-    const form = document.getElementById('contenedorFormularioPost');
+// Funcion para mostrar u ocultar la seccion de respuestas de una publi especifica
+function alternarComentarios(idPublicacion) {
+    const seccion = document.getElementById(`comentarios-seccion-${idPublicacion}`);
+    const boton = document.getElementById(`btn-ver-respuestas-${idPublicacion}`);
+    
+    if (seccion) {
+        if (seccion.style.display === 'none' || seccion.style.display === '') {
 
-    // Comprueba que el formulario exista
+            // Al abrir por primera vez o volver a desplegar cargam los comentarios anteriores
+            seccion.style.display = 'block';
+            if (boton) boton.textContent = 'Ocultar respuestas';
+            cargarComentarios(idPublicacion);
+        } else {
+
+            // Oculta
+            seccion.style.display = 'none';
+            if (boton) boton.textContent = 'Ver respuestas';
+        }
+    }
+}
+
+// Muestra u oculta el formulario para crear una publicacion
+function alternarFormulario() {
+    const form = document.getElementById('contenedorFormularioPost');
     if (form) {
-        // Si está oculto o no tiene un display definido, lo muestra
         if (form.style.display === 'none' || form.style.display === '') {
             form.style.display = 'flex';
         } else {
-            // Si esta visible, lo oculta
             form.style.display = 'none';
         }
     }

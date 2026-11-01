@@ -250,7 +250,7 @@ function mostrarPagos(pagos) {
         const fila = document.createElement('tr');
 
         // Muestra la imagen del comprobante (Base64) en lugar de la foto del producto
-        let comprobanteHTML = '<span style="color: #94a3b8;">Sin imagen</span>';
+        let comprobanteHTML = '<span style="color: #94a3b8;"></span>';
         if (pago.comprobante) {
             comprobanteHTML = `
                 <img src="${escapeHtml(pago.comprobante)}" alt="Comprobante" class="comprobante" style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px; cursor: pointer;" onclick="window.open('${escapeHtml(pago.comprobante)}')">
@@ -303,20 +303,24 @@ function cambiarEstadoPago(idDetalleCompra, idEstado) {
             }
             
             if (mensaje) {
-                mensaje.style.color = '#0d8a42';
+                mensaje.style.color = '#45024bfa;';
                 mensaje.textContent = res.mensaje;
             }
 
-            // Si el estado es "Pagado" (1) llama al archivo para enviar el correo
+            // Si el estado es "Pagado" (1) llama a la API para enviar el correo
             if (parseInt(idEstado) === 1) {
-                fetch('enviar_correo.php', {
+                fetch('API.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id_detalleCompra: parseInt(idDetalleCompra) })
+                    body: JSON.stringify({ 
+                        recurso: 'DetalleCompra', 
+                        consulta: 'enviarMail',
+                        id_detalleCompra: parseInt(idDetalleCompra) 
+                    })
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data.mensaje || data.error);
+                    console.log("Respuesta correo:", data.mensaje || data.error);
                 })
                 .catch(err => console.error("Error al enviar correo:", err));
             }
@@ -398,7 +402,7 @@ function cargarTutorialesAdmin() {
                 <td>#${tut.id_tutorial}</td>
                 <td><strong>${escapeHtml(tut.nombre)}</strong></td>
                 <td>${escapeHtml(tut.descripcion || '-')}</td>
-                <td><a href="${escapeHtml(tut.archivo)}" target="_blank" style="color: #0d8a42; text-decoration: underline;">Ver enlace</a></td>
+                <td><a href="${escapeHtml(tut.archivo)}" target="_blank" style="color: #45024bfa;2; text-decoration: underline;">Ver enlace</a></td>
                 <td>
                     <button type="button" class="btn-accion-editar" onclick='prepararEdicionTutorial(${JSON.stringify(tut)})'>Editar</button>
                     <button type="button" class="btn-accion-eliminar" onclick="eliminarTutorial(${tut.id_tutorial})">Eliminar</button>

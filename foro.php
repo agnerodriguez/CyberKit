@@ -39,6 +39,12 @@
             <option value="2">Compartir (Proyectos / Kits)</option>
           </select>
         </div>
+        
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+              cargarPublicaciones();
+          });
+        </script>
 
         <!-- Botón para alternar la visibilidad del formulario -->
         <button class="btn-cyber" onclick="alternarFormulario()">+ Hacer tu publicación</button>
@@ -48,7 +54,6 @@
     <!-- FORMULARIO OCULTO INICIALMENTE -->
     <div id="contenedorFormularioPost" class="crear-post-card" style="display: none;">
       <h3>Crear nueva publicación</h3>
-      
       <div style="margin-bottom: 10px;">
         <label for="postCategoriaSelect" style="margin-right: 10px; font-size: 0.8rem;">Publicar en:</label>
         <select id="postCategoriaSelect" style="padding: 5px;">
@@ -56,14 +61,11 @@
           <option value="2">Compartir (Proyectos / Kits)</option>
         </select>
       </div>
-
       <textarea id="nuevoPostContenido" placeholder="Escribe tu duda o describe tu proyecto/kit..."></textarea>
-      
       <div style="margin-bottom: 10px;">
         <label for="nuevoPostImagen" style="font-size: 0.8rem; color: #ff00ff;">Adjuntar foto (opcional para tu kit):</label><br>
         <input type="file" id="nuevoPostImagen" accept="image/*" style="margin-top: 5px;">
       </div>
-
       <button class="btn-cyber" onclick="crearPublicacion()">PUBLICAR</button>
     </div>
 

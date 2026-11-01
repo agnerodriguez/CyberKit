@@ -15,9 +15,9 @@
                 <a href="inicio.php"><img src="iconos/logoEmpresa.png" alt="Logo"></a>
             </div>
             <nav>
-                <button onclick="mostrar('productos')"><img src="iconos/productos.png" alt="moneda" style= "width: 19%">Productos</button>
-                <button onclick="mostrar('verPagos')"><img src="iconos/moneda.png" alt="moneda" style= "width: 19%">Ver pagos</button>
-                <button onclick="mostrar('tutoriales')"><img src="iconos/video-tutorial.png" alt="" style= "width: 19%">Tutoriales</button>
+                <button onclick="mostrar('productos')"><img src="iconos/productos.png">Productos</button>
+                <button onclick="mostrar('verPagos')"><img src="iconos/moneda.png">Ver pagos</button>
+                <button onclick="mostrar('tutoriales')"><img src="iconos/video-tutorial.png">Tutoriales</button>
             </nav>
         </aside>
 
@@ -76,40 +76,47 @@
                 </div>
                 <p id="mensajePagos" class="msj-error"></p>
 
-                <!-- Filtros de pagos -->
-                <div class="filtros-pagos">
-                    <div class="filtro-grupo">
-                        <label for="filtroEstado">Estado:</label>
-                        <select id="filtroEstado">
-                            <option value="">Todos los estados</option>
-                            <option value="1">Pagado</option>
-                            <option value="2">Pendiente</option>
-                            <option value="3">Impago</option>
-                        </select>
+                <!-- Bloque 1: Filtros de pagos -->
+                <div class="card-formulario-producto">
+                    <div class="filtros-pagos" style="background: transparent; border: none; padding: 0; box-shadow: none;">
+                        <div class="filtro-grupo">
+                            <label for="filtroEstado">Estado:</label>
+                            <select id="filtroEstado">
+                                <option value="">Todos los estados</option>
+                                <option value="1">Pagado</option>
+                                <option value="2">Pendiente</option>
+                                <option value="3">Impago</option>
+                            </select>
+                        </div>
+                        <button type="button" class="filtrar" onclick="filtrarPagos()">Filtrar</button>
+                        <button type="button" class="limpiar-filtros" onclick="limpiarFiltrosPagos()">Limpiar filtros</button>
                     </div>
-                    <button type="button" class="filtrar" onclick="filtrarPagos()">Filtrar</button>
-                    <button type="button" class="limpiar-filtros" onclick="limpiarFiltrosPagos()"> Limpiar filtros </button>
+                    <p id="mensajeFiltrosPagos" style="margin-top: 10px; font-size: 13px; color: #64748b;"></p>
                 </div>
-                <p id="mensajeFiltrosPagos"></p>
-                <div class="tabla-pagos-contenedor">
-                    <table class="tabla-pagos">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Fecha</th>
-                                <th>Usuario</th>
-                                <th>Producto (Cant.)</th>
-                                <th>Subtotal</th>
-                                <th>Comprobante</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablapagos">
-                            <tr>
-                                <td colspan="7" style="text-align: center;"></td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                <!-- Bloque 2: Tabla de Pagos -->
+                <div class="card-tabla-productos">
+                    <h3>Listado de transacciones</h3>
+                    <div class="tabla-productos-contenedor">
+                        <table class="tabla-productos tabla-pagos">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Usuario</th>
+                                    <th>Producto (Cant.)</th>
+                                    <th>Subtotal</th>
+                                    <th>Comprobante</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablapagos">
+                                <tr>
+                                    <td colspan="7" style="text-align: center;">Cargando pagos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
