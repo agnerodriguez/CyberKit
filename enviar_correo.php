@@ -115,13 +115,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                           </p>
                         </td>
                       </tr>
-                      <tr>
-                        <td style="background-color: #f9fafb; padding: 15px 25px; border-top: 1px solid #edf2f7; text-align: center;">
-                          <p style="margin: 0; font-size: 11px; color: #9aa0a6;">
-                            Este es un mensaje automático, por favor no respondas a este correo.
-                          </p>
-                        </td>
-                      </tr>
                     </table>
                   </td>
                 </tr>
