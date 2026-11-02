@@ -4,10 +4,9 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
 
-require 'conexion.php';
-mysqli_set_charset($conexion, "utf8mb4");
+$url_login = 'localhost/CyberKit/panel.php';
 
-include("conexion.php");
+require 'conexion.php';
 mysqli_set_charset($conexion, "utf8mb4");
 
 require 'PHPMailer/src/Exception.php';
@@ -83,8 +82,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   <td align="center">
                     <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 520px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
                       <tr>
-                        <td style="background-color: #0d8a42; padding: 25px 20px; text-align: center;">
-                          <h1 style="color: #ffffff; margin: 0; font-size: 20px; letter-spacing: 1px; font-weight: 700;">
+                        <td style="background-color: #ffffff; padding: 25px 20px; text-align: center;">
+                          <h1 style="color: #050404; margin: 0; font-size: 20px; letter-spacing: 1px; font-weight: 700;">
                             RecyTech - Notificación de Pago
                           </h1>
                         </td>

@@ -816,7 +816,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 FROM detalleCompra dc
                                 INNER JOIN productos p ON dc.id_producto = p.id_producto
                                 INNER JOIN usuarios u ON dc.id_usuario = u.id_usuario
-                                INNER JOIN estado e ON dc.id_estado = e.id_estado
+                                INNER JOIN estadopago e ON dc.id_estado = e.id_estado
                                 WHERE dc.id_detalleCompra = ?";
 
                         $stmt = $conexion->prepare($sql);
@@ -826,6 +826,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         if ($fila = $resultado->fetch_assoc()) {
                             $emailUsuario = $fila['usuario_email'];
+                            if (!filter_var($emailUsuario, FILTER_VALIDATE_EMAIL)) {
+                                http_response_code(400);
+                                echo json_encode([
+                                    "error" => "El usuario no tiene un correo electrónico válido."
+                                ]);
+                                exit;
+                            }
                             $nombreUsuario = $fila['usuario_nombre'];
                             $productoNombre = $fila['producto_nombre'];
                             $subtotal = $fila['subtotal'];

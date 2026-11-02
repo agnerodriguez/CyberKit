@@ -35,15 +35,16 @@ function mostrar(id) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    cargarProductosAdmin();
+    cargarProductos();
     cargarPagos();
+    cargarTutoriales();
 });
 
 // ==============================
 // PRODUCTOS
 // ==============================
 
-function cargarProductosAdmin() {
+function cargarProductos() {
     fetch('API.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -136,7 +137,7 @@ function guardarProducto() {
             if (data.mensaje) {
                 alert(data.mensaje);
                 limpiarFormularioProducto();
-                cargarProductosAdmin(); // Refresca la tabla del panel al instante
+                cargarProductos(); // Refresca la tabla del panel al instante
             } else {
                 alert("Error: " + (data.error || "No se pudo procesar la solicitud"));
             }
@@ -185,7 +186,7 @@ function eliminarProducto(id) {
     .then(data => {
         if (data.mensaje) {
             alert(data.mensaje);
-            cargarProductosAdmin();
+            cargarProductos();
         } else {
             alert(data.error || "Error al eliminar.");
         }
@@ -282,62 +283,86 @@ function mostrarPagos(pagos) {
 // Función para cambiar el estado del pago en la base de datos
 function cambiarEstadoPago(idDetalleCompra, idEstado) {
     const mensaje = document.getElementById('mensajePagos');
-    
-    // Actualiza el estado mediante la API
+    // Actualizar el estado del pago
     fetch('API.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            recurso: 'DetalleCompra', 
+        body: JSON.stringify({
+            recurso: 'DetalleCompra',
             consulta: 'Update',
-            id_detalleCompra: parseInt(idDetalleCompra), 
-            id_estado: parseInt(idEstado) 
+            id_detalleCompra: parseInt(idDetalleCompra),
+            id_estado: parseInt(idEstado)
         })
     })
-    .then(res => res.json())
+    .then(async response => {
+        const res = await response.json();
+        if (!response.ok || res.error) {
+            throw new Error(res.detallesTecnicos || res.error || 'Error al actualizar el pago.');
+        }
+        return res;
+    })
     .then(res => {
-        if (res.mensaje) {
-            const pagoEncontrado = todosLosPagos.find(p => p.id_detalleCompra == idDetalleCompra);
-            if (pagoEncontrado) {
-                pagoEncontrado.id_estado = parseInt(idEstado);
-            }
-            
+        const pagoEncontrado = todosLosPagos.find(
+            p => p.id_detalleCompra == idDetalleCompra
+        );
+        if (pagoEncontrado) {
+            pagoEncontrado.id_estado = parseInt(idEstado);
+        }
+        if (mensaje) {
+            mensaje.style.color = '#45024bfa;';
+            mensaje.textContent = res.mensaje;
+        }
+        // Si el pago fue aprobado, enviar correo
+        if (parseInt(idEstado) === 1) {
             if (mensaje) {
-                mensaje.style.color = '#45024bfa;';
-                mensaje.textContent = res.mensaje;
+                mensaje.textContent = 'Pago aprobado. Enviando correo al cliente...';
             }
-
-            // Si el estado es "Pagado" (1) llama a la API para enviar el correo
-            if (parseInt(idEstado) === 1) {
-                fetch('API.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        recurso: 'DetalleCompra', 
-                        consulta: 'enviarMail',
-                        id_detalleCompra: parseInt(idDetalleCompra) 
-                    })
+            fetch('API.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    recurso: 'DetalleCompra',
+                    consulta: 'enviarMail',
+                    id_detalleCompra: parseInt(idDetalleCompra)
                 })
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Respuesta correo:", data.mensaje || data.error);
-                })
-                .catch(err => console.error("Error al enviar correo:", err));
-            }
+            })
+            .then(async response => {
+                const data = await response.json();
 
-        } else if (res.error) {
-            if (mensaje) {
-                mensaje.style.color = 'red';
-                mensaje.textContent = "Error al actualizar estado del pago.";
-            } 
+                if (!response.ok || data.error) {
+                    throw new Error(
+                        data.detallesTecnicos ||
+                        data.error ||
+                        'No se pudo enviar el correo.'
+                    );
+                }
+                return data;
+            })
+            .then(data => {
+                console.log('Correo enviado:', data);
+
+                if (mensaje) {
+                    mensaje.style.color = '#45024bfa;';
+                    mensaje.textContent = '¡Pago aprobado y correo enviado correctamente al cliente!';
+                }
+            })
+            .catch(error => {
+                console.error('Error al enviar correo:', error);
+
+                if (mensaje) {
+                    mensaje.style.color = 'red';
+                    mensaje.textContent = 'El pago fue aprobado, pero no se pudo enviar el correo: ' + error.message;
+                }
+            });
         }
     })
-    .catch(err => {
+    .catch(error => {
+        console.error('Error al actualizar el pago:', error);
+
         if (mensaje) {
             mensaje.style.color = 'red';
-            mensaje.textContent = 'Error de conexión al actualizar estado.';
+            mensaje.textContent = error.message;
         }
-        console.error(err);
     });
 }
 
@@ -386,12 +411,8 @@ function verComprobante(base64) {
 // TUTORIALES
 // ==============================
 
-document.addEventListener('DOMContentLoaded', () => {
-    cargarTutorialesAdmin();
-});
-
 // Cargar listado de tutoriales en la tabla del panel
-function cargarTutorialesAdmin() {
+function cargarTutoriales() {
     fetch('API.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -423,7 +444,7 @@ function cargarTutorialesAdmin() {
             tbody.appendChild(tr);
         });
     })
-    .catch(err => console.error("Error al cargar tutoriales:", err));
+    .catch(error => console.error("Error al cargar tutoriales:", error));
 }
 
 // Guardar o Actualizar Tutorial
@@ -461,7 +482,7 @@ function guardarTutorial() {
         if (data.mensaje) {
             alert(data.mensaje);
             limpiarFormularioTutorial();
-            cargarTutorialesAdmin();
+            cargarTutoriales();
         } else {
             alert("Error: " + (data.error || "No se pudo procesar la solicitud"));
         }
@@ -506,7 +527,7 @@ function eliminarTutorial(id) {
     .then(data => {
         if (data.mensaje) {
             alert(data.mensaje);
-            cargarTutorialesAdmin();
+            cargarTutoriales();
         } else {
             alert(data.error || "Error al eliminar el tutorial.");
         }
