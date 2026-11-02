@@ -1152,7 +1152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'Tutoriales':
                 switch ($consulta) {
                     case 'Read': //Admin
-                        $sql = "SELECT id_tutorial, nombre, descripcion, archivo FROM tutoriales ORDER BY id_tutorial DESC";
+                        $sql = "SELECT id, nombre, descripcion, archivo FROM tutoriales ORDER BY id DESC";
 
                         $resultado = $conexion->query($sql);
 
@@ -1187,7 +1187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             exit;
                         }
 
-                        $sql = "SELECT id_tutorial, nombre, descripcion, archivo FROM tutoriales WHERE id_tutorial = ?";
+                        $sql = "SELECT id, nombre, descripcion, archivo FROM tutoriales WHERE id = ?";
 
                         $stmt = $conexion->prepare($sql);
                         $stmt->bind_param("i", $id_tutorial);
@@ -1250,7 +1250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             exit;
                         }
 
-                        $stmt_check = $conexion->prepare("SELECT id_tutorial FROM tutoriales WHERE nombre = ? AND id_tutorial != ?");
+                        $stmt_check = $conexion->prepare("SELECT id FROM tutoriales WHERE nombre = ? AND id != ?");
                         $stmt_check->bind_param("si", $nombre, $id_tutorial);
                         $stmt_check->execute();
                         $res_check = $stmt_check->get_result();
@@ -1263,7 +1263,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                         $stmt_check->close();
 
-                        $stmt = $conexion->prepare("UPDATE tutoriales SET nombre = ?, descripcion = ?, archivo = ? WHERE id_tutorial = ?");
+                        $stmt = $conexion->prepare("UPDATE tutoriales SET nombre = ?, descripcion = ?, archivo = ? WHERE id = ?");
                         $stmt->bind_param("sssi", $nombre, $descripcion, $archivo, $id_tutorial);
 
                         if ($stmt->execute()) {
@@ -1281,7 +1281,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         break;
 
                     case 'Delete': //Admin
-                        $id_tutorial = (int)($datos['id_tutorial'] ?? $datos['id'] ?? 0);
+                        $id_tutorial = (int)($datos['id'] ?? $datos['id'] ?? 0);
 
                         if ($id_tutorial <= 0) {
                             http_response_code(400);
@@ -1289,14 +1289,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             exit;
                         }
 
-                        $stmt = $conexion->prepare("DELETE FROM tutoriales WHERE id_tutorial = ?");
+                        $stmt = $conexion->prepare("DELETE FROM tutoriales WHERE id = ?");
                         $stmt->bind_param("i", $id_tutorial);
                         if ($stmt->execute()) {
                             if ($stmt->affected_rows > 0) {
                                 http_response_code(200);
                                 echo json_encode([
                                     "mensaje" => "Tutorial eliminado correctamente.",
-                                    "id_tutorial" => $id_tutorial
+                                    "id" => $id
                                 ]);
                             } else {
                                 http_response_code(404);
