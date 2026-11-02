@@ -936,8 +936,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             exit;
                         }
 
-                        $stmt = $conexion->prepare("INSERT INTO publicacion (id_usuario, id_categoria, contenido, imagen) VALUES (?, ?, ?, ?)");
-                        $stmt->bind_param("iiss", $id_usuario, $id_categoria, $contenido, $imagen);
+                        // Procesar la imagen si viene en formato Base64
+                        $datosBinarios = null;
+                        if (!empty($imagen)) {
+                            $imagenBase64 = $imagen;
+                            if (preg_match('/^data:image\/(\w+);base64,/', $imagenBase64)) {
+                                $imagenBase64 = substr($imagenBase64, strpos($imagenBase64, ',') + 1);
+                            }
+                            $datosBinarios = base64_decode($imagenBase64);
+                        }
+
+                        $stmt = $conexion->prepare("INSERT INTO publicacion (id_usuario, id_categoria, contenido, imagen, fecha) VALUES (?, ?, ?, ?, NOW())");
+                        $stmt->bind_param("iiss", $id_usuario, $id_categoria, $contenido, $datosBinarios);
 
                         if ($stmt->execute()) {
                             $id_publicacion = $stmt->insert_id;
