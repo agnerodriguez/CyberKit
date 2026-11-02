@@ -68,7 +68,8 @@
             <p class="texto-subtitulo">Aprende paso a paso con nuestros videos tutoriales desde el armado hasta ideas de personalizacion</p>
 
             <div class="rejilla-videos-tutoriales">
-                <div class="ventana-retro-video video-tutorial" onclick="openVideoModal('Aprende como funciona la Raspberry Pi', 'Descripción general de funcionamiento y componentes principales.', 'https://www.youtube.com/embed/dQw4w9WgXcQ')">
+                <!-- Video ID 1 -->
+                <div class="ventana-retro-video video-tutorial" onclick="openVideoModal(1)">
                     <div class="encabezado-ventana-retro">
                         <span class="titulo-ventana-retro">Data</span>
                         <div class="puntos-ventana-retro">
@@ -79,16 +80,17 @@
                     </div>
                     <div class="contenido-ventana-retro">
                         <div class="miniatura-video-tutorial">
-                            <img src="https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&w=500&q=80" alt="Raspberry Pi">
+                            <img src="https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&w=500&q=80" alt="Cyberdesk DIY">
                             <div class="boton-reproducir-circular">
                                 <div class="triangulo-reproducir"></div>
                             </div>
                         </div>
-                        <p class="titulo-video-tutorial">Aprende como funciona la Raspberry Pi</p>
+                        <p class="titulo-video-tutorial">Cyberdesk DIY de doble pantalla</p>
                     </div>
                 </div>
 
-                <div class="ventana-retro-video video-tutorial" onclick="openVideoModal('Arma tu Cyberdesk paso a paso', 'Guía de ensamblaje paso a paso del gabinete y componentes.', 'https://www.youtube.com/embed/dQw4w9WgXcQ')">
+                <!-- Video ID 2 -->
+                <div class="ventana-retro-video video-tutorial" onclick="openVideoModal(2)">
                     <div class="encabezado-ventana-retro">
                         <span class="titulo-ventana-retro">Data</span>
                         <div class="puntos-ventana-retro">
@@ -99,16 +101,17 @@
                     </div>
                     <div class="contenido-ventana-retro">
                         <div class="miniatura-video-tutorial">
-                            <img src="https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=500&q=80" alt="Cyberdesk Paso a paso">
+                            <img src="https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=500&q=80" alt="Altoids Cyberdesk">
                             <div class="boton-reproducir-circular">
                                 <div class="triangulo-reproducir"></div>
                             </div>
                         </div>
-                        <p class="titulo-video-tutorial">Arma tu Cyberdesk paso a paso</p>
+                        <p class="titulo-video-tutorial">Un cyberdesk curiosamente...</p>
                     </div>
                 </div>
 
-                <div class="ventana-retro-video video-tutorial" onclick="openVideoModal('Configuración del sistema', 'Tutorial de configuración y ajustes iniciales de software.', 'https://www.youtube.com/embed/dQw4w9WgXcQ')">
+                <!-- Video ID 3 -->
+                <div class="ventana-retro-video video-tutorial" onclick="openVideoModal(3)">
                     <div class="encabezado-ventana-retro">
                         <span class="titulo-ventana-retro">Data</span>
                         <div class="puntos-ventana-retro">
@@ -119,16 +122,17 @@
                     </div>
                     <div class="contenido-ventana-retro">
                         <div class="miniatura-video-tutorial">
-                            <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=80" alt="Tutorial">
+                            <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=80" alt="Cyberdesk de sirena">
                             <div class="boton-reproducir-circular">
                                 <div class="triangulo-reproducir"></div>
                             </div>
                         </div>
-                        <p class="titulo-video-tutorial">Configuración de software</p>
+                        <p class="titulo-video-tutorial">Cyberdesk de sirena para armar</p>
                     </div>
                 </div>
 
-                <div class="ventana-retro-video video-tutorial" onclick="openVideoModal('Configuración del sistema', 'Tutorial de configuración y ajustes iniciales de software.', 'https://www.youtube.com/embed/dQw4w9WgXcQ')">
+                <!-- Video ID 4 -->
+                <div class="ventana-retro-video video-tutorial" onclick="openVideoModal(4)">
                     <div class="encabezado-ventana-retro">
                         <span class="titulo-ventana-retro">Data</span>
                         <div class="puntos-ventana-retro">
@@ -139,12 +143,12 @@
                     </div>
                     <div class="contenido-ventana-retro">
                         <div class="miniatura-video-tutorial">
-                            <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=80" alt="Tutorial">
+                            <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=80" alt="Construcción Cyberdesk">
                             <div class="boton-reproducir-circular">
                                 <div class="triangulo-reproducir"></div>
                             </div>
                         </div>
-                        <p class="titulo-video-tutorial">Configuración de software</p>
+                        <p class="titulo-video-tutorial">Construcción de Cyberdesk con...</p>
                     </div>
                 </div>
             </div>

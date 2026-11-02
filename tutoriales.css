@@ -560,3 +560,23 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+.panel-descripcion-video {
+    background: rgba(59, 7, 100, 0.85);
+    border: 1px solid #a855f7;
+    border-radius: 16px;
+    padding: 25px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    max-height: 380px; /* Altura máxima para que no se deforme */
+    overflow-y: auto;   /* Barra de desplazamiento si la descripción es muy larga */
+}
+
+.texto-descripcion-video {
+    color: #ffffff;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+    white-space: pre-line; /* Esto respeta los saltos de línea que guardes en la base de datos */
+}
