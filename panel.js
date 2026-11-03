@@ -435,7 +435,7 @@ function cargarTutoriales() {
                 <td>#${tut.id_tutorial}</td>
                 <td><strong>${escapeHtml(tut.nombre)}</strong></td>
                 <td>${escapeHtml(tut.descripcion || '-')}</td>
-                <td><a href="${escapeHtml(tut.archivo)}" target="_blank" style="color: #45024bfa;2; text-decoration: underline;">Ver enlace</a></td>
+                <td><a href="${escapeHtml(tut.archivo)}" target="_blank" style="color: #45024b; text-decoration: underline;">Ver enlace</a></td>
                 <td>
                     <button type="button" class="btn-accion-editar" onclick='prepararEdicionTutorial(${JSON.stringify(tut)})'>Editar</button>
                     <button type="button" class="btn-accion-eliminar" onclick="eliminarTutorial(${tut.id_tutorial})">Eliminar</button>
