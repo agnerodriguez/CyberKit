@@ -38,7 +38,7 @@ $pagina_actual = basename($_SERVER['PHP_SELF']);
                     <a href="cuenta.php" onclick="Seleccionado(this)">Cuenta</a>
                 <?php else: ?>
                     <a href="inicioSesion.php">Cuenta</a>
-                <?php endif; ?>  
+                <?php endif; ?> 
             </li>
 
             <?php if (isset($_SESSION['admin']) && $_SESSION['admin'] == 1): ?>

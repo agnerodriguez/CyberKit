@@ -2,8 +2,8 @@
 session_start();
 
 // Control de acceso: Verificar si el usuario está autenticado
-if (!isset($_SESSION['id_usuario'])) {
-    header("Location: iniciarSesion.php");
+if (empty($_SESSION['id_usuario'])) {
+    header("Location: inicioSesion.php");
     exit();
 }
 
