@@ -790,11 +790,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     u.email AS usuario_email,
                                     m.importe AS precio_unitario,
                                     dc.id_comprobante,
+                                    c.imagen AS comprobante_imagen,
                                     dc.id_estado
                                 FROM detalleCompra dc
                                 INNER JOIN productos p ON dc.id_producto = p.id_producto
                                 INNER JOIN usuarios u ON dc.id_usuario = u.id_usuario
                                 INNER JOIN monto m ON dc.id_monto = m.id_monto
+                                LEFT JOIN comprobante c ON dc.id_comprobante = c.id_comprobante
                                 ORDER BY dc.id_detalleCompra DESC";
 
                         $resultado = $conexion->query($sql);
@@ -819,6 +821,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     ],
                                     "precio_unitario" => (float)$fila['precio_unitario'],
                                     "id_comprobante" => (int)$fila['id_comprobante'],
+                                    "comprobante" => $fila['comprobante_imagen'],
                                     "id_estado" => (int)$fila['id_estado']
                                 ];
                             }
