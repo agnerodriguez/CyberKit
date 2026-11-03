@@ -116,7 +116,7 @@ function obtenerDatosProducto() {
     const payload = {
         recurso: "Productos",
         consulta: "ReadProductoByID",
-        id_producto: 1 // idProducto
+        id_producto: idProducto
     };
 
     fetch("API.php", {
@@ -192,9 +192,11 @@ function comprobanteSeleccionado() {
 function enviarPagoAPI() {
     const inputSubir = document.getElementById('subir');
     const inputIdUsuario = document.getElementById('idUsuario');
+    const inputIdProducto = document.getElementById('idProducto');
     const mensajeComprobante = document.getElementById('mensajeComprobante');
 
     const idUsuario = inputIdUsuario ? parseInt(inputIdUsuario.value) : 0;
+    const idProducto = inputIdProducto ? parseInt(inputIdProducto.value) : 0;
     const cantidad = count;
     const subtotalCalculado = cantidad * precioUnitario; // Cálculo directo
 
@@ -323,7 +325,6 @@ function cambiarEstadoCompra(idDetalleCompra, nuevoEstadoId) {
     .then(data => {
         if (data.mensaje) {
             mensaje = "Te informaremos cuando el pago haya sido validado";
-            // ADMIN notificarEstadoCompra(idDetalleCompra);
         }
     })
     .catch(error => {
