@@ -28,7 +28,6 @@ function mostrar(id) {
         .forEach(f => f.classList.remove('activo'));
     formulario.classList.add('activo');
 
-    // se vuelva a consultar a la API.php y se rendericen los datos más recientes para los graficos.
     if (id === 'verPagos') {
         cargarPagos();
     }
@@ -50,7 +49,14 @@ function cargarProductos() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recurso: 'Productos', consulta: 'ReadAdmin' })
     })
-    .then(res => res.json())
+    .then(async res => {
+        const productos = await res.json();
+        if (!res.ok || productos.error) {
+            console.error("Error técnico al cargar productos:", productos.detallesTecnicos || productos.error);
+            throw new Error(productos.error || "No se pudieron cargar los productos.");
+        }
+        return productos;
+    })
     .then(productos => {
         const tbody = document.getElementById('tablaProductosAdmin');
         if (!tbody) return;
@@ -82,10 +88,9 @@ function cargarProductos() {
             tbody.appendChild(tr);
         });
     })
-    .catch(err => console.error("Error al cargar productos:", err));
+    .catch(err => console.error("Error nativo en cargarProductos():", err));
 }
 
-// Cargar datos en el formulario para editar
 function prepararEdicion(prod) {
     document.getElementById('prodId').value = prod.id_producto;
     document.getElementById('prodNombre').value = prod.nombre;
@@ -96,7 +101,6 @@ function prepararEdicion(prod) {
     document.getElementById('btnCancelarEdicion').style.display = 'inline-block';
 }
 
-// Agregar / Editar
 function guardarProducto() {
     const id = document.getElementById('prodId').value;
     const nombre = document.getElementById('prodNombre').value.trim();
@@ -104,14 +108,17 @@ function guardarProducto() {
     const stock = parseInt(document.getElementById('prodStock').value) || 0;
     const monto = parseFloat(document.getElementById('prodMonto').value) || 0;
     const archivoInput = document.getElementById('prodImagen');
+    const mensajePagos = document.getElementById('mensajePagos'); // Elemento compartido para feedback
 
     if (!nombre) {
-        alert("El nombre del producto es obligatorio.");
+        if (mensajePagos) {
+            mensajePagos.style.color = 'red';
+            mensajePagos.textContent = "El nombre del producto es obligatorio.";
+        }
         return;
     }
     const esEdicion = id !== "";
 
-    // Función interna encargada de estructurar el payload y hacer la petición
     const procesarEnvio = (imagenBase64) => {
         const payload = {
             recurso: 'Productos',
@@ -132,20 +139,31 @@ function guardarProducto() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-        .then(res => res.json())
-        .then(data => {
-            if (data.mensaje) {
-                alert(data.mensaje);
-                limpiarFormularioProducto();
-                cargarProductos(); // Refresca la tabla del panel al instante
-            } else {
-                alert("Error: " + (data.error || "No se pudo procesar la solicitud"));
+        .then(async res => {
+            const data = await res.json();
+            if (!res.ok || data.error) {
+                console.error("Detalle técnico API (guardarProducto):", data.detallesTecnicos || data.error);
+                throw new Error(data.error || "No se pudo guardar el producto.");
             }
+            return data;
         })
-        .catch(err => console.error("Error en la petición:", err));
+        .then(data => {
+            if (mensajePagos) {
+                mensajePagos.style.color = '#45024b';
+                mensajePagos.textContent = data.mensaje || "Producto procesado correctamente.";
+            }
+            limpiarFormularioProducto();
+            cargarProductos();
+        })
+        .catch(err => {
+            console.error("Error nativo en guardarProducto():", err);
+            if (mensajePagos) {
+                mensajePagos.style.color = 'red';
+                mensajePagos.textContent = err.message;
+            }
+        });
     };
 
-    // Si el administrador selecciona una imagen nueva, se procesa a Base64; de lo contrario se envía null
     if (archivoInput.files && archivoInput.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -157,7 +175,6 @@ function guardarProducto() {
     }
 }
 
-// Limpiar formulario
 function limpiarFormularioProducto() {
     document.getElementById('prodId').value = '';
     document.getElementById('prodNombre').value = '';
@@ -169,9 +186,8 @@ function limpiarFormularioProducto() {
     document.getElementById('btnCancelarEdicion').style.display = 'none';
 }
 
-// Eliminar producto
 function eliminarProducto(id) {
-    if (!confirm("¿Eliminar este producto?")) return;
+    const mensajePagos = document.getElementById('mensajePagos');
 
     fetch('API.php', {
         method: 'POST',
@@ -182,13 +198,26 @@ function eliminarProducto(id) {
             id_producto: parseInt(id)
         })
     })
-    .then(res => res.json())
+    .then(async res => {
+        const data = await res.json();
+        if (!res.ok || data.error) {
+            console.error("Detalle técnico API (eliminarProducto):", data.detallesTecnicos || data.error);
+            throw new Error(data.error || "Error al eliminar el producto.");
+        }
+        return data;
+    })
     .then(data => {
-        if (data.mensaje) {
-            alert(data.mensaje);
-            cargarProductos();
-        } else {
-            alert(data.error || "Error al eliminar.");
+        if (mensajePagos) {
+            mensajePagos.style.color = '#45024b';
+            mensajePagos.textContent = data.mensaje || "Producto eliminado correctamente.";
+        }
+        cargarProductos();
+    })
+    .catch(err => {
+        console.error("Error nativo en eliminarProducto():", err);
+        if (mensajePagos) {
+            mensajePagos.style.color = 'red';
+            mensajePagos.textContent = err.message;
         }
     });
 }
@@ -197,20 +226,23 @@ function eliminarProducto(id) {
 // PAGOS
 // ==============================
 
-let todosLosPagos = []; // Variable global que almacena todos los registros de pagos
+let todosLosPagos = [];
 
-// Función para buscar los datos de compras al servidor
 function cargarPagos() {
     fetch('API.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recurso: 'DetalleCompra', consulta: 'Read' })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (!Array.isArray(data)) {
+    .then(async response => {
+        const data = await response.json();
+        if (!response.ok || data.error || !Array.isArray(data)) {
+            console.error("Error técnico al cargar pagos:", data.detallesTecnicos || data.error);
             throw new Error('La API no devolvió una lista de pagos válida.');
         }
+        return data;
+    })
+    .then(data => {
         todosLosPagos = data; 
         mostrarPagos(todosLosPagos); 
     })
@@ -219,16 +251,16 @@ function cargarPagos() {
         if (tbody) {
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: red;">Error al cargar los pagos.</td></tr>';
         }
-        console.error(error);
+        console.error("Error nativo en cargarPagos():", error);
     });
 }
 
-// Función que renderiza la tabla con los datos de detalleCompra
 function mostrarPagos(pagos) {
     const tbody = document.getElementById('tablapagos');
     const mensaje = document.getElementById('mensajeFiltrosPagos');
     if (!tbody) return;
     tbody.innerHTML = ''; 
+
     if (pagos.length === 0) {
         tbody.innerHTML = `
             <tr>
@@ -250,7 +282,6 @@ function mostrarPagos(pagos) {
     pagos.forEach(pago => {
         const fila = document.createElement('tr');
 
-        // Muestra la imagen del comprobante (Base64) en lugar de la foto del producto
         let comprobanteHTML = '<span style="color: #94a3b8;">Sin imagen</span>';
         if (pago.comprobante) {
             comprobanteHTML = `
@@ -280,10 +311,9 @@ function mostrarPagos(pagos) {
     });
 }
 
-// Función para cambiar el estado del pago en la base de datos
 function cambiarEstadoPago(idDetalleCompra, idEstado) {
     const mensaje = document.getElementById('mensajePagos');
-    // Actualizar el estado del pago
+
     fetch('API.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -297,7 +327,8 @@ function cambiarEstadoPago(idDetalleCompra, idEstado) {
     .then(async response => {
         const res = await response.json();
         if (!response.ok || res.error) {
-            throw new Error(res.detallesTecnicos || res.error || 'Error al actualizar el pago.');
+            console.error("Detalle técnico API (cambiarEstadoPago):", res.detallesTecnicos || res.error);
+            throw new Error(res.error || 'Error al actualizar el pago.');
         }
         return res;
     })
@@ -309,55 +340,47 @@ function cambiarEstadoPago(idDetalleCompra, idEstado) {
             pagoEncontrado.id_estado = parseInt(idEstado);
         }
         if (mensaje) {
-            mensaje.style.color = '#45024bfa;';
+            mensaje.style.color = '#45024b';
             mensaje.textContent = res.mensaje;
         }
-        // Si el pago fue aprobado, enviar correo
+
         if (parseInt(idEstado) === 1) {
             if (mensaje) {
                 mensaje.textContent = 'Pago aprobado. Enviando correo al cliente...';
             }
-            fetch('API.php', {
+            
+            fetch('enviarValidacionMail.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    recurso: 'DetalleCompra',
-                    consulta: 'enviarMail',
                     id_detalleCompra: parseInt(idDetalleCompra)
                 })
             })
             .then(async response => {
                 const data = await response.json();
-
                 if (!response.ok || data.error) {
-                    throw new Error(
-                        data.detallesTecnicos ||
-                        data.error ||
-                        'No se pudo enviar el correo.'
-                    );
+                    console.error("Detalle técnico mail:", data.detallesTecnicos || data.error);
+                    throw new Error(data.error || 'No se pudo enviar el correo.');
                 }
                 return data;
             })
             .then(data => {
-                console.log('Correo enviado:', data);
-
                 if (mensaje) {
-                    mensaje.style.color = '#45024bfa;';
-                    mensaje.textContent = '¡Pago aprobado y correo enviado correctamente al cliente!';
+                    mensaje.style.color = '#45024b';
+                    mensaje.textContent = data.mensaje || '¡Pago aprobado y correo enviado correctamente al cliente!';
                 }
             })
             .catch(error => {
-                console.error('Error al enviar correo:', error);
-
+                console.error('Error nativo en envío de correo:', error);
                 if (mensaje) {
                     mensaje.style.color = 'red';
-                    mensaje.textContent = 'El pago fue aprobado, pero no se pudo enviar el correo: ' + error.message;
+                    mensaje.textContent = 'El pago fue aprobado, pero falló el envío: ' + error.message;
                 }
             });
         }
     })
     .catch(error => {
-        console.error('Error al actualizar el pago:', error);
+        console.error('Error nativo al actualizar el pago:', error);
 
         if (mensaje) {
             mensaje.style.color = 'red';
@@ -366,29 +389,24 @@ function cambiarEstadoPago(idDetalleCompra, idEstado) {
     });
 }
 
-// Función para filtrar los pagos por estado
 function filtrarPagos() {
     const selectEstado = document.getElementById('filtroEstado');
     if (!selectEstado) return;
     const valorFiltro = selectEstado.value;
 
-    // Si no se selecciona nada (opción vacia), muestra todos
     if (valorFiltro === "") {
         mostrarPagos(todosLosPagos);
         return;
     }
     const estadoBusqueda = parseInt(valorFiltro);
 
-    // Filtra el array global segun el id_estado
     const pagosFiltrados = todosLosPagos.filter(pago => {
         return parseInt(pago.id_estado) === estadoBusqueda;
     });
 
-    // Renderiza la tabla con los resultados filtrados
     mostrarPagos(pagosFiltrados);
 }
 
-// Limpiar filtros de pagos
 function limpiarFiltrosPagos() {
     const filtroEstado = document.getElementById('filtroEstado');
     if (filtroEstado) filtroEstado.value = '';
@@ -411,14 +429,20 @@ function verComprobante(base64) {
 // TUTORIALES
 // ==============================
 
-// Cargar listado de tutoriales en la tabla del panel
 function cargarTutoriales() {
     fetch('API.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recurso: 'Tutoriales', consulta: 'Read' })
     })
-    .then(res => res.json())
+    .then(async res => {
+        const tutoriales = await res.json();
+        if (!res.ok || tutoriales.error) {
+            console.error("Detalle técnico API (cargarTutoriales):", tutoriales.detallesTecnicos || tutoriales.error);
+            throw new Error(tutoriales.error || "No se pudieron obtener los tutoriales.");
+        }
+        return tutoriales;
+    })
     .then(tutoriales => {
         const tbody = document.getElementById('tablaTutorialesAdmin');
         if (!tbody) return;
@@ -444,18 +468,21 @@ function cargarTutoriales() {
             tbody.appendChild(tr);
         });
     })
-    .catch(error => console.error("Error al cargar tutoriales:", error));
+    .catch(error => console.error("Error nativo en cargarTutoriales():", error));
 }
 
-// Guardar o Actualizar Tutorial
 function guardarTutorial() {
     const id = document.getElementById('tutId').value;
     const nombre = document.getElementById('tutNombre').value.trim();
     const descripcion = document.getElementById('tutDescripcion').value.trim();
     const archivo = document.getElementById('tutArchivo').value.trim();
+    const mensajePagos = document.getElementById('mensajePagos');
 
     if (!nombre) {
-        alert("El título/nombre del tutorial es obligatorio.");
+        if (mensajePagos) {
+            mensajePagos.style.color = 'red';
+            mensajePagos.textContent = "El título/nombre del tutorial es obligatorio.";
+        }
         return;
     }
 
@@ -477,20 +504,31 @@ function guardarTutorial() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.mensaje) {
-            alert(data.mensaje);
-            limpiarFormularioTutorial();
-            cargarTutoriales();
-        } else {
-            alert("Error: " + (data.error || "No se pudo procesar la solicitud"));
+    .then(async res => {
+        const data = await res.json();
+        if (!res.ok || data.error) {
+            console.error("Detalle técnico API (guardarTutorial):", data.detallesTecnicos || data.error);
+            throw new Error(data.error || "No se pudo procesar el tutorial.");
         }
+        return data;
     })
-    .catch(err => console.error("Error en la petición de tutoriales:", err));
+    .then(data => {
+        if (mensajePagos) {
+            mensajePagos.style.color = '#45024b';
+            mensajePagos.textContent = data.mensaje || "Tutorial guardado correctamente.";
+        }
+        limpiarFormularioTutorial();
+        cargarTutoriales();
+    })
+    .catch(err => {
+        console.error("Error nativo en guardarTutorial():", err);
+        if (mensajePagos) {
+            mensajePagos.style.color = 'red';
+            mensajePagos.textContent = err.message;
+        }
+    });
 }
 
-// Cargar datos en el formulario para editar
 function prepararEdicionTutorial(tut) {
     document.getElementById('tutId').value = tut.id_tutorial;
     document.getElementById('tutNombre').value = tut.nombre;
@@ -500,7 +538,6 @@ function prepararEdicionTutorial(tut) {
     document.getElementById('btnCancelarEdicionTut').style.display = 'inline-block';
 }
 
-// Limpiar formulario de tutoriales
 function limpiarFormularioTutorial() {
     document.getElementById('tutId').value = '';
     document.getElementById('tutNombre').value = '';
@@ -510,9 +547,8 @@ function limpiarFormularioTutorial() {
     document.getElementById('btnCancelarEdicionTut').style.display = 'none';
 }
 
-// Eliminar tutorial
 function eliminarTutorial(id) {
-    if (!confirm("¿Estás seguro de eliminar este tutorial?")) return;
+    const mensajePagos = document.getElementById('mensajePagos');
 
     fetch('API.php', {
         method: 'POST',
@@ -523,14 +559,26 @@ function eliminarTutorial(id) {
             id_tutorial: parseInt(id)
         })
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.mensaje) {
-            alert(data.mensaje);
-            cargarTutoriales();
-        } else {
-            alert(data.error || "Error al eliminar el tutorial.");
+    .then(async res => {
+        const data = await res.json();
+        if (!res.ok || data.error) {
+            console.error("Detalle técnico API (eliminarTutorial):", data.detallesTecnicos || data.error);
+            throw new Error(data.error || "Error al eliminar el tutorial.");
         }
+        return data;
     })
-    .catch(err => console.error("Error al eliminar:", err));
+    .then(data => {
+        if (mensajePagos) {
+            mensajePagos.style.color = '#45024b';
+            mensajePagos.textContent = data.mensaje || "Tutorial eliminado correctamente.";
+        }
+        cargarTutoriales();
+    })
+    .catch(err => {
+        console.error("Error nativo en eliminarTutorial():", err);
+        if (mensajePagos) {
+            mensajePagos.style.color = 'red';
+            mensajePagos.textContent = err.message;
+        }
+    });
 }
