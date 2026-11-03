@@ -40,7 +40,7 @@ function openVideoModal(id_tutorial) {
         modal.classList.add('activo');
 
         // Petición a tu API con ReadByID
-        fetch('api.php', { // Reemplaza 'api.php' por la ruta real de tu archivo de API si es diferente
+        fetch('API.php', { // Reemplaza 'api.php' por la ruta real de tu archivo de API si es diferente
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

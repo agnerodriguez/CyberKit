@@ -14,6 +14,10 @@ if (ob_get_length()) ob_clean();
 
 header("Content-Type: application/json; charset=UTF-8");
 
+// Recibir los datos enviados por fetch en formato JSON
+$json_data = file_get_contents('php://input');
+$datos = json_decode($json_data, true);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $jsonRecibido = file_get_contents('php://input');
     $datos = json_decode($jsonRecibido, true);
@@ -108,11 +112,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         break;
                     
                     case 'ReadUsuarioByID': //Usuario
-                        $id_usuario = (int)($datos['id_usuario'] ?? $_SESSION['id_usuario'] ?? 0);
+                        $id_usuario = (int)($_SESSION['id_usuario'] ?? 0);
                         
-                        if ($id_usuario === 0) {
-                            http_response_code(400);
-                            echo json_encode(["error" => "Usuario no encontrado."]);
+                        if ($id_usuario <= 0) {
+                            http_response_code(401);
+                            echo json_encode(["error" => "Debes iniciar sesión para consultar tu perfil."]);
                             break;
                         }
                         
@@ -151,37 +155,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         break;
 
                     case 'Update': //Usuario
-                        $id_usuario = (int)($datos["id_usuario"] ?? $datos["id"] ?? 0);
-                        $nombre = trim($datos["nombre"] ?? '');
-                        $email = trim($datos["email"] ?? '');
-                        $edad = (int)($datos["edad"] ?? 0);
-                        $nueva_pass = trim($datos["contrasena"] ?? '');
-                        $tiene_admin = isset($datos["admin"]);
-                        $admin = $tiene_admin ? (int)$datos["admin"] : 0;
+                        $id_usuario = (int)($_SESSION['id_usuario'] ?? 0);
+                        $nombreValor = $datos["nombre"] ?? '';
+                        $emailValor = $datos["email"] ?? '';
+                        $edadValor = filter_var($datos["edad"] ?? null, FILTER_VALIDATE_INT);
+                        $nueva_pass = $datos["contrasena"] ?? '';
+                        $nombre = is_string($nombreValor) ? trim($nombreValor) : '';
+                        $email = is_string($emailValor) ? trim($emailValor) : '';
+                        $edad = $edadValor === false ? 0 : (int)$edadValor;
 
                         if ($id_usuario <= 0) {
-                            http_response_code(400);
-                            echo json_encode(["error" => "ID de usuario requerido."]);
-                            exit;
+                            http_response_code(401);
+                            echo json_encode(["error" => "Debes iniciar sesión para actualizar tu perfil."]);
+                            break;
                         }
 
-                        if (!empty($nueva_pass)) {
+                        if ($nombre === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || $edad < 1 || $edad > 120) {
+                            http_response_code(400);
+                            echo json_encode(["error" => "Nombre, email y edad válida son obligatorios."]);
+                            break;
+                        }
+
+                        if (!is_string($nueva_pass)) {
+                            http_response_code(400);
+                            echo json_encode(["error" => "La contraseña no tiene un formato válido."]);
+                            break;
+                        }
+
+                        $stmt = $conexion->prepare("SELECT id_usuario FROM usuarios WHERE email = ? AND id_usuario <> ?");
+                        if (!$stmt) {
+                            http_response_code(500);
+                            echo json_encode(["error" => "No se pudo validar el email."]);
+                            break;
+                        }
+                        $stmt->bind_param("si", $email, $id_usuario);
+                        if (!$stmt->execute()) {
+                            http_response_code(500);
+                            echo json_encode(["error" => "No se pudo validar el email."]);
+                            $stmt->close();
+                            break;
+                        }
+                        $email_existente = $stmt->get_result()->fetch_assoc();
+                        $stmt->close();
+
+                        if ($email_existente) {
+                            http_response_code(409);
+                            echo json_encode(["error" => "El email ya está registrado por otro usuario."]);
+                            break;
+                        }
+
+                        if ($nueva_pass !== '') {
                             $contrasena = password_hash($nueva_pass, PASSWORD_BCRYPT);
-                            if ($tiene_admin) {
-                                $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ?, contrasena = ?, admin = ? WHERE id_usuario = ?");
-                                $stmt->bind_param("ssisii", $email, $nombre, $edad, $contrasena, $admin, $id_usuario);
-                            } else {
-                                $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ?, contrasena = ? WHERE id_usuario = ?");
-                                $stmt->bind_param("ssisi", $email, $nombre, $edad, $contrasena, $id_usuario);
+                            $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ?, contrasena = ? WHERE id_usuario = ?");
+                            if (!$stmt) {
+                                http_response_code(500);
+                                echo json_encode(["error" => "No se pudo preparar la actualización del perfil."]);
+                                break;
                             }
+                            $stmt->bind_param("ssisi", $email, $nombre, $edad, $contrasena, $id_usuario);
                         } else {
-                            if ($tiene_admin) {
-                                $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ?, admin = ? WHERE id_usuario = ?");
-                                $stmt->bind_param("ssiii", $email, $nombre, $edad, $admin, $id_usuario);
-                            } else {
-                                $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ? WHERE id_usuario = ?");
-                                $stmt->bind_param("ssii", $email, $nombre, $edad, $id_usuario);
+                            $stmt = $conexion->prepare("UPDATE usuarios SET email = ?, nombre = ?, edad = ? WHERE id_usuario = ?");
+                            if (!$stmt) {
+                                http_response_code(500);
+                                echo json_encode(["error" => "No se pudo preparar la actualización del perfil."]);
+                                break;
                             }
+                            $stmt->bind_param("ssii", $email, $nombre, $edad, $id_usuario);
                         }
                         
                         if ($stmt->execute()) {
@@ -590,6 +629,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             case 'DetalleCompra':
                 switch ($consulta) {
+                    case 'ReadUsuario': // Usuario
+                        $id_usuario = (int)($_SESSION['id_usuario'] ?? 0);
+
+                        if ($id_usuario <= 0) {
+                            http_response_code(401);
+                            echo json_encode(["error" => "Debes iniciar sesión para consultar tus compras."]);
+                            break;
+                        }
+
+                        $sql = "SELECT
+                                    dc.id_detalleCompra,
+                                    dc.cantidad,
+                                    dc.subtotal,
+                                    dc.fecha,
+                                    ep.nombre AS estado,
+                                    p.nombre AS producto
+                                FROM detalleCompra dc
+                                INNER JOIN productos p ON dc.id_producto = p.id_producto
+                                LEFT JOIN estadopago ep ON dc.id_estado = ep.id_estado
+                                WHERE dc.id_usuario = ?
+                                ORDER BY dc.fecha DESC, dc.id_detalleCompra DESC";
+                        $stmt = $conexion->prepare($sql);
+
+                        if ($stmt) {
+                            $stmt->bind_param("i", $id_usuario);
+                            if (!$stmt->execute()) {
+                                http_response_code(500);
+                                echo json_encode(["error" => "No se pudo consultar el historial de compras."]);
+                                $stmt->close();
+                                break;
+                            }
+                            $resultado = $stmt->get_result();
+                            $compras = [];
+
+                            while ($fila = $resultado->fetch_assoc()) {
+                                $compras[] = [
+                                    "id_detalleCompra" => (int)$fila['id_detalleCompra'],
+                                    "producto" => $fila['producto'],
+                                    "cantidad" => (int)$fila['cantidad'],
+                                    "subtotal" => (float)$fila['subtotal'],
+                                    "fecha" => $fila['fecha'],
+                                    "estado" => $fila['estado']
+                                ];
+                            }
+
+                            echo json_encode($compras);
+                            $stmt->close();
+                        } else {
+                            http_response_code(500);
+                            echo json_encode(["error" => "No se pudo consultar el historial de compras."]);
+                        }
+                        break;
+
                     case 'Create': // Usuario
                         $id_producto = (int)($datos['id_producto'] ?? 0);
                         $id_usuario = (int)($datos['id_usuario'] ?? 0);
@@ -698,13 +790,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     u.email AS usuario_email,
                                     m.importe AS precio_unitario,
                                     dc.id_comprobante,
-                                    c.imagen AS comprobante_imagen,
                                     dc.id_estado
                                 FROM detalleCompra dc
                                 INNER JOIN productos p ON dc.id_producto = p.id_producto
                                 INNER JOIN usuarios u ON dc.id_usuario = u.id_usuario
                                 INNER JOIN monto m ON dc.id_monto = m.id_monto
-                                LEFT JOIN comprobante c ON dc.id_comprobante = c.id_comprobante
                                 ORDER BY dc.id_detalleCompra DESC";
 
                         $resultado = $conexion->query($sql);
@@ -729,7 +819,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     ],
                                     "precio_unitario" => (float)$fila['precio_unitario'],
                                     "id_comprobante" => (int)$fila['id_comprobante'],
-                                    "comprobante" => $fila['comprobante_imagen'],
                                     "id_estado" => (int)$fila['id_estado']
                                 ];
                             }
@@ -816,7 +905,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 FROM detalleCompra dc
                                 INNER JOIN productos p ON dc.id_producto = p.id_producto
                                 INNER JOIN usuarios u ON dc.id_usuario = u.id_usuario
-                                INNER JOIN estadopago e ON dc.id_estado = e.id_estado
+                                INNER JOIN estado e ON dc.id_estado = e.id_estado
                                 WHERE dc.id_detalleCompra = ?";
 
                         $stmt = $conexion->prepare($sql);
@@ -826,13 +915,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         if ($fila = $resultado->fetch_assoc()) {
                             $emailUsuario = $fila['usuario_email'];
-                            if (!filter_var($emailUsuario, FILTER_VALIDATE_EMAIL)) {
-                                http_response_code(400);
-                                echo json_encode([
-                                    "error" => "El usuario no tiene un correo electrónico válido."
-                                ]);
-                                exit;
-                            }
                             $nombreUsuario = $fila['usuario_nombre'];
                             $productoNombre = $fila['producto_nombre'];
                             $subtotal = $fila['subtotal'];
@@ -1178,7 +1260,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                         break;
                     
-                    case 'ReadByID': //Usuario
+                    case 'ReadByID':
                         $id_tutorial = (int)($datos['id_tutorial'] ?? $datos['id'] ?? 0);
 
                         if ($id_tutorial <= 0) {
@@ -1209,6 +1291,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         $stmt->close();
                         break;
+
 
                     case 'Create': //Admin
                         $nombre = trim($datos['nombre'] ?? '');

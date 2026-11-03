@@ -1,0 +1,293 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #07030d;
+    background-image: url(fondos/fondo.png);
+    background-size: 100% 100%, 100% 4px;
+    font-family: 'Rajdhani', sans-serif;
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px;
+}
+
+.contenedor-general {
+    width: 100%;
+    max-width: 1050px;
+    padding: 55px;
+}
+
+.titulo-principal {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 2.2rem;
+    color: #f55cc0;
+    text-shadow: 0 0 10px rgba(230, 57, 160, 0.5), 3px 3px 0px #000;
+    text-align: center;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+}
+
+.contenedor-principal {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 25px;
+    align-items: start;
+}
+
+/* ------------------------------------------------------
+   BARRA LATERAL IZQUIERDA
+   ------------------------------------------------------ */
+.tarjeta-barra-lateral {
+    background: linear-gradient(180deg, #4d5f7c 0%, #35455e 100%);
+    border: 3px solid #00ff55;
+    box-shadow: 0 0 15px rgba(0, 255, 85, 0.6), inset 0 0 10px rgba(0, 255, 85, 0.2);
+    border-radius: 8px;
+    padding: 25px 20px;
+}
+
+.cabecera-usuario {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.contenedor-avatar {
+    position: relative;
+    width: 65px;
+    height: 65px;
+}
+
+.circulo-avatar {
+    width: 100%;
+    height: 100%;
+    background: #e639a0;
+    border-radius: 50%;
+    border: 3px solid #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.2rem;
+    color: #ffffff;
+}
+
+.boton-editar-avatar {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #6c757d;
+    border: 2px solid #ffffff;
+    color: #ffffff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.texto-nombre-usuario {
+    font-family: 'VT323', monospace;
+    font-size: 1.9rem;
+    color: #ffffff;
+    letter-spacing: 1px;
+}
+
+.menu-lateral {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.boton-navegacion {
+    width: 100%;
+    background: #6a6fae;
+    border: 1px solid #7d83c7;
+    border-radius: 12px;
+    padding: 12px 18px;
+    color: #ffffff;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    transition: all 0.2s ease;
+}
+
+.boton-navegacion:hover, .boton-navegacion.activo {
+    background: #575c9b;
+    border-color: #f55cc0;
+    transform: translateY(-1px);
+}
+
+.circulo-flecha {
+    width: 28px;
+    height: 28px;
+    background: #7bd5f5;
+    border-radius: 50%;
+    color: #1a334e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.formulario-salir {
+    width: 100%;
+}
+
+/* ------------------------------------------------------
+   CONTENIDO DERECHO
+   ------------------------------------------------------ */
+.area-contenido {
+    width: 100%;
+}
+
+.vista-cyber {
+    display: none;
+}
+
+.vista-cyber.activo {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.tarjeta-panel {
+    background: linear-gradient(135deg, #3b2366 0%, #291748 100%);
+    border-radius: 16px;
+    padding: 25px 30px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.5), inset 0 0 15px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tarjeta-panel.margen-inferior {
+    margin-bottom: 20px;
+}
+
+.titulo-vista {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.3rem;
+    color: #ffffff;
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+}
+
+.rejilla-perfil {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 25px;
+}
+
+.grupo-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.grupo-formulario.ancho-completo, .pie-formulario.ancho-completo {
+    grid-column: span 2;
+}
+
+.grupo-formulario label {
+    font-family: 'VT323', monospace;
+    font-size: 1.3rem;
+    color: #ffffff;
+}
+
+.campo-entrada-pill {
+    background: #807c99;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 18px;
+    color: #ffffff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    outline: none;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+}
+
+.campo-entrada-pill.editable-active {
+    background: #a39ec4;
+    border: 1px solid #e639a0;
+    box-shadow: 0 0 8px rgba(230, 57, 160, 0.5);
+}
+
+.pie-formulario {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.boton-pastilla-rosa {
+    background: #e639a0;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 25px;
+    color: #ffffff;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 12px rgba(230, 57, 160, 0.5);
+    transition: all 0.2s;
+}
+
+.boton-pastilla-rosa:hover {
+    background: #f55cc0;
+    transform: scale(1.03);
+}
+
+.boton-pastilla-rosa.brillo-verde {
+    background: #00b33c;
+    box-shadow: 0 0 12px rgba(0, 255, 85, 0.6);
+}
+
+/* ------------------------------------------------------
+   HISTORIAL DE COMPRAS
+   ------------------------------------------------------ */
+.lista-compras {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.estado-carga, .estado-vacio {
+    font-family: 'VT323', monospace;
+    font-size: 1.3rem;
+    color: #b8b3d3;
+    text-align: center;
+    padding: 15px 0;
+}
+
+/* Responsividad móvil */
+@media (max-width: 820px) {
+    .contenedor-principal {
+        grid-template-columns: 1fr;
+    }
+    .rejilla-perfil {
+        grid-template-columns: 1fr;
+    }
+    .grupo-formulario.ancho-completo, .pie-formulario.ancho-completo {
+        grid-column: span 1;
+    }
+}
