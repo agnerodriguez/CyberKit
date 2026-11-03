@@ -9,7 +9,7 @@ html, body {
     margin: 0;
     padding: 0;
     overflow: hidden; /* Evita que la página completa se desplace verticalmente */
-    font-family: 'Tamrin', sans-serif;
+    font-family: sans-serif;
     background: white;
 }
 
