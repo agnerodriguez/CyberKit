@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('api.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recurso: 'Productos', consulta: 'ReadUsuario' })
+        body: JSON.stringify({ recurso: 'Productos', consulta: 'ReadProductos' })
     })
     .then(res => res.json())
     .then(productos => {

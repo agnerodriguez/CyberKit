@@ -397,7 +397,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                         break;
 
-                    case 'ReadUsuario': //Usuario
+                    case 'ReadProductos': //Usuario
                         $sql = "SELECT p.id_producto, p.nombre, p.descripcion, p.stock, p.imagen, m.importe AS monto
                                 FROM productos p
                                 INNER JOIN monto m ON p.id_producto = m.id_producto
