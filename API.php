@@ -397,7 +397,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                         break;
 
-                    case 'ReadUsuario': //Usuario
+                    case 'ReadProductos': //Usuario
                         $sql = "SELECT p.id_producto, p.nombre, p.descripcion, p.stock, p.imagen, m.importe AS monto
                                 FROM productos p
                                 INNER JOIN monto m ON p.id_producto = m.id_producto
@@ -790,11 +790,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     u.email AS usuario_email,
                                     m.importe AS precio_unitario,
                                     dc.id_comprobante,
+                                    c.imagen AS comprobante_imagen,
                                     dc.id_estado
                                 FROM detalleCompra dc
                                 INNER JOIN productos p ON dc.id_producto = p.id_producto
                                 INNER JOIN usuarios u ON dc.id_usuario = u.id_usuario
                                 INNER JOIN monto m ON dc.id_monto = m.id_monto
+                                LEFT JOIN comprobante c ON dc.id_comprobante = c.id_comprobante
                                 ORDER BY dc.id_detalleCompra DESC";
 
                         $resultado = $conexion->query($sql);
@@ -819,6 +821,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     ],
                                     "precio_unitario" => (float)$fila['precio_unitario'],
                                     "id_comprobante" => (int)$fila['id_comprobante'],
+                                    "comprobante" => $fila['comprobante_imagen'],
                                     "id_estado" => (int)$fila['id_estado']
                                 ];
                             }
@@ -877,119 +880,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 "detallesTecnicos" => $e->getMessage()
                             ]);
                         }
-                        break;
-
-                    case 'enviarMail': 
-                        require_once 'PHPMailer/src/Exception.php';
-                        require_once 'PHPMailer/src/PHPMailer.php';
-                        require_once 'PHPMailer/src/SMTP.php';
-
-                        $id_detalleCompra = (int)($datos['id_detalleCompra'] ?? 0);
-
-                        if ($id_detalleCompra <= 0) {
-                            http_response_code(400);
-                            echo json_encode([
-                                "error" => "No se pudo identificar la compra a notificar.",
-                                "detallesTecnicos" => "ID de compra no válido o ausente."
-                            ]);
-                            exit;
-                        }
-
-                        $sql = "SELECT 
-                                    dc.id_detalleCompra,
-                                    dc.subtotal,
-                                    p.nombre AS producto_nombre,
-                                    u.nombre AS usuario_nombre,
-                                    u.email AS usuario_email,
-                                    e.nombre AS estado_nombre
-                                FROM detalleCompra dc
-                                INNER JOIN productos p ON dc.id_producto = p.id_producto
-                                INNER JOIN usuarios u ON dc.id_usuario = u.id_usuario
-                                INNER JOIN estado e ON dc.id_estado = e.id_estado
-                                WHERE dc.id_detalleCompra = ?";
-
-                        $stmt = $conexion->prepare($sql);
-                        $stmt->bind_param("i", $id_detalleCompra);
-                        $stmt->execute();
-                        $resultado = $stmt->get_result();
-
-                        if ($fila = $resultado->fetch_assoc()) {
-                            $emailUsuario = $fila['usuario_email'];
-                            $nombreUsuario = $fila['usuario_nombre'];
-                            $productoNombre = $fila['producto_nombre'];
-                            $subtotal = $fila['subtotal'];
-                            $estadoNombre = $fila['estado_nombre'];
-
-                            $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-
-                            try {
-                                $mail->CharSet = 'UTF-8';
-                                $mail->Encoding = 'base64';
-                                $mail->isSMTP();
-                                $mail->Host       = 'smtp.gmail.com';
-                                $mail->SMTPAuth   = true;
-                                $mail->Username   = 'recytech.support@gmail.com';
-                                $mail->Password   = 'ucha mqaw vkeo kltt'; 
-                                $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
-                                $mail->Port       = 587;
-
-                                $mail->setFrom('recytech.support@gmail.com', 'RecyTech');
-                                $mail->addAddress($emailUsuario, $nombreUsuario);
-
-                                $mail->isHTML(true);
-                                $mail->Subject = 'Estado de tu compra - RecyTech';
-                                $mail->Body    = '
-                                <!DOCTYPE html>
-                                <html lang="es">
-                                <head>
-                                <meta charset="UTF-8">
-                                </head>
-                                <body style="font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 20px;">
-                                <div style="max-width: 500px; background-color: #ffffff; padding: 20px; border-radius: 8px; margin: 0 auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                                    <h2 style="color: #0d8a42;">Notificación de Compra</h2>
-                                    <p>Hola <b>' . htmlspecialchars($nombreUsuario) . '</b>,</p>
-                                    <p>Te informamos sobre el estado actualizado de tu orden de compra <b>#' . $id_detalleCompra . '</b>:</p>
-                                    
-                                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-                                    <tr>
-                                        <td style="padding: 8px; border-bottom: 1px solid #ddd;"><b>Producto:</b></td>
-                                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">' . htmlspecialchars($productoNombre) . '</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 8px; border-bottom: 1px solid #ddd;"><b>Total:</b></td>
-                                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">$' . number_format($subtotal, 2) . '</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 8px; border-bottom: 1px solid #ddd;"><b>Estado:</b></td>
-                                        <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; color: #0d8a42;">' . htmlspecialchars($estadoNombre) . '</td>
-                                    </tr>
-                                    </table>
-
-                                    <p style="margin-top: 20px; font-size: 13px; color: #666;">Si tienes alguna duda con respecto a tu pago, por favor ponte en contacto con nuestro equipo mediante el foro de nuestro sitio.</p>
-                                </div>
-                                </body>
-                                </html>';
-
-                                $mail->send();
-
-                                http_response_code(200);
-                                echo json_encode(["mensaje" => "Correo enviado exitosamente al usuario."]);
-
-                            } catch (Exception $e) {
-                                http_response_code(500);
-                                echo json_encode([
-                                    "error" => "No se pudo enviar el correo de notificación.",
-                                    "detallesTecnicos" => $mail->ErrorInfo
-                                ]);
-                            }
-                        } else {
-                            http_response_code(404);
-                            echo json_encode([
-                                "error" => "La compra solicitada no existe.",
-                                "detallesTecnicos" => "No se encontró ningún registro en detalleCompra con el ID: " . $id_detalleCompra
-                            ]);
-                        }
-                        $stmt->close();
                         break;
                     
                     default:

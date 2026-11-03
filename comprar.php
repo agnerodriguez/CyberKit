@@ -13,7 +13,7 @@
 
     $idUsuario = $_SESSION['id_usuario'] ?? 0;
 
-    /*$idProducto = (int)($_POST['id_producto'] ?? 0); */
+    $idProducto = (int)($_POST['id'] ?? $_GET['id']?? 0);
     
 ?>
 <!DOCTYPE html>

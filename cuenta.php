@@ -54,7 +54,7 @@ $id_usuario = $_SESSION['id_usuario'];
                         <div class="circulo-flecha"><i class="bi bi-chevron-right"></i></div>
                     </button>
 
-                    <form action="inicio.php" method="POST" class="formulario-salir">
+                    <form action="cerrarSesion.php" method="POST" class="formulario-salir">
                         <button type="submit" class="boton-navegacion salir">
                             <span>Cerrar Sesion</span>
                             <div class="circulo-flecha"><i class="bi bi-arrow-counterclockwise"></i></div>

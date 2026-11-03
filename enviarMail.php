@@ -33,8 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $emailUsuario = $datos['email'];
         $nombre = $datos['nombre'];
 
-        // Clave provisional: los 8 primeros caracteres del email (sin dominio)
-        $provisional = substr($emailUsuario, 0, 8);
+        // Clave provisional: nombre del usuario sin espacios, encriptada con bcrypt
+        $provisional = str_replace(' ', '', $nombre);
         $contraEncriptada = password_hash($provisional, PASSWORD_BCRYPT);
 
         $stmtReset = mysqli_prepare($conexion, "UPDATE usuarios SET contrasena = ? WHERE email = ?");
@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 ' . htmlspecialchars($provisional) . '
                               </p>
                               <p style="margin:5px 0 0 0;font-size:11px;color:#7b2fbf;">
-                                (Los primeros 8 caracteres de tu email, sin el @)
+                                (La clave es su nombre de usuario, sin espacios)
                               </p>
                             </div>
                             <p style="font-size:14px;line-height:1.6;color:#555555;margin-bottom:0;">

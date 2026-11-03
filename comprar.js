@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     obtenerDatosProducto();
-})
+});
 
 const btnMenos = document.getElementById('menos');
 const btnMas = document.getElementById('mas');
@@ -8,7 +8,7 @@ const valor = document.getElementById('valor');
 const subtotalEl = document.getElementById('subtotalDinamico');
 
 let count = 0;
-let precioUnitario = 0; // Variable global para guardar el precio base
+let precioUnitario = 0;
 
 function actualizarSubtotal() {
     const subtotal = count * precioUnitario;
@@ -41,7 +41,7 @@ if (btnMenos) {
 
 function copiarElemento(idElemento) {
    const elemento = document.getElementById(idElemento);
-   const mensajeEstado = document.getElementById('mensajeCopiar'); // Elemento para la UI
+   const mensajeEstado = document.getElementById('mensajeCopiar');
 
    if (!elemento) {
       console.error(`Error al copiar: No se encontró el elemento con ID '${idElemento}' en el DOM.`);
@@ -54,26 +54,21 @@ function copiarElemento(idElemento) {
 
    const texto = elemento.innerText;
 
-   //navigator.clipboard: Es una API moderna del navegador que da acceso de lectura y escritura al portapapeles del dispositivo
    navigator.clipboard.writeText(texto)
       .then(() => {
-         // Mensaje amigable para el usuario en la interfaz
          if (mensajeEstado) {
             mensajeEstado.innerText = "¡Copiado al portapapeles!";
-            mensajeEstado.style.color = "#00ff88"; // Opcional: verde éxito
+            mensajeEstado.style.color = "#00ff88";
             mensajeEstado.style.display = "block";
 
-            // Ocultar el mensaje automáticamente después de 3 segundos
             setTimeout(() => {
                mensajeEstado.style.display = "none";
             }, 3000);
          }
       })
       .catch(err => {
-         // Detalle técnico para el desarrollador
          console.error("Detalle técnico del error al intentar copiar:", err);
          
-         // Mensaje amigable para la interfaz
          if (mensajeEstado) {
             mensajeEstado.innerText = "No se pudo copiar el texto. Inténtalo manualmente.";
             mensajeEstado.style.color = "yellow";
@@ -83,15 +78,12 @@ function copiarElemento(idElemento) {
 }
 
 function mostrar(id) { 
-    // Oculta todos los contenedores
     document.querySelectorAll('.contenedor').forEach(contenedor => {
         contenedor.classList.remove('activo');
     });
 
-    // Convierte "id" en un arreglo
     const ids = Array.isArray(id) ? id : [id];
 
-    // Muestra el contenedor correspondiente añadiendo 'activo'
     ids.forEach(idActual => {
         const elemento = document.getElementById(idActual);
         if (elemento) {
@@ -116,7 +108,7 @@ function obtenerDatosProducto() {
     const payload = {
         recurso: "Productos",
         consulta: "ReadProductoByID",
-        id_producto: 1 // idProducto
+        id_producto: idProducto
     };
 
     fetch("API.php", {
@@ -135,9 +127,9 @@ function obtenerDatosProducto() {
             throw new Error("Respuesta no válida del servidor.");
         }
 
-        if (!response.ok) {
+        if (!response.ok || data.error) {
             if (data.detallesTecnicos) {
-                console.error("Error:", data.detallesTecnicos);
+                console.error("Detalles técnicos API:", data.detallesTecnicos);
             }
             throw new Error(data.error || "Error al obtener el producto.");
         }
@@ -147,10 +139,8 @@ function obtenerDatosProducto() {
     .then(producto => {
         document.getElementById('nombreProducto').textContent = producto.nombre;
         
-        // Guardar el precio unitario numérico
         precioUnitario = parseFloat(producto.monto) || 0;
 
-        // Formatear precio de portada
         const montoFormateado = precioUnitario.toLocaleString('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
@@ -164,13 +154,12 @@ function obtenerDatosProducto() {
             contenedorImagen.innerHTML = `<img src="${producto.imagen}" alt="${producto.nombre}">`;
         }
 
-        // Resetear contador y subtotal
         count = 0;
         valor.textContent = count;
         actualizarSubtotal();
     })
     .catch(error => {
-        console.error("Error en la solicitud:", error);
+        console.error("Error en la solicitud obtenerDatosProducto():", error);
         if (mensaje) {
             mensaje.textContent = error.message;
             mensaje.style.display = 'block';
@@ -192,15 +181,18 @@ function comprobanteSeleccionado() {
 function enviarPagoAPI() {
     const inputSubir = document.getElementById('subir');
     const inputIdUsuario = document.getElementById('idUsuario');
+    const inputIdProducto = document.getElementById('idProducto');
     const mensajeComprobante = document.getElementById('mensajeComprobante');
 
     const idUsuario = inputIdUsuario ? parseInt(inputIdUsuario.value) : 0;
+    const idProducto = inputIdProducto ? parseInt(inputIdProducto.value) : 0;
     const cantidad = count;
-    const subtotalCalculado = cantidad * precioUnitario; // Cálculo directo
+    const subtotalCalculado = cantidad * precioUnitario;
 
     if (!inputSubir.files || inputSubir.files.length === 0) {
         if (mensajeComprobante) {
             mensajeComprobante.innerText = "Debes seleccionar una foto del comprobante antes de pagar.";
+            mensajeComprobante.style.color = "yellow";
             mensajeComprobante.style.display = "block";
         }
         return;
@@ -209,6 +201,7 @@ function enviarPagoAPI() {
     if (cantidad <= 0) {
         if (mensajeComprobante) {
             mensajeComprobante.innerText = "Debes seleccionar al menos 1 unidad para comprar.";
+            mensajeComprobante.style.color = "yellow";
             mensajeComprobante.style.display = "block";
         }
         return;
@@ -223,8 +216,9 @@ function enviarPagoAPI() {
             consulta: "Create",
             id_producto: idProducto,
             id_usuario: idUsuario,
+            estado: 2,
             cantidad: cantidad,
-            subtotal: subtotalCalculado, // Enviamos el subtotal directamente
+            subtotal: subtotalCalculado,
             comprobante: e.target.result
         };
 
@@ -240,11 +234,11 @@ function enviarPagoAPI() {
             try {
                 data = JSON.parse(textoRespuesta);
             } catch (err) {
-                console.error("Error:", textoRespuesta);
+                console.error("Error nativo del servidor:", textoRespuesta);
                 throw new Error("Respuesta no válida del servidor.");
             }
 
-            if (!response.ok) {
+            if (!response.ok || data.error) {
                 if (data.detallesTecnicos) {
                     console.error("Detalles técnicos API:", data.detallesTecnicos);
                 }
@@ -261,7 +255,7 @@ function enviarPagoAPI() {
             }
         })
         .catch(error => {
-            console.error("Error en el envío del pago:", error);
+            console.error("Error nativo en el catch del envío del pago:", error);
             if (mensajeComprobante) {
                 mensajeComprobante.innerText = error.message;
                 mensajeComprobante.style.color = "yellow";
@@ -271,63 +265,4 @@ function enviarPagoAPI() {
     };
 
     reader.readAsDataURL(archivo);
-}
-
-function notificarEstadoCompra(idDetalleCompra) {
-    const mensaje = document.getElementById("mensajeMail");
-
-    const payload = {
-        recurso: "DetalleCompra",
-        consulta: "enviarMail",
-        id_detalleCompra: idDetalleCompra
-    };
-
-    fetch("API.php", {
-        method: "POST",
-        headers: {"Content-Type": "application/json; charset=UTF-8"},
-        body: JSON.stringify(payload)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.mensaje) {
-            mensaje = "Notificación enviada.";
-        } else {
-            mensaje = "Error al notificar.";
-            console.error(data.error);
-        }
-    })
-    .catch(error => {
-        mensaje = "Error en la solicitud.";
-        console.error(error);
-    });
-}
-
-// Ejemplo de uso al actualizar el estado
-function cambiarEstadoCompra(idDetalleCompra, nuevoEstadoId) {
-    const mensaje = document.getElementById("mensajeEstado");
-
-    // Si el estado enviado corresponde a Pago o Impago
-    const payload = {
-        recurso: "DetalleCompra",
-        consulta: "Update",
-        id_detalleCompra: idDetalleCompra,
-        id_estado: nuevoEstadoId
-    };
-
-    fetch("API.php", {
-        method: "POST",
-        headers: {"Content-Type": "application/json; charset=UTF-8"},
-        body: JSON.stringify(payload)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.mensaje) {
-            mensaje = "Te informaremos cuando el pago haya sido validado";
-            // ADMIN notificarEstadoCompra(idDetalleCompra);
-        }
-    })
-    .catch(error => {
-        mensaje = "Error al procesar la compra";
-        console.error(error);
-    });
 }
