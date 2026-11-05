@@ -40,21 +40,6 @@
                 </div>
 
             </div>
-
-            <div class="columna-derecha">
-                
-                <h2 class="subtitulo-redes">Nuestras Redes Sociales</h2>
-                
-                <div class="item-red">
-                    <img src="iconos/ig.png" alt="Instagram" class="icono-red">
-                    <span class="texto-red">CyberComunity</span>
-                </div>
-
-                <div class="item-red">
-                    <img src="iconos/arroba (2).png" alt="Email" class="icono-red">
-                    <span class="texto-red">CyberComunity@gmail.com</span>
-                </div>
-            </div>
         </div>
     </section>
     <?php include 'footer.php'; ?>
