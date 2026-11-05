@@ -39,18 +39,19 @@ function openVideoModal(id_tutorial) {
         modalIframe.src = "";
         modal.classList.add('activo');
 
-        // Petición a tu API con ReadByID
-        fetch('API.php', { // Reemplaza 'api.php' por la ruta real de tu archivo de API si es diferente
+        // Petición a la API con las claves que exige API.php
+        fetch('API.php', { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                accion: 'ReadByID',
+                recurso: 'Tutoriales',   // Requerido para entrar a switch($recurso)
+                consulta: 'ReadByID',    // Requerido para entrar a switch($consulta)
                 id_tutorial: id_tutorial
             })
         })
-        .then(response => response.text()) // Cambiamos a .text() primero para evitar errores de JSON si PHP arroja warnings
+        .then(response => response.text())
         .then(text => {
             try {
                 const data = JSON.parse(text);
@@ -58,6 +59,7 @@ function openVideoModal(id_tutorial) {
                     modalTitle.textContent = data.nombre;
                     modalDesc.textContent = data.descripcion;
                     
+                    // Transforma el link guardado en la BD a formato iframe embed
                     let urlVideo = data.archivo;
                     if (urlVideo.includes("youtu.be/")) {
                         let idVideo = urlVideo.split("youtu.be/")[1].split("?")[0];
@@ -75,9 +77,9 @@ function openVideoModal(id_tutorial) {
             } catch (e) {
                 console.error("Respuesta no JSON de la API:", text);
                 modalTitle.textContent = "Error de servidor";
-                modalDesc.textContent = "El servidor devolvió una respuesta inválida. Revisa la consola.";
+                modalDesc.textContent = "El servidor devolvió una respuesta no válida. Revisa la consola.";
             }
-        })
+        });
     }
 }
 
