@@ -1196,27 +1196,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     case 'Create': //Admin
                         $nombre = trim($datos['nombre'] ?? '');
                         $descripcion = trim($datos['descripcion'] ?? '');
-                        $archivo = trim($datos['archivo'] ?? '');
+                        $entrada = trim($datos['archivo'] ?? ''); // Puede ser URL o Base64
+
+                        $rutaFinal = $entrada;
+
+                        // Si viene un archivo en Base64 (PDF o Video)
+                        if (strpos($entrada, 'data:') === 0) {
+                            $directorioDestino = 'tutoriales/';
+                            if (!is_dir($directorioDestino)) {
+                                mkdir($directorioDestino, 0755, true);
+                            }
+
+                            $extension = 'bin';
+                            if (preg_match('/^data:application\/pdf;base64,/', $entrada)) {
+                                $extension = 'pdf';
+                            } elseif (preg_match('/^data:video\/(\w+);base64,/', $entrada, $matches)) {
+                                $extension = $matches[1];
+                            }
+
+                            $entrada = substr($entrada, strpos($entrada, ',') + 1);
+                            $datosBinarios = base64_decode($entrada);
+
+                            if ($datosBinarios !== false) {
+                                $nombreArchivo = 'tutorial_' . time() . '.' . $extension;
+                                $rutaFinal = $directorioDestino . $nombreArchivo;
+                                file_put_contents($rutaFinal, $datosBinarios);
+                            }
+                        }
 
                         $stmt = $conexion->prepare("INSERT INTO tutoriales (nombre, descripcion, archivo) VALUES (?, ?, ?)");
-                        $stmt->bind_param("sss", $nombre, $descripcion, $archivo);
+                        $stmt->bind_param("sss", $nombre, $descripcion, $rutaFinal);
 
                         if ($stmt->execute()) {
-                            $id_tutorial = $stmt->insert_id;
                             http_response_code(201);
-                            echo json_encode([
-                                "mensaje" => "Tutorial agregado correctamente.",
-                                "id_tutorial" => $id_tutorial,
-                                "nombre" => $nombre,
-                                "descripcion" => $descripcion,
-                                "archivo" => $archivo
-                            ]);
+                            echo json_encode(["mensaje" => "Tutorial agregado correctamente."]);
                         } else {
                             http_response_code(500);
-                            echo json_encode([
-                                "error" => "Error al agregar el tutorial.",
-                                "detallesTecnicos" => $stmt->error
-                            ]);
+                            echo json_encode(["error" => "Error al agregar el tutorial.", "detallesTecnicos" => $stmt->error]);
                         }
                         $stmt->close();
                         break;

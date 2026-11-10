@@ -475,58 +475,100 @@ function guardarTutorial() {
     const id = document.getElementById('tutId').value;
     const nombre = document.getElementById('tutNombre').value.trim();
     const descripcion = document.getElementById('tutDescripcion').value.trim();
-    const archivo = document.getElementById('tutArchivo').value.trim();
+    const enlace = document.getElementById('tutEnlace').value.trim();
+    const archivoInput = document.getElementById('tutArchivo');
     const mensajePagos = document.getElementById('mensajePagos');
 
     if (!nombre) {
         if (mensajePagos) {
             mensajePagos.style.color = 'red';
-            mensajePagos.textContent = "El título/nombre del tutorial es obligatorio.";
+            mensajePagos.textContent = "El título del tutorial es obligatorio.";
         }
         return;
     }
 
     const esEdicion = id !== "";
-    const payload = {
-        recurso: 'Tutoriales',
-        consulta: esEdicion ? 'Update' : 'Create',
-        nombre: nombre,
-        descripcion: descripcion,
-        archivo: archivo
+
+    const enviarDatos = (recursoFinal) => {
+        const payload = {
+            recurso: 'Tutoriales',
+            consulta: esEdicion ? 'Update' : 'Create',
+            nombre: nombre,
+            descripcion: descripcion,
+            archivo: recursoFinal
+        };
+
+        if (esEdicion) {
+            payload.id_tutorial = parseInt(id);
+        }
+
+        fetch('API.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(async res => {
+            const data = await res.json();
+            if (!res.ok || data.error) {
+                throw new Error(data.error || "No se pudo procesar el tutorial.");
+            }
+            return data;
+        })
+        .then(data => {
+            if (mensajePagos) {
+                mensajePagos.style.color = '#45024b';
+                mensajePagos.textContent = data.mensaje || "Tutorial guardado correctamente.";
+            }
+            limpiarFormularioTutorial();
+            cargarTutoriales();
+        })
+        .catch(err => {
+            if (mensajePagos) {
+                mensajePagos.style.color = 'red';
+                mensajePagos.textContent = err.message;
+            }
+        });
     };
 
-    if (esEdicion) {
-        payload.id_tutorial = parseInt(id);
+    // Si seleccionaron un archivo físico, lo convertimos a Base64
+    if (archivoInput.files && archivoInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            enviarDatos(e.target.result); // Envía el archivo en Base64
+        };
+        reader.readAsDataURL(archivoInput.files[0]);
+    } else {
+        // Si no subieron archivo, mandamos el enlace de texto ingresado
+        enviarDatos(enlace);
     }
+}
 
-    fetch('API.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    })
-    .then(async res => {
-        const data = await res.json();
-        if (!res.ok || data.error) {
-            console.error("Detalle técnico API (guardarTutorial):", data.detallesTecnicos || data.error);
-            throw new Error(data.error || "No se pudo procesar el tutorial.");
+function prepararEdicionTutorial(tut) {
+    document.getElementById('tutId').value = tut.id_tutorial;
+    document.getElementById('tutNombre').value = tut.nombre;
+    document.getElementById('tutDescripcion').value = tut.descripcion;
+    
+    // Si el valor guardado es una ruta de archivo del servidor o un enlace web
+    if (tut.archivo && (tut.archivo.startsWith('tutoriales/') || tut.archivo.startsWith('http'))) {
+        if (tut.archivo.startsWith('http')) {
+            document.getElementById('tutEnlace').value = tut.archivo;
+        } else {
+            document.getElementById('tutEnlace').value = ''; // Es archivo local almacenado
         }
-        return data;
-    })
-    .then(data => {
-        if (mensajePagos) {
-            mensajePagos.style.color = '#45024b';
-            mensajePagos.textContent = data.mensaje || "Tutorial guardado correctamente.";
-        }
-        limpiarFormularioTutorial();
-        cargarTutoriales();
-    })
-    .catch(err => {
-        console.error("Error nativo en guardarTutorial():", err);
-        if (mensajePagos) {
-            mensajePagos.style.color = 'red';
-            mensajePagos.textContent = err.message;
-        }
-    });
+    }
+    
+    document.getElementById('tituloFormTutorial').textContent = "Editar Tutorial #" + tut.id_tutorial;
+    document.getElementById('btnCancelarEdicionTut').style.display = 'inline-block';
+}
+
+function limpiarFormularioTutorial() {
+    document.getElementById('tutId').value = '';
+    document.getElementById('tutNombre').value = '';
+    document.getElementById('tutDescripcion').value = '';
+    document.getElementById('tutEnlace').value = '';
+    document.getElementById('tutArchivo').value = '';
+    document.getElementById('tituloFormTutorial').textContent = "Registrar Nuevo Tutorial";
+    document.getElementById('btnCancelarEdicionTut').style.display = 'none';
 }
 
 function prepararEdicionTutorial(tut) {

@@ -131,11 +131,17 @@
                     <input type="hidden" id="tutId" value="">
                     
                     <div class="form-producto-grid">
-                        <input type="text" id="tutNombre" placeholder="Título del tutorial">
-                        <input type="text" id="tutArchivo" placeholder="Enlace o ruta del archivo/video">
-                        <textarea id="tutDescripcion" placeholder="Descripción del tutorial..." style="grid-column: span 2;"></textarea>
+                        <input type="text" id="tutNombre" placeholder="Título del tutorial" style="grid-column: 1 / -1;">
                         
-                        <div class="form-acciones" style="grid-column: span 2;">
+                        <!-- Contenedor para poner el enlace y el archivo lado a lado -->
+                        <div style="grid-column: 1 / -1; display: flex; gap: 10px; align-items: center;">
+                            <input type="text" id="tutEnlace" placeholder="Enlace web (Ej: YouTube, URL externa)" style="flex: 1;">
+                            <input type="file" id="tutArchivo" accept="application/pdf,video/*" style="flex: 1; padding: 7px; background: #fff;">
+                        </div>
+
+                        <textarea id="tutDescripcion" placeholder="Descripción del tutorial..." style="grid-column: 1 / -1;"></textarea>
+                        
+                        <div class="form-acciones" style="grid-column: 1 / -1;">
                             <button type="button" class="btn-guardar" onclick="guardarTutorial()">Guardar Tutorial</button>
                             <button type="button" id="btnCancelarEdicionTut" class="btn-cancelar" style="display:none;" onclick="limpiarFormularioTutorial()">Cancelar</button>
                         </div>
@@ -152,7 +158,7 @@
                                     <th>ID</th>
                                     <th>Título</th>
                                     <th>Descripción</th>
-                                    <th>Archivo / Enlace</th>
+                                    <th>Recurso</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
