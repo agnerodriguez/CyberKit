@@ -42,8 +42,10 @@
         
         <script>
           document.addEventListener("DOMContentLoaded", () => {
-              cargarPublicaciones();
-          });
+            cargarUsuarioSesion().then(() => {
+                cargarPublicaciones();
+            });
+        });
         </script>
 
         <!-- Botón para alternar la visibilidad del formulario -->

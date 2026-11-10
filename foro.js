@@ -17,23 +17,30 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-// OBTENER USUARIO DE LA SESIÓN
-// Recupera el identificador y el nombre del usuario almacenados en el navegador.
+let idUsuarioActual = 0;
+
+function cargarUsuarioSesion() {
+    return fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            recurso: 'Usuarios',
+            consulta: 'ReadUsuarioByID'
+        })
+    })
+    .then(respuesta => respuesta.json())
+    .then(usuario => {
+        idUsuarioActual = parseInt(usuario.id_usuario) || 0;
+    })
+    .catch(error => {
+        console.error('No se pudo obtener el usuario de la sesión:', error);
+        idUsuarioActual = 0;
+    });
+}
+
 function getUsuarioSesion() {
-    let idUsuario = localStorage.getItem('idUsuario');
-    let nombreUsuario = localStorage.getItem('usuario');
-
-// un ID predeterminado si no existe o no es un número válido. ayudaaaaa
-    if (!idUsuario || isNaN(idUsuario)) idUsuario = 0; 
-
-    // Asigna un nombre predeterminado si no hay uno almacenado.
-    if (!nombreUsuario) nombreUsuario = 'CyberUser';
-
-    // Devuelve los datos del usuario en un objeto.
-    return {
-        id: parseInt(idUsuario),
-        nombre: nombreUsuario
-    };
+    const nombreUsuario = localStorage.getItem('usuario') || localStorage.getItem('nombre') || 'CyberUser';
+    return { id: idUsuarioActual, nombre: nombreUsuario };
 }
 
 // CARGAR PUBLICACIONES
@@ -278,21 +285,37 @@ function renderizarPublicacion(post) {
     const card = document.createElement('div');
     card.className = 'post-card';
 
+    // Obtenemos el usuario actual de la sesión
+    const usuarioActual = getUsuarioSesion();
+
     let imagenHTML = '';
     if (post.imagen) {
         imagenHTML = `<div style="margin: 10px 0;"><img src="data:image/jpeg;base64,${post.imagen}" style="max-width: 100%; max-height: 350px; border-radius: 6px;"></div>`;
     }
 
+    // Generar el botón de eliminar solo si el usuario logueado es el autor del post
+    let botonEliminarHTML = '';
+
+    if (usuarioActual.id > 0 && parseInt(usuarioActual.id) === parseInt(post.id_usuario)) {
+        botonEliminarHTML = `
+        <button type="button" class="btn-cyber-sm" onclick="eliminarPublicacion(${post.id_publicacion})"
+            style="width: 35px; height: 35px; padding: 5px; flex-shrink: 0;">
+            <img src="iconos/papelera-de-reciclaje.png" alt="Eliminar" style="width: 18px; height: 18px;">
+        </button>`;
+    }
+
     card.innerHTML = `
-        <div class="post-header" style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #aaa; margin-bottom: 8px;">
+        <div class="post-header" style="display: flex; align-items: center; margin-bottom: 8px;">
             <span class="post-autor"> <img src="iconos/usuarioCeleste.png" alt="usuario" style= "width: 2.5%"> ${escapeHtml(post.autor_nombre || 'Anónimo')}</span>
             
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <!-- Botón al lado de la fecha/hora -->
+            <div style="display: flex; align-items: center; gap: 10px;">
+                ${botonEliminarHTML}
                 <button class="btn-cyber-sm" onclick="alternarComentarios(${post.id_publicacion})" id="btn-ver-respuestas-${post.id_publicacion}">Ver respuestas</button>
                 <span class="post-fecha">🕒 ${escapeHtml(post.fecha || 'Reciente')}</span>
             </div>
+
         </div>
+
         <p class="post-contenido" style="font-size: 16px; margin-bottom: 10px;">${escapeHtml(post.contenido)}</p>
         ${imagenHTML}
 
@@ -306,8 +329,38 @@ function renderizarPublicacion(post) {
         </div>
     `;
 
-    // muestra las respuestas cuando el usuario haga clic explicitamente en el boton
     return card;
+}
+
+// ELIMINAR PUBLICACIÓN
+function eliminarPublicacion(idPublicacion) {
+    if (!confirm('¿Estás seguro de que deseas eliminar esta publicación?')) {
+        return;
+    }
+
+    fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            recurso: 'Publicacion',
+            consulta: 'Delete',
+            id_publicacion: parseInt(idPublicacion)
+        })
+    })
+    .then(respuesta => respuesta.json().then(data => ({ ok: respuesta.ok, data })))
+    .then(resultado => {
+        if (resultado.ok && !resultado.data.error) {
+
+            // Recargamos las publicaciones para reflejar los cambios
+            cargarPublicaciones();
+        } else {
+            alert(resultado.data.error || 'No se pudo eliminar la publicación.');
+        }
+    })
+    .catch(error => {
+        console.error('Error al eliminar publicación:', error);
+        alert('Error de conexión con el servidor.');
+    });
 }
 
 // Funcion para mostrar u ocultar la seccion de respuestas de una publi especifica

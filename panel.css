@@ -248,8 +248,9 @@ html, body {
 
 /* Bloque 2: Tabla de Listado de Productos (Abajo por separado) */
 .card-tabla-productos {
+    margin-top: 2px;
     background: #ffffff;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #cbd5e1;
     border-radius: 12px;
     padding: 20px 25px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);

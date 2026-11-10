@@ -66,13 +66,6 @@ body {
     text-shadow: 2px 2px 0px #5a189a, 0 0 10px #ff00ff;
 }
 
-.collage-derecha {
-    position: relative;
-    width: 450px;
-    height: 320px;
-    flex-shrink: 0;
-}
-
 /* --- SECCIÓN FORO (Ocupa todo el ancho de la pantalla) --- */
 .foro-seccion {
     width: 100%;
@@ -160,9 +153,9 @@ body {
     box-shadow: 0 0 12px #00ffff;
 }
 
-/* Tarjeta de Crear Publicación (Única centrada) */
+/* Tarjeta de Crear Publicación                                             */
 .crear-post-card {
-    background: rgba(255, 46, 237, 0.15);
+    background: rgba(84, 2, 77, 0.682);
     border: 3px solid #ff00ff;
     border-radius: 8px;
     padding: 25px;
@@ -186,6 +179,14 @@ body {
     width: 100%;
     min-height: 100px;
     resize: vertical;
+}
+
+.post-autor {
+    color: white !important;
+}
+
+.post-fecha {
+    color: white !important;
 }
 
 /* Botones */
