@@ -116,7 +116,7 @@
             </div>
         </section>
 
-        <!-- VISTA 3: Galería PDF -->
+       <!-- VISTA 3: Galería PDF -->
         <section id="seccion-manuales-pdf" class="seccion-vista">
             <h1 class="titulo-pixel brillo-rosa">TUTORIALES EN PDF</h1>
 
@@ -132,6 +132,8 @@
 
                 <div class="contenido-ventana-pdfs">
                     <div class="rejilla-columnas-pdf">
+                        
+                        <!-- PDF 1: Manual de Armado -->
                         <div class="columna-pdf">
                             <div class="tarjeta-pdf1">
                                 <h3>MANUAL DE ARMADO</h3>
@@ -139,11 +141,16 @@
                                 <p>Lista de materiales</p>
                                 <p>Diagramas</p>
                             </div>
-                            <button class="boton-descargar-pdf">DESCARGAR</button>
+                            <a href="pdf/armado.pdf" download="armado.pdf" style="text-decoration: none;">
+                                <button class="boton-descargar-pdf" style="width: 100%;">DESCARGAR</button>
+                            </a>
                         </div>
 
+                        <!-- PDF 2: Cableado -->
                         <div class="columna-pdf columna-pdf-desplazada">
-                            <button class="boton-descargar-pdf">DESCARGAR</button>
+                            <a href="pdf/cableado.pdf" download="cableado.pdf" style="text-decoration: none;">
+                                <button class="boton-descargar-pdf" style="width: 100%;">DESCARGAR</button>
+                            </a>
                             <div class="tarjeta-pdf2">
                                 <h3>CABLEADO</h3>
                                 <p>Esquemas</p>
@@ -152,6 +159,7 @@
                             </div>
                         </div>
 
+                        <!-- PDF 3: Software -->
                         <div class="columna-pdf">
                             <div class="tarjeta-pdf3">
                                 <h3>SOFTWARE</h3>
@@ -159,11 +167,16 @@
                                 <p>Instalación</p>
                                 <p>Ajustes</p>
                             </div>
-                            <button class="boton-descargar-pdf">DESCARGAR</button>
+                            <a href="pdf/software.pdf" download="software.pdf" style="text-decoration: none;">
+                                <button class="boton-descargar-pdf" style="width: 100%;">DESCARGAR</button>
+                            </a>
                         </div>
 
+                        <!-- PDF 4: Resolución -->
                         <div class="columna-pdf columna-pdf-desplazada">
-                            <button class="boton-descargar-pdf">DESCARGAR</button>
+                            <a href="pdf/resolucion.pdf" download="sresolucion.pdf" style="text-decoration: none;">
+                                <button class="boton-descargar-pdf" style="width: 100%;">DESCARGAR</button>
+                            </a>
                             <div class="tarjeta-pdf4">
                                 <h3>RESOLUCIÓN</h3>
                                 <p>Problemas comunes</p>
@@ -171,6 +184,7 @@
                                 <p>Contacto</p>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
