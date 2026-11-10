@@ -68,93 +68,51 @@
             <p class="texto-subtitulo">Aprende paso a paso con nuestros videos tutoriales desde el armado hasta ideas de personalizacion</p>
 
             <div class="rejilla-videos-tutoriales">
-                <!-- Video ID 1 -->
-                <div class="ventana-retro-video video-tutorial" onclick="openVideoModal(1)">
-                    <div class="encabezado-ventana-retro">
-                        <span class="titulo-ventana-retro">Data</span>
-                        <div class="puntos-ventana-retro">
-                            <span class="punto-ventana-retro"></span>
-                            <span class="punto-ventana-retro"></span>
-                            <span class="punto-ventana-retro"></span>
-                        </div>
-                    </div>
-                    <div class="contenido-ventana-retro">
-                        <div class="miniatura-video-tutorial">
-                            <img src="https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&w=500&q=80" alt="Cyberdesk DIY">
-                            <div class="boton-reproducir-circular">
-                                <div class="triangulo-reproducir"></div>
+                <?php
+                // Incluimos la conexión si no está cargada arriba
+                include_once("conexion.php");
+
+                $sql = "SELECT id_tutorial, nombre, descripcion, archivo FROM tutoriales ORDER BY id_tutorial DESC";
+                $resultado = $conexion->query($sql);
+
+                if ($resultado && $resultado->num_rows > 0) {
+                    while ($fila = $resultado->fetch_assoc()) {
+                        $id = (int)$fila['id_tutorial'];
+                        $nombreHtml = htmlspecialchars($fila['nombre'], ENT_QUOTES, 'UTF-8');
+                        $archivo = trim($fila['archivo']);
+
+                        // Extraer la miniatura de YouTube automáticamente
+                        $miniatura = "img/tutovideos.png";
+                        if (preg_match('/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/))([A-Za-z0-9_-]{11})/', $archivo, $match)) {
+                            $miniatura = "https://img.youtube.com/vi/" . $match[1] . "/hqdefault.jpg";
+                        }
+                ?>
+                        <!-- Ventana retro generada por cada fila de la BD -->
+                        <div class="ventana-retro-video video-tutorial" onclick="openVideoModal(<?php echo $id; ?>)">
+                            <div class="encabezado-ventana-retro">
+                                <span class="titulo-ventana-retro">Tutorial #<?php echo $id; ?></span>
+                                <div class="puntos-ventana-retro">
+                                    <span class="punto-ventana-retro"></span>
+                                    <span class="punto-ventana-retro"></span>
+                                    <span class="punto-ventana-retro"></span>
+                                </div>
+                            </div>
+                            <div class="contenido-ventana-retro">
+                                <div class="miniatura-video-tutorial">
+                                    <img src="<?php echo $miniatura; ?>" alt="<?php echo $nombreHtml; ?>">
+                                    <div class="boton-reproducir-circular">
+                                        <div class="triangulo-reproducir"></div>
+                                    </div>
+                                </div>
+                                <p class="titulo-video-tutorial"><?php echo $nombreHtml; ?></p>
                             </div>
                         </div>
-                        <p class="titulo-video-tutorial">Cyberdesk DIY de doble pantalla</p>
-                    </div>
-                </div>
-
-                <!-- Video ID 2 -->
-                <div class="ventana-retro-video video-tutorial" onclick="openVideoModal(2)">
-                    <div class="encabezado-ventana-retro">
-                        <span class="titulo-ventana-retro">Data</span>
-                        <div class="puntos-ventana-retro">
-                            <span class="punto-ventana-retro"></span>
-                            <span class="punto-ventana-retro"></span>
-                            <span class="punto-ventana-retro"></span>
-                        </div>
-                    </div>
-                    <div class="contenido-ventana-retro">
-                        <div class="miniatura-video-tutorial">
-                            <img src="https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=500&q=80" alt="Altoids Cyberdesk">
-                            <div class="boton-reproducir-circular">
-                                <div class="triangulo-reproducir"></div>
-                            </div>
-                        </div>
-                        <p class="titulo-video-tutorial">Un cyberdesk curiosamente...</p>
-                    </div>
-                </div>
-
-                <!-- Video ID 3 -->
-                <div class="ventana-retro-video video-tutorial" onclick="openVideoModal(3)">
-                    <div class="encabezado-ventana-retro">
-                        <span class="titulo-ventana-retro">Data</span>
-                        <div class="puntos-ventana-retro">
-                            <span class="punto-ventana-retro"></span>
-                            <span class="punto-ventana-retro"></span>
-                            <span class="punto-ventana-retro"></span>
-                        </div>
-                    </div>
-                    <div class="contenido-ventana-retro">
-                        <div class="miniatura-video-tutorial">
-                            <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=80" alt="Cyberdesk de sirena">
-                            <div class="boton-reproducir-circular">
-                                <div class="triangulo-reproducir"></div>
-                            </div>
-                        </div>
-                        <p class="titulo-video-tutorial">Cyberdesk de sirena para armar</p>
-                    </div>
-                </div>
-
-                <!-- Video ID 4 -->
-                <div class="ventana-retro-video video-tutorial" onclick="openVideoModal(4)">
-                    <div class="encabezado-ventana-retro">
-                        <span class="titulo-ventana-retro">Data</span>
-                        <div class="puntos-ventana-retro">
-                            <span class="punto-ventana-retro"></span>
-                            <span class="punto-ventana-retro"></span>
-                            <span class="punto-ventana-retro"></span>
-                        </div>
-                    </div>
-                    <div class="contenido-ventana-retro">
-                        <div class="miniatura-video-tutorial">
-                            <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=80" alt="Construcción Cyberdesk">
-                            <div class="boton-reproducir-circular">
-                                <div class="triangulo-reproducir"></div>
-                            </div>
-                        </div>
-                        <p class="titulo-video-tutorial">Construcción de Cyberdesk con...</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="barra-progreso-videos">
-                <div class="progreso-videos"></div>
+                <?php 
+                    }
+                } else {
+                    echo "<p style='color: #f3e8ff; grid-column: 1/-1; text-align: center;'>No hay tutoriales disponibles en la base de datos.</p>";
+                }
+                ?>
             </div>
         </section>
 
