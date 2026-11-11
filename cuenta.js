@@ -118,75 +118,80 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     async function cargarCompras() {
-        const contenedor = document.getElementById('lista-compras');
-        contenedor.textContent = 'Cargando compras...';
+    const contenedor = document.getElementById('lista-compras');
+    contenedor.innerHTML = '<tr><td colspan="6" class="estado-carga">Cargando compras...</td></tr>';
 
-        try {
-            const compras = await solicitarAPI({
-                recurso: 'DetalleCompra',
-                consulta: 'ReadUsuario'
-            });
+    try {
+        const compras = await solicitarAPI({
+            recurso: 'DetalleCompra',
+            consulta: 'ReadUsuario'
+        });
 
-            contenedor.replaceChildren();
-            if (!Array.isArray(compras) || compras.length === 0) {
-                contenedor.textContent = '[ NO HAY COMPRAS REGISTRADAS ]';
-                contenedor.className = 'lista-compras estado-vacio';
-                return;
+        contenedor.innerHTML = '';
+
+        if (!Array.isArray(compras) || compras.length === 0) {
+            contenedor.innerHTML = '<tr><td colspan="6" class="estado-vacio">[ NO HAY COMPRAS REGISTRADAS ]</td></tr>';
+            return;
+        }
+
+        compras.forEach(compra => {
+            const tr = document.createElement('tr');
+
+            // Determinar texto y clase CSS según el estado de la compra
+            let claseEstado = 'estado-pendiente';
+            let textoEstado = compra.estado || 'Pendiente';
+            const idEstado = Number(compra.id_estado);
+
+            if (idEstado === 1 || String(textoEstado).toLowerCase().includes('pago')) {
+                claseEstado = 'estado-pago';
+                textoEstado = 'Pago';
+            } else if (idEstado === 3 || String(textoEstado).toLowerCase().includes('impago')) {
+                claseEstado = 'estado-impago';
+                textoEstado = 'Impago';
+            } else if (idEstado === 2 || String(textoEstado).toLowerCase().includes('pendiente')) {
+                claseEstado = 'estado-pendiente';
+                textoEstado = 'Pendiente';
             }
 
-            contenedor.className = 'lista-compras';
-            compras.forEach(compra => {
-                const fila = document.createElement('div');
-                fila.className = 'purchase-row';
+            // Formatear precio
+            const subtotalFormateado = new Intl.NumberFormat('es-AR', {
+                style: 'currency',
+                currency: 'ARS'
+            }).format(Number(compra.subtotal) || 0);
 
-                const info = document.createElement('div');
-                info.className = 'purchase-info';
+            // Formatear fecha
+            const fechaCompra = new Date(String(compra.fecha || '').replace(' ', 'T'));
+            const fechaFormateada = Number.isNaN(fechaCompra.getTime())
+                ? (compra.fecha || '-')
+                : fechaCompra.toLocaleDateString('es-AR');
 
-                const icono = document.createElement('div');
-                icono.className = 'cart-icon-circle';
-                icono.innerHTML = '<i class="bi bi-cart-fill"></i>';
+            tr.innerHTML = `
+                <td>#${compra.id_detalleCompra}</td>
+                <td><strong>${escapeHtml(compra.producto || 'Producto')}</strong></td>
+                <td>x${compra.cantidad}</td>
+                <td>${subtotalFormateado}</td>
+                <td>${fechaFormateada}</td>
+                <td><span class="insignia-estado ${claseEstado}">${escapeHtml(textoEstado)}</span></td>
+            `;
 
-                const etiqueta = document.createElement('span');
-                etiqueta.className = 'action-label';
-                etiqueta.textContent = 'Compraste:';
-
-                const producto = document.createElement('span');
-                producto.className = 'product-name';
-                producto.textContent = compra.producto || 'Producto';
-
-                info.append(icono, etiqueta, producto);
-
-                const meta = document.createElement('div');
-                meta.className = 'purchase-meta';
-
-                const cantidad = document.createElement('span');
-                cantidad.className = 'meta-qty';
-                cantidad.textContent = `x${compra.cantidad}`;
-
-                const precio = document.createElement('span');
-                precio.className = 'meta-price';
-                precio.textContent = new Intl.NumberFormat('es-AR', {
-                    style: 'currency',
-                    currency: 'ARS'
-                }).format(Number(compra.subtotal) || 0);
-
-                const fecha = document.createElement('span');
-                fecha.className = 'meta-date';
-                const fechaCompra = new Date(String(compra.fecha || '').replace(' ', 'T'));
-                fecha.textContent = Number.isNaN(fechaCompra.getTime())
-                    ? (compra.fecha || '')
-                    : fechaCompra.toLocaleDateString('es-AR');
-
-                meta.append(cantidad, precio, fecha);
-                fila.append(info, meta);
-                contenedor.append(fila);
-            });
-        } catch (error) {
-            console.error('Error al cargar las compras:', error);
-            contenedor.textContent = 'No se pudo cargar el historial de compras.';
-            contenedor.className = 'lista-compras estado-vacio';
-        }
+            contenedor.appendChild(tr);
+        });
+    } catch (error) {
+        console.error('Error al cargar las compras:', error);
+        contenedor.innerHTML = '<tr><td colspan="6" class="estado-vacio">No se pudo cargar el historial de compras.</td></tr>';
     }
+}
+
+// Función para sanitizar HTML y evitar inyecciones XSS
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
 
     cargarUsuario().catch(error => {
         console.error('Error al cargar el perfil:', error);

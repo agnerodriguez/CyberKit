@@ -36,9 +36,6 @@ $id_usuario = $_SESSION['id_usuario'];
                         <div class="circulo-avatar">
                             <i class="bi bi-person-fill"></i>
                         </div>
-                        <button class="boton-editar-avatar" title="Cambiar foto">
-                            <i class="bi bi-pencil-fill"></i>
-                        </button>
                     </div>
                     <span id="sidebar-username" class="texto-nombre-usuario">Cyberuser</span>
                 </div>
@@ -107,19 +104,31 @@ $id_usuario = $_SESSION['id_usuario'];
                     </div>
                 </div>
 
-                <!-- MODAL / VISTA 2: MIS COMPRAS -->
+               <!-- MODAL / VISTA 2: MIS COMPRAS -->
                 <div id="seccion-compras" class="vista-cyber">
-                    
-                    <!-- BLOQUE 1: MIS COMPRAS -->
                     <div class="tarjeta-panel margen-inferior">
                         <h2 class="titulo-vista">Mis Compras</h2>
 
-                        <div class="lista-compras" id="lista-compras">
-                            <!-- Inyectado dinámicamente vía Fetch API -->
-                            <div class="estado-carga">Cargando compras desde la red...</div>
+                        <div class="tabla-compras-contenedor">
+                            <table class="tabla-compras">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Producto</th>
+                                        <th>Cant.</th>
+                                        <th>Subtotal</th>
+                                        <th>Fecha</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lista-compras">
+                                    <tr>
+                                        <td colspan="6" class="estado-carga">Cargando compras desde la red...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-
                 </div>
 
             </section>

@@ -153,6 +153,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             ]);
                         }
                         break;
+                        
+                    case 'ReadUsuario': // Usuario
+                        $id_usuario = (int)($_SESSION['id_usuario'] ?? 0);
+
+                        if ($id_usuario <= 0) {
+                            http_response_code(401);
+                            echo json_encode(["error" => "Debes iniciar sesión para consultar tus compras."]);
+                            break;
+                        }
+
+                        $sql = "SELECT
+                                    dc.id_detalleCompra,
+                                    dc.cantidad,
+                                    dc.subtotal,
+                                    dc.fecha,
+                                    dc.id_estado,
+                                    ep.nombre AS estado,
+                                    p.nombre AS producto
+                                FROM detalleCompra dc
+                                INNER JOIN productos p ON dc.id_producto = p.id_producto
+                                LEFT JOIN estadopago ep ON dc.id_estado = ep.id_estado
+                                WHERE dc.id_usuario = ?
+                                ORDER BY dc.fecha DESC, dc.id_detalleCompra DESC";
+                        $stmt = $conexion->prepare($sql);
+
+                        if ($stmt) {
+                            $stmt->bind_param("i", $id_usuario);
+                            if (!$stmt->execute()) {
+                                http_response_code(500);
+                                echo json_encode(["error" => "No se pudo consultar el historial de compras."]);
+                                $stmt->close();
+                                break;
+                            }
+                            $resultado = $stmt->get_result();
+                            $compras = [];
+
+                            while ($fila = $resultado->fetch_assoc()) {
+                                $compras[] = [
+                                    "id_detalleCompra" => (int)$fila['id_detalleCompra'],
+                                    "producto" => $fila['producto'],
+                                    "cantidad" => (int)$fila['cantidad'],
+                                    "subtotal" => (float)$fila['subtotal'],
+                                    "fecha" => $fila['fecha'],
+                                    "id_estado" => (int)$fila['id_estado'],
+                                    "estado" => $fila['estado']
+                                ];
+                            }
+
+                            echo json_encode($compras);
+                            $stmt->close();
+                        } else {
+                            http_response_code(500);
+                            echo json_encode(["error" => "No se pudo consultar el historial de compras."]);
+                        }
+                        break;
 
                     case 'Update': //Usuario
                         $id_usuario = (int)($_SESSION['id_usuario'] ?? 0);

@@ -291,3 +291,72 @@ body {
         grid-column: span 1;
     }
 }
+
+/* ------------------------------------------------------
+   ESTILOS DE TABLA Y ESTADOS - MIS COMPRAS
+   ------------------------------------------------------ */
+.tabla-compras-contenedor {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.tabla-compras {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 1rem;
+    color: #ffffff;
+}
+
+.tabla-compras th {
+    background: rgba(106, 111, 174, 0.3);
+    color: #f55cc0;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.75rem;
+    padding: 14px 16px;
+    border-bottom: 2px solid rgba(245, 92, 192, 0.4);
+}
+
+.tabla-compras td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+}
+
+.tabla-compras tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Etiquetas del Estado */
+.insignia-estado {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+}
+
+.insignia-estado.estado-pago {
+    background: rgba(0, 255, 85, 0.15);
+    color: #00ff55;
+    border: 1px solid #00ff55;
+    box-shadow: 0 0 8px rgba(0, 255, 85, 0.4);
+}
+
+.insignia-estado.estado-pendiente {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid #ffc107;
+    box-shadow: 0 0 8px rgba(255, 193, 7, 0.4);
+}
+
+.insignia-estado.estado-impago {
+    background: rgba(255, 77, 77, 0.15);
+    color: #ff4d4d;
+    border: 1px solid #ff4d4d;
+    box-shadow: 0 0 8px rgba(255, 77, 77, 0.4);
+}
