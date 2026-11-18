@@ -28,12 +28,36 @@ function cargarUsuarioSesion() {
             consulta: 'ReadUsuarioByID'
         })
     })
-    .then(respuesta => respuesta.json())
+    .then(async response => {
+        const textoRespuesta = await response.text();
+        let data;
+
+        try {
+            data = JSON.parse(textoRespuesta);
+        } catch (err) {
+            console.error("Error nativo del servidor:", textoRespuesta);
+            throw new Error("Respuesta no válida del servidor.");
+        }
+
+        // Si no hay sesión iniciada, es un caso esperado.
+        if (response.status === 401) {
+            return { id_usuario: 0 };
+        }
+
+        if (!response.ok || data.error) {
+            if (data.detallesTecnicos) {
+                console.error("Detalles técnicos API:", data.detallesTecnicos);
+            }
+            throw new Error(data.error || "No se pudo obtener el usuario de la sesión.");
+        }
+
+        return data;
+    })
     .then(usuario => {
         idUsuarioActual = parseInt(usuario.id_usuario) || 0;
     })
     .catch(error => {
-        console.error('No se pudo obtener el usuario de la sesión:', error);
+        console.error("Error en la solicitud cargarUsuarioSesion():", error);
         idUsuarioActual = 0;
     });
 }
@@ -46,17 +70,13 @@ function getUsuarioSesion() {
 // CARGAR PUBLICACIONES
 // Obtiene las publicaciones de la categoría seleccionada y las muestra en el foro.
 function cargarPublicaciones() {
-    // Recupera el identificador de la categoría seleccionada
     const idCategoria = document.getElementById('selectCategoria').value;
-
-    // Obtiene el contenedor donde se mostrarán las publicaciones.
     const contenedor = document.getElementById('preguntasLista');
+
     if (!contenedor) return;
-    
-    // Muestra un mensaje mientras se cargan los datos
+
     contenedor.innerHTML = '<p class="cargando">Cargando publicaciones...</p>';
 
-    // Envía una solicitud POST a la API para consultar las publicaciones.
     fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -66,30 +86,41 @@ function cargarPublicaciones() {
             id_categoria: parseInt(idCategoria)
         })
     })
+    .then(async response => {
+        const textoRespuesta = await response.text();
+        let data;
 
-    // Convierte la respuesta del servidor a formato JSON
-    .then(respuesta => respuesta.json())
+        try {
+            data = JSON.parse(textoRespuesta);
+        } catch (err) {
+            console.error("Error nativo del servidor:", textoRespuesta);
+            throw new Error("Respuesta no válida del servidor.");
+        }
+
+        if (!response.ok || data.error) {
+            if (data.detallesTecnicos) {
+                console.error("Detalles técnicos API:", data.detallesTecnicos);
+            }
+            throw new Error(data.error || "No se pudieron cargar las publicaciones.");
+        }
+
+        return data;
+    })
     .then(publicaciones => {
-
-        // Limpia el contenedor antes de mostrar los resultados
         contenedor.innerHTML = '';
 
-        // Comprueba si no se recibieron publicaciones válidas
         if (!Array.isArray(publicaciones) || publicaciones.length === 0) {
             contenedor.innerHTML = '<p class="sin-datos">No hay publicaciones en esta sección todavía. ¡Sé el primero en participar!</p>';
             return;
         }
 
-        // Recorre las publicaciones recibidas y crea una tarjeta para cada una
         publicaciones.forEach(post => {
             contenedor.appendChild(renderizarPublicacion(post));
         });
     })
-
-    // Maneja los errores que ocurran durante la solicitud
     .catch(error => {
-        console.error('Error al cargar publicaciones:', error);
-        contenedor.innerHTML = '<p> class="error">Ocurrió un error al conectar con el servidor. </p>';
+        console.error("Error en la solicitud cargarPublicaciones():", error);
+        contenedor.innerHTML = '<p class="error">Ocurrió un error al conectar con el servidor.</p>';
     });
 }
 
@@ -128,7 +159,6 @@ function enviarPostAPI(idUsuario, idCategoria, contenido, imagenBase64) {
     fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // Convierte los datos de la publicación a formato JSON
         body: JSON.stringify({
             recurso: 'Publicacion',
             consulta: 'Create',
@@ -138,47 +168,52 @@ function enviarPostAPI(idUsuario, idCategoria, contenido, imagenBase64) {
             imagen: imagenBase64
         })
     })
-    .then(respuesta => {
-        // Obtiene los datos JSON y conserva el estado de la respuesta HTTP
-        return respuesta.json().then(data => {
-            return { ok: respuesta.ok, data: data };
-        });
-    })
-    .then(resultado => {
-        // Comprueba si la operación fue exitosa y la API no devolvió un error
-        if (resultado.ok && !resultado.data.error) {
-            // Limpia el campo de contenido después de publicar.
-            document.getElementById('nuevoPostContenido').value = '';
+    .then(async response => {
+        const textoRespuesta = await response.text();
+        let data;
 
-            // Limpia el campo de imagen si existe.
-            const archivoInput = document.getElementById('nuevoPostImagen');
-            if (archivoInput) archivoInput.value = '';
-            
-            // Selecciona la categoría de la publicación recién creada
-            document.getElementById('selectCategoria').value = idCategoria;
-
-            // Actualiza la lista de publicaciones
-            cargarPublicaciones();
-        } else {
-            // Muestra el mensaje de error devuelto por la API
-            alert(resultado.data.error || 'No se pudo crear la publicación.');
+        try {
+            data = JSON.parse(textoRespuesta);
+        } catch (err) {
+            console.error("Error nativo del servidor:", textoRespuesta);
+            throw new Error("Respuesta no válida del servidor.");
         }
+
+        if (!response.ok || data.error) {
+            if (data.detallesTecnicos) {
+                console.error("Detalles técnicos API:", data.detallesTecnicos);
+            }
+            throw new Error(data.error || "No se pudo crear la publicación.");
+        }
+
+        return data;
     })
-    // Maneja errores de conexión o procesamiento
+    .then(data => {
+        // Limpia el campo de contenido después de publicar.
+        document.getElementById('nuevoPostContenido').value = '';
+
+        // Limpia el campo de imagen si existe.
+        const archivoInput = document.getElementById('nuevoPostImagen');
+        if (archivoInput) archivoInput.value = '';
+        
+        // Selecciona la categoría de la publicación recién creada
+        document.getElementById('selectCategoria').value = idCategoria;
+
+        // Actualiza la lista de publicaciones
+        cargarPublicaciones();
+    })
     .catch(error => {
-        console.error('Error al crear publicación:', error);
-        alert('Error de conexión.');
+        console.error("Error en la solicitud de publicación:", error);
+        alert(error.message);
     });
 }
 
 // CARGAR COMENTARIOS
 // Consulta los comentarios de una publicación y los muestra en pantalla
 function cargarComentarios(idPublicacion) {
-    // Obtiene el contenedor de comentarios correspondiente a la publicación
     const listaComentarios = document.getElementById(`comentarios-lista-${idPublicacion}`);
+    
     if (!listaComentarios) return;
-
-    // Solicita a la API los comentarios asociados a la publicación
     fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -188,60 +223,63 @@ function cargarComentarios(idPublicacion) {
             id_publicacion: parseInt(idPublicacion)
         })
     })
-    .then(respuesta => respuesta.json())
+    .then(async response => {
+        const textoRespuesta = await response.text();
+        let data;
+
+        try {
+            data = JSON.parse(textoRespuesta);
+        } catch (err) {
+            console.error("Error nativo del servidor:", textoRespuesta);
+            throw new Error("Respuesta no válida del servidor.");
+        }
+
+        if (!response.ok || data.error) {
+            if (data.detallesTecnicos) {
+                console.error("Detalles técnicos API:", data.detallesTecnicos);
+            }
+            throw new Error(data.error || "No se pudieron cargar los comentarios.");
+        }
+
+        return data;
+    })
     .then(comentarios => {
-        // Limpia el contenedor antes de mostrar los comentarios actualizados
         listaComentarios.innerHTML = '';
 
-        // Comprueba que la respuesta contenga comentarios
         if (Array.isArray(comentarios) && comentarios.length > 0) {
-            // Recorre los comentarios recibidos
             comentarios.forEach(com => {
-                // Crea un elemento HTML para cada comentario
                 const item = document.createElement('div');
 
-                // Define los estilos visuales del comentarios
                 item.style.margin = '6px 0';
                 item.style.padding = '6px';
                 item.style.background = 'rgba(0,0,0,0.1)';
                 item.style.borderRadius = '4px';
 
-                // Inserta el nombre del autor y el contenido del comentario
-                // escapeHtml protege el texto para que no se interprete como HTML
                 item.innerHTML = `
                     <strong style="font-size: 13px;">
-                    <img src="iconos/usuarioRosa.png" alt="usuario" style= "width: 1%">
+                    <img src="iconos/usuarioRosa.png" alt="usuario" style="width: 1%">
                     ${escapeHtml(com.autor_nombre)}
                     :</strong> <span style="font-size: 13px;">${escapeHtml(com.contenido)}</span>
                 `;
 
-                // Agrega el comentario al contenedor
                 listaComentarios.appendChild(item);
             });
         }
     })
-    // Registra cualquier error ocurrido al consultar los comentarios
     .catch(error => {
-        console.error('Error al cargar comentarios:', error);
+        console.error("Error en la solicitud cargarComentarios():", error);
     });
 }
 
 // CREAR COMENTARIO
 // Obtiene el texto escrito por el usuario y lo envía como respuesta a la publicación indicada
 function crearComentario(idPublicacion) {
-    // Obtiene el campo de texto correspondiente a la publicación.
     const input = document.getElementById(`input-comentario-${idPublicacion}`);
-
-    // Recupera el contenido y elimina los espacios de los extremos
     const contenido = input.value.trim();
-
-    // Obtiene los datos del usuario que realiza el comentario
     const usuario = getUsuarioSesion();
 
-    // Evita enviar comentarios vacios
     if (!contenido) return;
 
-    // Envía el comentario a la API mediante una solicitud POST
     fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -253,29 +291,33 @@ function crearComentario(idPublicacion) {
             contenido: contenido
         })
     })
-    .then(respuesta => {
-        // Convierte la respuesta a JSON y conserva el estado HTTP
-        return respuesta.json().then(data => {
-            return { ok: respuesta.ok, data: data };
-        });
-    })
-    .then(resultado => {
-        // Comprueba si el comentario se creó correctamente
-        if (resultado.ok && !resultado.data.error) {
-            // Limpia el campo de texto después del envío
-            input.value = '';
+    .then(async response => {
+        const textoRespuesta = await response.text();
+        let data;
 
-            // Vuelve a cargar los comentarios para mostrar el nuevo
-            cargarComentarios(idPublicacion);
-        } else {
-            // Informa si la API devolvio un error
-            alert(resultado.data.error || 'No se pudo enviar el comentario.');
+        try {
+            data = JSON.parse(textoRespuesta);
+        } catch (err) {
+            console.error("Error nativo del servidor:", textoRespuesta);
+            throw new Error("Respuesta no válida del servidor.");
         }
-    })
 
-    // Registra errores ocurridos al enviar la respuesta
+        if (!response.ok || data.error) {
+            if (data.detallesTecnicos) {
+                console.error("Detalles técnicos API:", data.detallesTecnicos);
+            }
+            throw new Error(data.error || "No se pudo enviar el comentario.");
+        }
+
+        return data;
+    })
+    .then(data => {
+        input.value = '';
+        cargarComentarios(idPublicacion);
+    })
     .catch(error => {
-        console.error('Error al responder:', error);
+        console.error("Error al responder:", error);
+        alert(error.message);
     });
 }
 
@@ -347,19 +389,32 @@ function eliminarPublicacion(idPublicacion) {
             id_publicacion: parseInt(idPublicacion)
         })
     })
-    .then(respuesta => respuesta.json().then(data => ({ ok: respuesta.ok, data })))
-    .then(resultado => {
-        if (resultado.ok && !resultado.data.error) {
+    .then(async response => {
+        const textoRespuesta = await response.text();
+        let data;
 
-            // Recargamos las publicaciones para reflejar los cambios
-            cargarPublicaciones();
-        } else {
-            alert(resultado.data.error || 'No se pudo eliminar la publicación.');
+        try {
+            data = JSON.parse(textoRespuesta);
+        } catch (err) {
+            console.error("Error nativo del servidor:", textoRespuesta);
+            throw new Error("Respuesta no válida del servidor.");
         }
+
+        if (!response.ok || data.error) {
+            if (data.detallesTecnicos) {
+                console.error("Detalles técnicos API:", data.detallesTecnicos);
+            }
+            throw new Error(data.error || "No se pudo eliminar la publicación.");
+        }
+
+        return data;
+    })
+    .then(data => {
+        cargarPublicaciones();
     })
     .catch(error => {
         console.error('Error al eliminar publicación:', error);
-        alert('Error de conexión con el servidor.');
+        alert(error.message);
     });
 }
 
@@ -386,6 +441,11 @@ function alternarComentarios(idPublicacion) {
 
 // Muestra u oculta el formulario para crear una publicacion
 function alternarFormulario() {
+    if (idUsuarioActual <= 0) {
+        window.location.href = 'inicioSesion.php';
+        return;
+    }
+
     const form = document.getElementById('contenedorFormularioPost');
     if (form) {
         if (form.style.display === 'none' || form.style.display === '') {
