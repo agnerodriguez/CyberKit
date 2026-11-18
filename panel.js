@@ -10,22 +10,19 @@ function escapeHtml(str) {
 
 function mostrar(id) {
     const formulario = document.getElementById(id);
-    const inicio = document.getElementById('inicio');
+    if (!formulario) return;
 
-    if (id === 'inicio') {
-        document.querySelectorAll('.formulario')
-            .forEach(f => f.classList.remove('activo'));
-        inicio.classList.add('activo');
-        return;
-    }
-
+    // Si el formulario ya esta activo, lo cierra
     if (formulario.classList.contains('activo')) {
         formulario.classList.remove('activo');
-        inicio.classList.add('activo');
         return;
     }
+
+    // Oculta todos los formularios activos
     document.querySelectorAll('.formulario')
         .forEach(f => f.classList.remove('activo'));
+    
+    // Activa el seleccionado
     formulario.classList.add('activo');
 
     if (id === 'verPagos') {
