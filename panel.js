@@ -50,11 +50,23 @@ function cargarProductos() {
         body: JSON.stringify({ recurso: 'Productos', consulta: 'ReadAdmin' })
     })
     .then(async res => {
-        const productos = await res.json();
+        const textoRespuesta = await res.text();
+        let productos;
+
+        try {
+            productos = JSON.parse(textoRespuesta);
+        } catch (e) {
+            console.error("Error nativo del servidor:", textoRespuesta);
+            throw new Error("Respuesta no válida del servidor.");
+        }
+
         if (!res.ok || productos.error) {
-            console.error("Error técnico al cargar productos:", productos.detallesTecnicos || productos.error);
+            if (productos.detallesTecnicos) {
+                console.error("Detalles técnicos API:", productos.detallesTecnicos);
+            }
             throw new Error(productos.error || "No se pudieron cargar los productos.");
         }
+
         return productos;
     })
     .then(productos => {
@@ -140,11 +152,23 @@ function guardarProducto() {
             body: JSON.stringify(payload)
         })
         .then(async res => {
-            const data = await res.json();
+            const textoRespuesta = await res.text();
+            let data;
+
+            try {
+                data = JSON.parse(textoRespuesta);
+            } catch (e) {
+                console.error("Error nativo del servidor:", textoRespuesta);
+                throw new Error("Respuesta no válida del servidor.");
+            }
+
             if (!res.ok || data.error) {
-                console.error("Detalle técnico API (guardarProducto):", data.detallesTecnicos || data.error);
+                if (data.detallesTecnicos) {
+                    console.error("Detalles técnicos API:", data.detallesTecnicos);
+                }
                 throw new Error(data.error || "No se pudo guardar el producto.");
             }
+
             return data;
         })
         .then(data => {
@@ -199,11 +223,23 @@ function eliminarProducto(id) {
         })
     })
     .then(async res => {
-        const data = await res.json();
+        const textoRespuesta = await res.text();
+        let data;
+
+        try {
+            data = JSON.parse(textoRespuesta);
+        } catch (e) {
+            console.error("Error nativo del servidor:", textoRespuesta);
+            throw new Error("Respuesta no válida del servidor.");
+        }
+
         if (!res.ok || data.error) {
-            console.error("Detalle técnico API (eliminarProducto):", data.detallesTecnicos || data.error);
+            if (data.detallesTecnicos) {
+                console.error("Detalles técnicos API:", data.detallesTecnicos);
+            }
             throw new Error(data.error || "Error al eliminar el producto.");
         }
+
         return data;
     })
     .then(data => {
@@ -235,11 +271,27 @@ function cargarPagos() {
         body: JSON.stringify({ recurso: 'DetalleCompra', consulta: 'Read' })
     })
     .then(async response => {
-        const data = await response.json();
-        if (!response.ok || data.error || !Array.isArray(data)) {
-            console.error("Error técnico al cargar pagos:", data.detallesTecnicos || data.error);
-            throw new Error('La API no devolvió una lista de pagos válida.');
+        const textoRespuesta = await response.text();
+        let data;
+
+        try {
+            data = JSON.parse(textoRespuesta);
+        } catch (e) {
+            console.error("Error nativo del servidor:", textoRespuesta);
+            throw new Error("Respuesta no válida del servidor.");
         }
+
+        if (!response.ok || data.error) {
+            if (data.detallesTecnicos) {
+                console.error("Detalles técnicos API:", data.detallesTecnicos);
+            }
+            throw new Error(data.error || "Error al obtener los pagos.");
+        }
+
+        if (!Array.isArray(data)) {
+            throw new Error("La API no devolvió una lista de pagos válida.");
+        }
+
         return data;
     })
     .then(data => {
@@ -274,7 +326,7 @@ function mostrarPagos(pagos) {
         }
         return;
     }
-    
+
     if (mensaje) {
         mensaje.textContent = `Se encontraron ${pagos.length} pago(s).`;
     }
@@ -325,11 +377,23 @@ function cambiarEstadoPago(idDetalleCompra, idEstado) {
         })
     })
     .then(async response => {
-        const res = await response.json();
-        if (!response.ok || res.error) {
-            console.error("Detalle técnico API (cambiarEstadoPago):", res.detallesTecnicos || res.error);
-            throw new Error(res.error || 'Error al actualizar el pago.');
+        const textoRespuesta = await response.text();
+        let res;
+
+        try {
+            res = JSON.parse(textoRespuesta);
+        } catch (e) {
+            console.error("Error nativo del servidor:", textoRespuesta);
+            throw new Error("Respuesta no válida del servidor.");
         }
+
+        if (!response.ok || res.error) {
+            if (res.detallesTecnicos) {
+                console.error("Detalles técnicos API:", res.detallesTecnicos);
+            }
+            throw new Error(res.error || "Error al actualizar el pago.");
+        }
+
         return res;
     })
     .then(res => {
@@ -348,7 +412,7 @@ function cambiarEstadoPago(idDetalleCompra, idEstado) {
             if (mensaje) {
                 mensaje.textContent = 'Pago aprobado. Enviando correo al cliente...';
             }
-            
+
             fetch('enviarValidacionMail.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -357,11 +421,23 @@ function cambiarEstadoPago(idDetalleCompra, idEstado) {
                 })
             })
             .then(async response => {
-                const data = await response.json();
-                if (!response.ok || data.error) {
-                    console.error("Detalle técnico mail:", data.detallesTecnicos || data.error);
-                    throw new Error(data.error || 'No se pudo enviar el correo.');
+                const textoRespuesta = await response.text();
+                let data;
+
+                try {
+                    data = JSON.parse(textoRespuesta);
+                } catch (e) {
+                    console.error("Error nativo del servidor:", textoRespuesta);
+                    throw new Error("Respuesta no válida del servidor.");
                 }
+
+                if (!response.ok || data.error) {
+                    if (data.detallesTecnicos) {
+                        console.error("Detalles técnicos API:", data.detallesTecnicos);
+                    }
+                    throw new Error(data.error || "No se pudo enviar el correo.");
+                }
+
                 return data;
             })
             .then(data => {
@@ -436,16 +512,35 @@ function cargarTutoriales() {
         body: JSON.stringify({ recurso: 'Tutoriales', consulta: 'Read' })
     })
     .then(async res => {
-        const tutoriales = await res.json();
-        if (!res.ok || tutoriales.error) {
-            console.error("Detalle técnico API (cargarTutoriales):", tutoriales.detallesTecnicos || tutoriales.error);
-            throw new Error(tutoriales.error || "No se pudieron obtener los tutoriales.");
+        const textoRespuesta = await res.text();
+        let tutoriales;
+
+        try {
+            tutoriales = JSON.parse(textoRespuesta);
+        } catch (e) {
+            console.error("Error nativo del servidor:", textoRespuesta);
+            throw new Error("Respuesta no válida del servidor.");
         }
+
+        if (!res.ok || tutoriales.error) {
+            if (tutoriales.detallesTecnicos) {
+                console.error(
+                    "Detalle técnico API (cargarTutoriales):",
+                    tutoriales.detallesTecnicos
+                );
+            }
+
+            throw new Error(
+                tutoriales.error || "No se pudieron obtener los tutoriales."
+            );
+        }
+
         return tutoriales;
     })
     .then(tutoriales => {
         const tbody = document.getElementById('tablaTutorialesAdmin');
         if (!tbody) return;
+
         tbody.innerHTML = '';
 
         if (!Array.isArray(tutoriales) || tutoriales.length === 0) {
@@ -455,21 +550,30 @@ function cargarTutoriales() {
 
         tutoriales.forEach(tut => {
             const tr = document.createElement('tr');
+
             tr.innerHTML = `
                 <td>#${tut.id_tutorial}</td>
                 <td><strong>${escapeHtml(tut.nombre)}</strong></td>
                 <td>${escapeHtml(tut.descripcion || '-')}</td>
-                <td><a href="${escapeHtml(tut.archivo)}" target="_blank" style="color: #45024b; text-decoration: underline;">Ver enlace</a></td>
+                <td>
+                    <a href="${escapeHtml(tut.archivo)}" target="_blank" style="color: #45024b; text-decoration: underline;">
+                        Ver enlace
+                    </a>
+                </td>
                 <td>
                     <button type="button" class="btn-accion-editar" onclick='prepararEdicionTutorial(${JSON.stringify(tut)})'>Editar</button>
                     <button type="button" class="btn-accion-eliminar" onclick="eliminarTutorial(${tut.id_tutorial})">Eliminar</button>
                 </td>
             `;
+
             tbody.appendChild(tr);
         });
     })
-    .catch(error => console.error("Error nativo en cargarTutoriales():", error));
+    .catch(error => {
+        console.error("Error nativo en cargarTutoriales():", error);
+    });
 }
+
 
 function guardarTutorial() {
     const id = document.getElementById('tutId').value;
@@ -508,10 +612,29 @@ function guardarTutorial() {
             body: JSON.stringify(payload)
         })
         .then(async res => {
-            const data = await res.json();
-            if (!res.ok || data.error) {
-                throw new Error(data.error || "No se pudo procesar el tutorial.");
+            const textoRespuesta = await res.text();
+            let data;
+
+            try {
+                data = JSON.parse(textoRespuesta);
+            } catch (e) {
+                console.error("Error nativo del servidor:", textoRespuesta);
+                throw new Error("Respuesta no válida del servidor.");
             }
+
+            if (!res.ok || data.error) {
+                if (data.detallesTecnicos) {
+                    console.error(
+                        "Detalle técnico API (guardarTutorial):",
+                        data.detallesTecnicos
+                    );
+                }
+
+                throw new Error(
+                    data.error || "No se pudo procesar el tutorial."
+                );
+            }
+
             return data;
         })
         .then(data => {
@@ -519,10 +642,13 @@ function guardarTutorial() {
                 mensajePagos.style.color = '#45024b';
                 mensajePagos.textContent = data.mensaje || "Tutorial guardado correctamente.";
             }
+
             limpiarFormularioTutorial();
             cargarTutoriales();
         })
         .catch(err => {
+            console.error("Error nativo en guardarTutorial():", err);
+
             if (mensajePagos) {
                 mensajePagos.style.color = 'red';
                 mensajePagos.textContent = err.message;
@@ -530,36 +656,53 @@ function guardarTutorial() {
         });
     };
 
-    // Si seleccionaron un archivo físico, lo convertimos a Base64
+    // Si seleccionaron un archivo físico, lo convertimos a Base64.
     if (archivoInput.files && archivoInput.files[0]) {
         const reader = new FileReader();
+
         reader.onload = function(e) {
-            enviarDatos(e.target.result); // Envía el archivo en Base64
+            enviarDatos(e.target.result);
         };
+
+        reader.onerror = function(e) {
+            console.error("Error nativo al leer el archivo:", e);
+
+            if (mensajePagos) {
+                mensajePagos.style.color = 'red';
+                mensajePagos.textContent = "No se pudo leer el archivo seleccionado.";
+            }
+        };
+
         reader.readAsDataURL(archivoInput.files[0]);
     } else {
-        // Si no subieron archivo, mandamos el enlace de texto ingresado
+        // Si no seleccionaron archivo, enviamos el enlace ingresado.
         enviarDatos(enlace);
     }
 }
 
+
 function prepararEdicionTutorial(tut) {
     document.getElementById('tutId').value = tut.id_tutorial;
     document.getElementById('tutNombre').value = tut.nombre;
-    document.getElementById('tutDescripcion').value = tut.descripcion;
-    
-    // Si el valor guardado es una ruta de archivo del servidor o un enlace web
-    if (tut.archivo && (tut.archivo.startsWith('tutoriales/') || tut.archivo.startsWith('http'))) {
-        if (tut.archivo.startsWith('http')) {
-            document.getElementById('tutEnlace').value = tut.archivo;
-        } else {
-            document.getElementById('tutEnlace').value = ''; // Es archivo local almacenado
-        }
+    document.getElementById('tutDescripcion').value = tut.descripcion || '';
+
+    // No se puede asignar una ruta a un input de tipo file.
+    // Si es un enlace web, lo mostramos en el campo de enlace.
+    if (tut.archivo && tut.archivo.startsWith('http')) {
+        document.getElementById('tutEnlace').value = tut.archivo;
+    } else {
+        document.getElementById('tutEnlace').value = '';
     }
-    
-    document.getElementById('tituloFormTutorial').textContent = "Editar Tutorial #" + tut.id_tutorial;
-    document.getElementById('btnCancelarEdicionTut').style.display = 'inline-block';
+
+    document.getElementById('tutArchivo').value = '';
+
+    document.getElementById('tituloFormTutorial').textContent =
+        "Editar Tutorial #" + tut.id_tutorial;
+
+    document.getElementById('btnCancelarEdicionTut').style.display =
+        'inline-block';
 }
+
 
 function limpiarFormularioTutorial() {
     document.getElementById('tutId').value = '';
@@ -567,27 +710,14 @@ function limpiarFormularioTutorial() {
     document.getElementById('tutDescripcion').value = '';
     document.getElementById('tutEnlace').value = '';
     document.getElementById('tutArchivo').value = '';
-    document.getElementById('tituloFormTutorial').textContent = "Registrar Nuevo Tutorial";
-    document.getElementById('btnCancelarEdicionTut').style.display = 'none';
+
+    document.getElementById('tituloFormTutorial').textContent =
+        "Registrar Nuevo Tutorial";
+
+    document.getElementById('btnCancelarEdicionTut').style.display =
+        'none';
 }
 
-function prepararEdicionTutorial(tut) {
-    document.getElementById('tutId').value = tut.id_tutorial;
-    document.getElementById('tutNombre').value = tut.nombre;
-    document.getElementById('tutDescripcion').value = tut.descripcion;
-    document.getElementById('tutArchivo').value = tut.archivo;
-    document.getElementById('tituloFormTutorial').textContent = "Editar Tutorial #" + tut.id_tutorial;
-    document.getElementById('btnCancelarEdicionTut').style.display = 'inline-block';
-}
-
-function limpiarFormularioTutorial() {
-    document.getElementById('tutId').value = '';
-    document.getElementById('tutNombre').value = '';
-    document.getElementById('tutDescripcion').value = '';
-    document.getElementById('tutArchivo').value = '';
-    document.getElementById('tituloFormTutorial').textContent = "Registrar Nuevo Tutorial";
-    document.getElementById('btnCancelarEdicionTut').style.display = 'none';
-}
 
 function eliminarTutorial(id) {
     const mensajePagos = document.getElementById('mensajePagos');
@@ -602,11 +732,29 @@ function eliminarTutorial(id) {
         })
     })
     .then(async res => {
-        const data = await res.json();
-        if (!res.ok || data.error) {
-            console.error("Detalle técnico API (eliminarTutorial):", data.detallesTecnicos || data.error);
-            throw new Error(data.error || "Error al eliminar el tutorial.");
+        const textoRespuesta = await res.text();
+        let data;
+
+        try {
+            data = JSON.parse(textoRespuesta);
+        } catch (e) {
+            console.error("Error nativo del servidor:", textoRespuesta);
+            throw new Error("Respuesta no válida del servidor.");
         }
+
+        if (!res.ok || data.error) {
+            if (data.detallesTecnicos) {
+                console.error(
+                    "Detalle técnico API (eliminarTutorial):",
+                    data.detallesTecnicos
+                );
+            }
+
+            throw new Error(
+                data.error || "Error al eliminar el tutorial."
+            );
+        }
+
         return data;
     })
     .then(data => {
@@ -614,10 +762,12 @@ function eliminarTutorial(id) {
             mensajePagos.style.color = '#45024b';
             mensajePagos.textContent = data.mensaje || "Tutorial eliminado correctamente.";
         }
+
         cargarTutoriales();
     })
     .catch(err => {
         console.error("Error nativo en eliminarTutorial():", err);
+
         if (mensajePagos) {
             mensajePagos.style.color = 'red';
             mensajePagos.textContent = err.message;
