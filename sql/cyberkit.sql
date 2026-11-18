@@ -27,6 +27,8 @@ SET time_zone = "+00:00";
 -- Estructura de tabla para la tabla `categoria`
 --
 
+SET SESSION sql_require_primary_key = 0;
+
 CREATE TABLE `categoria` (
   `id_categoria` int(8) NOT NULL,
   `nombre` varchar(30) NOT NULL
