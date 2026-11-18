@@ -332,7 +332,15 @@ function renderizarPublicacion(post) {
 
     let imagenHTML = '';
     if (post.imagen) {
-        imagenHTML = `<div style="margin: 10px 0;"><img src="data:image/jpeg;base64,${post.imagen}" style="max-width: 100%; max-height: 350px; border-radius: 6px;"></div>`;
+        imagenHTML = `
+            <div style="margin: 10px 0;">
+                <img
+                    src="data:image/jpeg;base64,${post.imagen}"
+                    onclick="verImagenPublicacion('${post.imagen}')"
+                    style="max-width: 100%; max-height: 350px; border-radius: 6px; cursor: pointer;"
+                    alt="Imagen de la publicación">
+            </div>
+        `;
     }
 
     // Generar el botón de eliminar solo si el usuario logueado es el autor del post
@@ -372,6 +380,27 @@ function renderizarPublicacion(post) {
     `;
 
     return card;
+}
+
+function verImagenPublicacion(base64) {
+    const ventana = window.open();
+
+    if (!ventana) {
+        alert('Permití las ventanas emergentes para visualizar la imagen.');
+        return;
+    }
+
+    ventana.document.write(`
+        <html>
+            <head>
+                <title>Imagen de la publicación - CyberKit</title>
+            </head>
+
+            <body style= "margin: 0; background: #1e1e1e; display: flex; justify-content: center; align-items: center; height: 100vh;">
+                <img src="data:image/jpeg;base64,${base64} "style= "max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px;">
+            </body>
+        </html>
+    `);
 }
 
 // ELIMINAR PUBLICACIÓN
