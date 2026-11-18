@@ -24,7 +24,8 @@ $id_usuario = $_SESSION['id_usuario'];
 
 <body data-userid="<?php echo htmlspecialchars($id_usuario, ENT_QUOTES, 'UTF-8'); ?>">
     <?php include 'nav.php'; ?>
-
+    <!-- Contenedor flotante para notificaciones del sistema -->
+    <div id="contenedor-notificaciones" class="contenedor-notificaciones"></div>
     <main class="contenedor-general">
         <h1 class="titulo-principal">Mi Cuenta</h1><!-- Título Superior -->
 
