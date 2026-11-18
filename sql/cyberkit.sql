@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.3
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-11-2026 a las 20:01:52
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Tiempo de generación: 18-11-2026 a las 02:13:38
+-- Versión del servidor: 10.11.16-MariaDB
+-- Versión de PHP: 8.5.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -144,7 +144,7 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`id_producto`, `nombre`, `descripcion`, `stock`, `imagen`) VALUES
-(1, 'CyberKit', 'CyberKit es la solución definitiva para los apasionados del do it yourself y aficionados por la electrónica y la informática. Este kit incluye todo lo necesario para ensamblar tu CyberDesk, ofreciendo una experiencia única de aprendizaje digital.', 89, 'productos/producto_1.png');
+(1, 'CyberKit', 'CyberKit es la solución definitiva para los apasionados del do it yourself y aficionados por la electrónica y la informática. Este kit incluye todo lo necesario para ensamblar tu CyberDesk, ofreciendo una experiencia única de aprendizaje digital.', 86, 'productos/producto_1.png');
 
 -- --------------------------------------------------------
 
@@ -169,10 +169,22 @@ CREATE TABLE `publicacion` (
 
 CREATE TABLE `tutoriales` (
   `id_tutorial` int(8) NOT NULL,
-  `nombre` varchar(30) NOT NULL,
-  `descripcion` varchar(255) NOT NULL,
-  `archivo` varchar(255) NOT NULL
+  `nombre` varchar(200) NOT NULL,
+  `descripcion` varchar(550) NOT NULL,
+  `archivo` varchar(350) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tutoriales`
+--
+
+INSERT INTO `tutoriales` (`id_tutorial`, `nombre`, `descripcion`, `archivo`) VALUES
+(1, 'Cyberdeck de doble pantalla para armar uno mismo: diseño elegante, máxima funcionalidad.', 'Echa un vistazo a mi último proyecto DIY: un cyberdeck de doble pantalla construido alrededor de una Raspberry Pi 5. Es totalmente imprimible en 3D y de código abierto. En este vídeo te muestro el proceso de diseño y construcción, y luego presento sus características con una GUI personalizada de ttkbootstrap y un experimento de demostración con un sensor I2C.', 'https://youtu.be/cigAxzQGeLg?si=z5yL1T4TlMK2gfxh'),
+(2, 'Un ciberdeck curiosamente menta', 'Las latas de Altoids son el contenedor perfecto. Desde kits de supervivencia, sistemas de juegos portátiles personalizados, hasta costura, acuarelas y primeros auxilios, la gente ha estado reutilizando la lata de estas mentas curiosamente fuertes durante décadas. Son latitas muy bonitas. Recientemente me entró un fuerte deseo de construir un pequeño ciberdeck dentro de una de estas latas.', 'https://youtu.be/j262kCYZxZI?si=hML8CJC0rPYnRfYg'),
+(3, 'Cyberdeck de sirena para armar', 'Haz tu propia Cyberdesk con una estetica unica de sirena', 'https://youtu.be/aumh4oknVuM?si=i18hChjfVkuSXrDe'),
+(4, 'Construcción de cibercubierta con carga solar', 'Te gusta la estetica Cybersolar? este Cyberkit te va a encantar', 'https://youtu.be/sVnjyTWPwnc?si=d1vnaKeRamEE1PHc'),
+(5, '¡Construí un Cyberdeck con una laptop vieja y rota!', '¿Qué harías con una laptop vieja y rota que ya nadie quiere?  En lugar de tirarla a la basura, decidí convertirla en algo completamente diferente: ¡un DIY Cyberdeck totalmente funcional!\r\nPara este proyecto desmonté la laptop por completo y rescaté todo el hardware que todavía podía utilizar. La idea era construir un DIY Cyberdeck compacto, portátil y con un diseño inspirado en esas computadoras futuristas de las películas.', 'https://youtu.be/7qXs92ovtMU?si=8muF8Mfvc3PFSu75'),
+(6, 'Construyo un PC Cyberdeck Cyberpunk de Bolsillo (Parte 1/2)', 'Mini PC portátil, cyberdeck, Orange Pi, CyberPunk, mini ordenador — Cyberdeck casero inspirado en Neuromancer, más pequeño que un smartphone; caja rugerizada, teclado inalámbrico y batería 18650.\n\nIdeal para makers y aficionados, en el vídeo muestro los retos y soluciones: optimización del espacio, instalación de puertos USB, uso de cables flexibles y acabados estéticos con chapas de aluminio y panel de voltaje. Proyecto práctico y estético para quien quiera un mini ordenador estilo CyberPunk.', 'https://youtu.be/sve-bZJyEYk?si=9pok5-YE5FNB-Fsx');
 
 -- --------------------------------------------------------
 
@@ -320,7 +332,7 @@ ALTER TABLE `publicacion`
 -- AUTO_INCREMENT de la tabla `tutoriales`
 --
 ALTER TABLE `tutoriales`
-  MODIFY `id_tutorial` int(8) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_tutorial` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
