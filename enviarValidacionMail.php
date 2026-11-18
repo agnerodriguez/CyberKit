@@ -160,12 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $resultado = $stmt->get_result();
 
     if ($fila = $resultado->fetch_assoc()) {
-        // Verificar que el estado sea Pagado (id_estado = 1)
-        if ((int)$fila['id_estado'] !== 1) {
-            http_response_code(400);
-            echo json_encode(["error" => "El pago debe estar en estado Pagado para enviar el recibo."]);
-            exit;
-        }
+        $esPagado = ((int)$fila['id_estado'] === 1);
 
         $emailUsuario = $fila['usuario_email'];
         $nombreUsuario = $fila['usuario_nombre'];
@@ -189,14 +184,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $mail->setFrom('recytech.support@gmail.com', 'RecyTech');
             $mail->addAddress($emailUsuario, $nombreUsuario);
-
-            // Generar y adjuntar el PDF en memoria
-            $pdfBinario = generarReciboPDF($fila);
-            $nombrePdf = "Recibo_Pago_RecyTech_" . str_pad($id_detalleCompra, 6, "0", STR_PAD_LEFT) . ".pdf";
-            $mail->addStringAttachment($pdfBinario, $nombrePdf, 'base64', 'application/pdf');
-
             $mail->isHTML(true);
-            $mail->Subject = '¡Pago Aprobado! - Recibo de Pago #' . $id_detalleCompra . ' - RecyTech';
+
+            // Configurar contenido y adjunto según el estado del pago
+            if ($esPagado) {
+                $pdfBinario = generarReciboPDF($fila);
+                $nombrePdf = "Recibo_Pago_RecyTech_" . str_pad($id_detalleCompra, 6, "0", STR_PAD_LEFT) . ".pdf";
+                $mail->addStringAttachment($pdfBinario, $nombrePdf, 'base64', 'application/pdf');
+
+                $mail->Subject = '¡Pago Aprobado! - Recibo de Pago #' . $id_detalleCompra . ' - RecyTech';
+                $mensajePrincipal = 'Te informamos que tu comprobante ha sido verificado y tu pago ha sido <b>aprobado</b> exitosamente. Adjunto a este correo encontrarás tu <b>Recibo de Pago en PDF</b>.';
+                $etiquetaMonto = 'Total pagado:';
+                $bgCaja = '#f0fdf4';
+                $bordeCaja = '#0d8a42';
+                $colorTituloCaja = '#166534';
+                $colorEstado = '#15803d';
+                $mensajePie = 'Gracias por confiar en nosotros.';
+            } else {
+                $mail->Subject = 'Estado de Pago: Impago - Orden #' . $id_detalleCompra . ' - RecyTech';
+                $mensajePrincipal = 'Te informamos que el pago correspondiente a tu orden figura como <b>impago</b> o no pudo ser aprobado tras la verificación. Por favor, revisa tu comprobante o comunícate con nosotros para regularizar la operación.';
+                $etiquetaMonto = 'Total a pagar:';
+                $bgCaja = '#fef2f2';
+                $bordeCaja = '#dc2626';
+                $colorTituloCaja = '#991b1b';
+                $colorEstado = '#b91c1c';
+                $mensajePie = 'Si ya realizaste el pago o crees que se trata de un error, por favor contáctanos.';
+            }
+
             $mail->Body = '
             <!DOCTYPE html>
             <html lang="es">
@@ -219,24 +233,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             ¡Hola, ' . htmlspecialchars($nombreUsuario) . '!
                           </h2>
                           <p style="font-size: 14px; line-height: 1.6; color: #555555; margin-bottom: 20px;">
-                            Te informamos que tu comprobante ha sido verificado y tu pago ha sido <b>aprobado</b> exitosamente. Adjunto a este correo encontrarás tu <b>Recibo de Pago en PDF</b>.
+                            ' . $mensajePrincipal . '
                           </p>
-                          <div style="background-color: #f0fdf4; border-left: 4px solid #0d8a42; padding: 15px; border-radius: 4px; margin-bottom: 25px;">
-                            <p style="margin: 0 0 8px 0; font-size: 13px; color: #166534;">
+                          <div style="background-color: ' . $bgCaja . '; border-left: 4px solid ' . $bordeCaja . '; padding: 15px; border-radius: 4px; margin-bottom: 25px;">
+                            <p style="margin: 0 0 8px 0; font-size: 13px; color: ' . $colorTituloCaja . ';">
                               <b>Detalles de la orden #' . $id_detalleCompra . ':</b>
                             </p>
                             <p style="margin: 4px 0; font-size: 14px; color: #333333;">
                               <b>Producto:</b> ' . htmlspecialchars($productoNombre) . ' (x' . $cantidad . ')
                             </p>
                             <p style="margin: 4px 0; font-size: 14px; color: #333333;">
-                              <b>Total pagado:</b> $' . number_format($subtotal, 2, ',', '.') . '
+                              <b>' . $etiquetaMonto . '</b> $' . number_format($subtotal, 2, ',', '.') . '
                             </p>
-                            <p style="margin: 4px 0; font-size: 14px; color: #15803d;">
+                            <p style="margin: 4px 0; font-size: 14px; color: ' . $colorEstado . ';">
                               <b>Estado actual:</b> ' . htmlspecialchars($estadoNombre) . '
                             </p>
                           </div>
                           <p style="font-size: 12px; line-height: 1.5; color: #777777; margin-bottom: 0;">
-                            Gracias por confiar en nosotros.
+                            ' . $mensajePie . '
                           </p>
                         </td>
                       </tr>
@@ -249,7 +263,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $mail->send();
             http_response_code(200);
-            echo json_encode(["mensaje" => "Correo enviado exitosamente."]);
+            echo json_encode([
+                "mensaje" => $esPagado 
+                    ? "Correo de pago aprobado y recibo PDF enviados exitosamente." 
+                    : "Correo de notificación de estado impago enviado exitosamente."
+            ]);
 
         } catch (Exception $e) {
             http_response_code(500);
