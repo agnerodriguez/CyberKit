@@ -360,8 +360,11 @@ function mostrarPagos(pagos) {
     });
 }
 
+
 function cambiarEstadoPago(idDetalleCompra, idEstado) {
     const mensaje = document.getElementById('mensajePagos');
+
+    const estadoNum = parseInt(idEstado);
 
     fetch('API.php', {
         method: 'POST',
@@ -370,98 +373,86 @@ function cambiarEstadoPago(idDetalleCompra, idEstado) {
             recurso: 'DetalleCompra',
             consulta: 'Update',
             id_detalleCompra: parseInt(idDetalleCompra),
-            id_estado: parseInt(idEstado)
+            id_estado: estadoNum
         })
     })
     .then(async response => {
-        const textoRespuesta = await response.text();
+        const texto = await response.text();
         let res;
 
         try {
-            res = JSON.parse(textoRespuesta);
+            res = JSON.parse(texto);
         } catch (e) {
-            console.error("Error nativo del servidor:", textoRespuesta);
+            console.error("Respuesta del servidor:", texto);
             throw new Error("Respuesta no válida del servidor.");
         }
 
         if (!response.ok || res.error) {
-            if (res.detallesTecnicos) {
-                console.error("Detalles técnicos API:", res.detallesTecnicos);
-            }
             throw new Error(res.error || "Error al actualizar el pago.");
         }
 
         return res;
     })
-    .then(res => {
+    .then(async res => {
+
+        // Actualizar el estado local
         const pagoEncontrado = todosLosPagos.find(
-            p => p.id_detalleCompra == idDetalleCompra
+            p => parseInt(p.id_detalleCompra) === parseInt(idDetalleCompra)
         );
+
         if (pagoEncontrado) {
-            pagoEncontrado.id_estado = parseInt(idEstado);
-        }
-        if (mensaje) {
-            mensaje.style.color = '#45024b';
-            mensaje.textContent = res.mensaje;
+            pagoEncontrado.id_estado = estadoNum;
         }
 
-        const estadoNum = parseInt(idEstado);
-
-        // Si el estado es Pagado (1) o Impago (3)
-        if (estadoNum === 1 || estadoNum === 3) {
+        // Si es pendiente, no enviar correo
+        if (estadoNum === 2) {
             if (mensaje) {
-                mensaje.textContent = estadoNum === 1 
-                    ? 'Pago aprobado. Generando recibo y enviando correo...' 
-                    : 'Estado cambiado a impago. Enviando notificación al cliente...';
+                mensaje.style.color = '#45024b';
+                mensaje.textContent = 'Estado actualizado a pendiente.';
+            }
+            return;
+        }
+
+        // Enviar correo para Pagado (1) o Impago (3)
+        if (estadoNum === 1 || estadoNum === 3) {
+
+            if (mensaje) {
+                mensaje.style.color = '#45024b';
+                mensaje.textContent = estadoNum === 1
+                    ? 'Pago aprobado. Enviando recibo por correo...'
+                    : 'Pago marcado como impago. Enviando notificación...';
             }
 
-            // Selecciona el archivo PHP correspondiente según el estado
-            const archivoEnvioMail = (estadoNum === 1) ? 'enviarValidacionMail.php' : 'enviarNotificacionImpago.php';
-
-            fetch(archivoEnvioMail, {
+            const responseMail = await fetch('enviarValidacionMail.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     id_detalleCompra: parseInt(idDetalleCompra)
                 })
-            })
-            .then(async response => {
-                const textoRespuesta = await response.text();
-                let data;
-
-                try {
-                    data = JSON.parse(textoRespuesta);
-                } catch (e) {
-                    console.error("Error nativo del servidor:", textoRespuesta);
-                    throw new Error("Respuesta no válida del servidor.");
-                }
-
-                if (!response.ok || data.error) {
-                    if (data.detallesTecnicos) {
-                        console.error("Detalles técnicos API:", data.detallesTecnicos);
-                    }
-                    throw new Error(data.error || "No se pudo enviar el correo.");
-                }
-
-                return data;
-            })
-            .then(data => {
-                if (mensaje) {
-                    mensaje.style.color = '#45024b';
-                    mensaje.textContent = data.mensaje || 'Estado actualizado y correo enviado correctamente.';
-                }
-            })
-            .catch(error => {
-                console.error('Error nativo en envío de correo:', error);
-                if (mensaje) {
-                    mensaje.style.color = 'red';
-                    mensaje.textContent = 'El estado se actualizó, pero falló el envío del correo: ' + error.message;
-                }
             });
+
+            const textoMail = await responseMail.text();
+            let dataMail;
+
+            try {
+                dataMail = JSON.parse(textoMail);
+            } catch (e) {
+                console.error("Respuesta del envío de correo:", textoMail);
+                throw new Error("El servidor no devolvió una respuesta válida al enviar el correo.");
+            }
+
+            if (!responseMail.ok || dataMail.error) {
+                throw new Error(dataMail.error || "No se pudo enviar el correo.");
+            }
+
+            if (mensaje) {
+                mensaje.style.color = '#45024b';
+                mensaje.textContent = dataMail.mensaje;
+            }
         }
     })
     .catch(error => {
-        console.error('Error nativo al actualizar el pago:', error);
+        console.error("Error al actualizar el pago o enviar el correo:", error);
 
         if (mensaje) {
             mensaje.style.color = 'red';

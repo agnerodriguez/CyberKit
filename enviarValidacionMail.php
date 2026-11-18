@@ -159,15 +159,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute();
     $resultado = $stmt->get_result();
 
-    if ($fila = $resultado->fetch_assoc()) {
-        $esPagado = ((int)$fila['id_estado'] === 1);
+      if ($fila = $resultado->fetch_assoc()) {
 
+        // Obtener el estado REAL guardado en la base de datos
+        $idEstado = (int)$fila['id_estado'];
+        $esPagado = ($idEstado === 1);
+        $estadoNombre = $fila['estado_nombre'];
+        
         $emailUsuario = $fila['usuario_email'];
         $nombreUsuario = $fila['usuario_nombre'];
         $productoNombre = $fila['producto_nombre'];
         $cantidad = $fila['cantidad'];
         $subtotal = $fila['subtotal'];
-        $estadoNombre = $fila['estado_nombre'];
 
         $mail = new PHPMailer(true);
 
@@ -186,8 +189,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mail->addAddress($emailUsuario, $nombreUsuario);
             $mail->isHTML(true);
 
-            // Configurar contenido y adjunto según el estado del pago
-            if ($esPagado) {
+            // Configurar contenido dinámico según el estado
+            if ($idEstado === 1) {
                 $pdfBinario = generarReciboPDF($fila);
                 $nombrePdf = "Recibo_Pago_RecyTech_" . str_pad($id_detalleCompra, 6, "0", STR_PAD_LEFT) . ".pdf";
                 $mail->addStringAttachment($pdfBinario, $nombrePdf, 'base64', 'application/pdf');
@@ -200,6 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $colorTituloCaja = '#166534';
                 $colorEstado = '#15803d';
                 $mensajePie = 'Gracias por confiar en nosotros.';
+                // Para cualquier otro estado no lleva PDF
             } else {
                 $mail->Subject = 'Estado de Pago: Impago - Orden #' . $id_detalleCompra . ' - RecyTech';
                 $mensajePrincipal = 'Te informamos que el pago correspondiente a tu orden figura como <b>impago</b> o no pudo ser aprobado tras la verificación. Por favor, revisa tu comprobante o comunícate con nosotros para regularizar la operación.';
