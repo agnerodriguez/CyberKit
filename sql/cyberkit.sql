@@ -27,11 +27,10 @@ SET time_zone = "+00:00";
 -- Estructura de tabla para la tabla `categoria`
 --
 
-SET SESSION sql_require_primary_key = 0;
-
 CREATE TABLE `categoria` (
   `id_categoria` int(8) NOT NULL,
-  `nombre` varchar(30) NOT NULL
+  `nombre` varchar(30) NOT NULL,
+  PRIMARY KEY (`id_categoria`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -55,7 +54,8 @@ CREATE TABLE `comentario` (
   `id_comentario_padre` int(8) DEFAULT NULL,
   `contenido` varchar(255) NOT NULL,
   `imagen` mediumblob DEFAULT NULL,
-  `fecha` datetime NOT NULL DEFAULT current_timestamp()
+  `fecha` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_comentario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -66,7 +66,8 @@ CREATE TABLE `comentario` (
 
 CREATE TABLE `comprobante` (
   `id_comprobante` int(8) NOT NULL,
-  `imagen` mediumblob DEFAULT NULL
+  `imagen` mediumblob DEFAULT NULL,
+  PRIMARY KEY (`id_comprobante`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -84,7 +85,8 @@ CREATE TABLE `detallecompra` (
   `id_estado` int(8) NOT NULL,
   `cantidad` int(3) NOT NULL,
   `subtotal` decimal(12,2) NOT NULL,
-  `fecha` datetime NOT NULL DEFAULT current_timestamp()
+  `fecha` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_detalleCompra`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -95,7 +97,8 @@ CREATE TABLE `detallecompra` (
 
 CREATE TABLE `estadopago` (
   `id_estado` int(8) NOT NULL,
-  `nombre` varchar(10) DEFAULT NULL
+  `nombre` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`id_estado`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -117,7 +120,8 @@ CREATE TABLE `monto` (
   `id_monto` int(8) NOT NULL,
   `id_producto` int(8) NOT NULL,
   `importe` decimal(12,2) NOT NULL,
-  `fecha_actualizacion` datetime DEFAULT current_timestamp()
+  `fecha_actualizacion` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_monto`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -138,7 +142,8 @@ CREATE TABLE `productos` (
   `nombre` varchar(50) NOT NULL,
   `descripcion` varchar(255) NOT NULL,
   `stock` int(4) NOT NULL,
-  `imagen` varchar(100) NOT NULL
+  `imagen` varchar(100) NOT NULL,
+  PRIMARY KEY (`id_producto`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -160,7 +165,8 @@ CREATE TABLE `publicacion` (
   `id_categoria` int(8) NOT NULL,
   `contenido` varchar(255) NOT NULL,
   `fecha` datetime NOT NULL,
-  `imagen` mediumblob DEFAULT NULL
+  `imagen` mediumblob DEFAULT NULL,
+  PRIMARY KEY (`id_publicacion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -173,7 +179,8 @@ CREATE TABLE `tutoriales` (
   `id_tutorial` int(8) NOT NULL,
   `nombre` varchar(200) NOT NULL,
   `descripcion` varchar(550) NOT NULL,
-  `archivo` varchar(350) NOT NULL
+  `archivo` varchar(350) NOT NULL,
+  PRIMARY KEY (`id_tutorial`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -200,7 +207,8 @@ CREATE TABLE `usuarios` (
   `email` varchar(255) NOT NULL,
   `edad` int(2) NOT NULL,
   `contrasena` varchar(255) NOT NULL,
-  `admin` tinyint(1) NOT NULL
+  `admin` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id_usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -208,31 +216,17 @@ CREATE TABLE `usuarios` (
 --
 
 --
--- Indices de la tabla `categoria`
---
-ALTER TABLE `categoria`
-  ADD PRIMARY KEY (`id_categoria`);
-
---
 -- Indices de la tabla `comentario`
 --
 ALTER TABLE `comentario`
-  ADD PRIMARY KEY (`id_comentario`),
   ADD KEY `id_usuario` (`id_usuario`),
   ADD KEY `fk_comentario_publicacion` (`id_publicacion`),
   ADD KEY `fk_comentario_comentario_padre` (`id_comentario_padre`);
 
 --
--- Indices de la tabla `comprobante`
---
-ALTER TABLE `comprobante`
-  ADD PRIMARY KEY (`id_comprobante`);
-
---
 -- Indices de la tabla `detallecompra`
 --
 ALTER TABLE `detallecompra`
-  ADD PRIMARY KEY (`id_detalleCompra`),
   ADD KEY `id_producto` (`id_producto`),
   ADD KEY `id_usuario` (`id_usuario`),
   ADD KEY `id_monto` (`id_monto`),
@@ -240,43 +234,17 @@ ALTER TABLE `detallecompra`
   ADD KEY `id_estado` (`id_estado`);
 
 --
--- Indices de la tabla `estadopago`
---
-ALTER TABLE `estadopago`
-  ADD PRIMARY KEY (`id_estado`);
-
---
 -- Indices de la tabla `monto`
 --
 ALTER TABLE `monto`
-  ADD PRIMARY KEY (`id_monto`),
   ADD KEY `fk_monto_productos` (`id_producto`);
-
---
--- Indices de la tabla `productos`
---
-ALTER TABLE `productos`
-  ADD PRIMARY KEY (`id_producto`);
 
 --
 -- Indices de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  ADD PRIMARY KEY (`id_publicacion`),
   ADD KEY `id_usuario` (`id_usuario`),
   ADD KEY `id_categoria` (`id_categoria`);
-
---
--- Indices de la tabla `tutoriales`
---
-ALTER TABLE `tutoriales`
-  ADD PRIMARY KEY (`id_tutorial`);
-
---
--- Indices de la tabla `usuarios`
---
-ALTER TABLE `usuarios`
-  ADD PRIMARY KEY (`id_usuario`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas

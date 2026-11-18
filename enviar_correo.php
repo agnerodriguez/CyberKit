@@ -4,7 +4,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
 
-$url_login = 'localhost/CyberKit/panel.php';
+$url_login = 'https://eest3-lc.online/panel.php';
 
 require 'conexion.php';
 mysqli_set_charset($conexion, "utf8mb4");
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 u.nombre AS usuario_nombre,
                 u.email AS usuario_email,
                 e.nombre AS estado_nombre
-            FROM detalleCompra dc
+            FROM detallecompra dc
             INNER JOIN productos p ON dc.id_producto = p.id_producto
             INNER JOIN usuarios u ON dc.id_usuario = u.id_usuario
             INNER JOIN estadopago e ON dc.id_estado = e.id_estado

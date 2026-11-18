@@ -700,7 +700,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     dc.fecha,
                                     ep.nombre AS estado,
                                     p.nombre AS producto
-                                FROM detalleCompra dc
+                                FROM detallecompra dc
                                 INNER JOIN productos p ON dc.id_producto = p.id_producto
                                 LEFT JOIN estadopago ep ON dc.id_estado = ep.id_estado
                                 WHERE dc.id_usuario = ?
@@ -780,7 +780,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $stmt_monto->close();
 
                             // 3. Insertar detalle con el subtotal recibido desde el cliente
-                            $sql = "INSERT INTO detalleCompra (id_producto, id_usuario, id_monto, id_comprobante, id_estado, cantidad, subtotal) 
+                            $sql = "INSERT INTO detallecompra (id_producto, id_usuario, id_monto, id_comprobante, id_estado, cantidad, subtotal) 
                                     VALUES (?, ?, ?, ?, ?, ?, ?)";
                             
                             $stmt_detalle = $conexion->prepare($sql);
@@ -847,7 +847,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     dc.id_comprobante,
                                     c.imagen AS comprobante_imagen,
                                     dc.id_estado
-                                FROM detalleCompra dc
+                                FROM detallecompra dc
                                 INNER JOIN productos p ON dc.id_producto = p.id_producto
                                 INNER JOIN usuarios u ON dc.id_usuario = u.id_usuario
                                 INNER JOIN monto m ON dc.id_monto = m.id_monto
@@ -905,7 +905,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $conexion->begin_transaction();
 
                         try {
-                            $stmt_upd = $conexion->prepare("UPDATE detalleCompra SET id_estado = ? WHERE id_detalleCompra = ?");
+                            $stmt_upd = $conexion->prepare("UPDATE detallecompra SET id_estado = ? WHERE id_detalleCompra = ?");
                             $stmt_upd->bind_param("ii", $id_estado, $id_detalleCompra);
 
                             if (!$stmt_upd->execute()) {

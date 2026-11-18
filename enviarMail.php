@@ -1,7 +1,7 @@
 <?php
 header("Content-Type: text/html; charset=UTF-8");
 
-$url_login = 'localhost/CyberKit/inicioSesion.php';
+$url_login = 'https://eest3-lc.online/inicioSesion.php';
 
 require 'conexion.php';
 mysqli_set_charset($conexion, "utf8mb4");

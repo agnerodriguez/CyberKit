@@ -21,20 +21,20 @@
 
             <div class="redes">
                 <div class="fondoIg">
-                    
                     <div class="fondoSuperpuestoIg">
                         
                         <a href="https://www.instagram.com/recy.techh/?utm_source=ig_web_button_share_sheet"><img src="iconos/ig.png" alt="IG"></a>
                     </div>
                 </div>
-                <span class="fuenteSecundaria">recytech</span>
+                <span class="fuenteSecundaria"><a href="https://www.instagram.com/recy.techh/?utm_source=ig_web_button_share_sheet">recy.techh</a></span>
 
                 <div class="fondoMail">
                     <div class="fondoSuperpuestoMail">
                         <img src="iconos/gmail.png" alt="Mail">
                     </div>
                 </div>
-                <span class="fuenteSecundaria">recytech.support@gmail.com</span>
+                <span class="fuenteSecundaria" style="cursor: pointer;" id="mail" onclick="copiarElemento('mail')">recytech.support@gmail.com</span>
+                <p id="mensajeCopiar" class="fuenteSecundaria"></p>
             </div>
         </div>
 
@@ -46,5 +46,8 @@
             <li class="fuenteSecundaria"><a href="foro.php">Nuestro foro</a></li>
         </div>
     </footer>
+
+    <script src="footer.js"></script>
+
 </body>
 </html>

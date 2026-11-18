@@ -32,7 +32,7 @@ $sql = "SELECT
             u.nombre AS usuario_nombre,
             u.email AS usuario_email,
             e.nombre AS estado_nombre
-        FROM detalleCompra dc
+        FROM detallecompra dc
         INNER JOIN productos p ON dc.id_producto = p.id_producto
         INNER JOIN usuarios u ON dc.id_usuario = u.id_usuario
         INNER JOIN estadopago e ON dc.id_estado = e.id_estado
