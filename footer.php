@@ -21,9 +21,10 @@
 
             <div class="redes">
                 <div class="fondoIg">
-                    <a href="https://www.instagram.com/recy.techh/?utm_source=ig_web_button_share_sheet"></a>
+                    
                     <div class="fondoSuperpuestoIg">
-                        <img src="iconos/ig.png" alt="IG">
+                        
+                        <a href="https://www.instagram.com/recy.techh/?utm_source=ig_web_button_share_sheet"><img src="iconos/ig.png" alt="IG"></a>
                     </div>
                 </div>
                 <span class="fuenteSecundaria">recytech</span>
