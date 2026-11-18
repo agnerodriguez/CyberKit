@@ -249,7 +249,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $mail->send();
             http_response_code(200);
-            echo json_encode(["mensaje" => "Correo con recibo PDF enviado exitosamente."]);
+            echo json_encode(["mensaje" => "Correo enviado exitosamente."]);
 
         } catch (Exception $e) {
             http_response_code(500);
