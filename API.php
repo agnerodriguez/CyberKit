@@ -867,7 +867,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     "producto" => [
                                         "id_producto" => (int)$fila['id_producto'],
                                         "nombre" => $fila['producto_nombre'],
-                                        "imagen" => $fila['producto_imagen'] // Corregido: envía la ruta limpia almacenada
+                                        "imagen" => $fila['producto_imagen']
                                     ],
                                     "usuario" => [
                                         "id_usuario" => (int)$fila['id_usuario'],

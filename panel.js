@@ -408,12 +408,20 @@ function cambiarEstadoPago(idDetalleCompra, idEstado) {
             mensaje.textContent = res.mensaje;
         }
 
-        if (parseInt(idEstado) === 1) {
+        const estadoNum = parseInt(idEstado);
+
+        // Si el estado es Pagado (1) o Impago (3)
+        if (estadoNum === 1 || estadoNum === 3) {
             if (mensaje) {
-                mensaje.textContent = 'Pago aprobado. Enviando correo al cliente...';
+                mensaje.textContent = estadoNum === 1 
+                    ? 'Pago aprobado. Generando recibo y enviando correo...' 
+                    : 'Estado cambiado a impago. Enviando notificación al cliente...';
             }
 
-            fetch('enviarValidacionMail.php', {
+            // Selecciona el archivo PHP correspondiente según el estado
+            const archivoEnvioMail = (estadoNum === 1) ? 'enviarValidacionMail.php' : 'enviarNotificacionImpago.php';
+
+            fetch(archivoEnvioMail, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -443,14 +451,14 @@ function cambiarEstadoPago(idDetalleCompra, idEstado) {
             .then(data => {
                 if (mensaje) {
                     mensaje.style.color = '#45024b';
-                    mensaje.textContent = data.mensaje || '¡Pago aprobado y correo enviado correctamente al cliente!';
+                    mensaje.textContent = data.mensaje || 'Estado actualizado y correo enviado correctamente.';
                 }
             })
             .catch(error => {
                 console.error('Error nativo en envío de correo:', error);
                 if (mensaje) {
                     mensaje.style.color = 'red';
-                    mensaje.textContent = 'El pago fue aprobado, pero falló el envío: ' + error.message;
+                    mensaje.textContent = 'El estado se actualizó, pero falló el envío del correo: ' + error.message;
                 }
             });
         }
@@ -675,19 +683,18 @@ function guardarTutorial() {
 
         reader.readAsDataURL(archivoInput.files[0]);
     } else {
-        // Si no seleccionaron archivo, enviamos el enlace ingresado.
+        // Si no seleccionaron archivo, envia el enlace ingresado
         enviarDatos(enlace);
     }
 }
-
 
 function prepararEdicionTutorial(tut) {
     document.getElementById('tutId').value = tut.id_tutorial;
     document.getElementById('tutNombre').value = tut.nombre;
     document.getElementById('tutDescripcion').value = tut.descripcion || '';
 
-    // No se puede asignar una ruta a un input de tipo file.
-    // Si es un enlace web, lo mostramos en el campo de enlace.
+    // No se puede asignar una ruta a un input de tipo file
+    // Si es un enlace web, lo muestra en el campo de enlace
     if (tut.archivo && tut.archivo.startsWith('http')) {
         document.getElementById('tutEnlace').value = tut.archivo;
     } else {
@@ -695,12 +702,8 @@ function prepararEdicionTutorial(tut) {
     }
 
     document.getElementById('tutArchivo').value = '';
-
-    document.getElementById('tituloFormTutorial').textContent =
-        "Editar Tutorial #" + tut.id_tutorial;
-
-    document.getElementById('btnCancelarEdicionTut').style.display =
-        'inline-block';
+    document.getElementById('tituloFormTutorial').textContent = "Editar Tutorial #" + tut.id_tutorial;
+    document.getElementById('btnCancelarEdicionTut').style.display = 'inline-block';
 }
 
 
@@ -710,12 +713,8 @@ function limpiarFormularioTutorial() {
     document.getElementById('tutDescripcion').value = '';
     document.getElementById('tutEnlace').value = '';
     document.getElementById('tutArchivo').value = '';
-
-    document.getElementById('tituloFormTutorial').textContent =
-        "Registrar Nuevo Tutorial";
-
-    document.getElementById('btnCancelarEdicionTut').style.display =
-        'none';
+    document.getElementById('tituloFormTutorial').textContent = "Registrar Nuevo Tutorial";
+    document.getElementById('btnCancelarEdicionTut').style.display = 'none';
 }
 
 
