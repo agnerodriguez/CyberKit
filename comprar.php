@@ -79,10 +79,10 @@
                         <!-- Columna Derecha: Información -->
                         <div class="info">
                             <h2 class="fuentePrincipal">ALIAS</h2>
-                            <p class="fuentePrincipal" id="alias" onclick="copiarElemento('alias')">$$$$$</p>
+                            <p class="fuentePrincipal" id="alias" onclick="copiarElemento('alias')">recy.tech.web</p>
 
                             <h2 class="fuentePrincipal">CBU</h2>
-                            <p class="fuentePrincipal" id="cbu" onclick="copiarElemento('cbu')">$$$$$</p>
+                            <p class="fuentePrincipal" id="cbu" onclick="copiarElemento('cbu')">0000003100091028927866</p>
 
                             <p id="mensajeCopiar" class="fuenteSecundaria"></p>
                         </div>
