@@ -4,6 +4,22 @@
     box-sizing: border-box;
 }
 
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('fuentes/PressStart2P.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Michroma';
+  src: url('fuentes/Michroma-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 html, body {
     height: 100vh;
     margin: 0;
@@ -11,6 +27,18 @@ html, body {
     overflow: hidden; /* Evita que la página completa se desplace verticalmente */
     font-family: sans-serif;
     background: white;
+}
+
+.fuentePrincipal {
+  font-family: 'Press Start 2P';
+}
+
+.fuenteSecundaria {
+  font-family: 'Michroma';
+}
+
+.NOCELULAR {
+    display: none;
 }
 
 /* Control estricto de Secciones/Formularios */
@@ -511,4 +539,65 @@ html, body {
     border-radius: 4px !important;
     display: block !important;
     margin: 0 !important;
+}
+
+@media (max-width: 768px) {
+    .NOCELULAR {
+        /* Posicionamiento fijo para cubrir toda la pantalla del celular */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        
+        /* Flexbox para centrar la tarjeta .aviso en la pantalla */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+        z-index: 9999; /* Asegura que quede por encima de otros elementos */
+        background-color: rgba(53, 49, 49, 0.524);
+        
+        /* Opcional: desenfoque para el fondo detrás */
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .aviso {
+        /* Ordena los elementos hijos (texto y botón) en columna vertical */
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centra horizontalmente el texto y el botón */
+
+        color: #ff00ff;
+        text-shadow: 2px 2px 0px #5a189a, 0 0 8px #ff00ff;
+        font-size: 15px;
+        text-align: center;
+        padding: 20px;  
+    }
+    
+    a{
+        text-decoration: none;
+    }
+
+    .VolverInicio {
+        background-color: #ff00ff;
+        color:  black;
+        border-radius: 50px;
+        cursor: pointer;
+        text-transform: uppercase;
+        border: 3px solid  white;
+        box-shadow: 0 0 15px #ff00ff, inset 0 0 8px rgba(255, 255, 255, 0.6);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        padding: 6px 30px;
+        font-size: 17px;
+        align-self: center;
+        margin-top: 10%;
+    }
+
+    .VolverInicio:hover {
+        transform: scale(1.05);
+        background-color: #ff33ff;
+        box-shadow: 0 0 25px #ff00ff, 0 0 10px #00ffff;
+    }
 }

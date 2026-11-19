@@ -48,6 +48,11 @@
     background-color: transparent;
 }
 
+.nav-lista li.panel-admin {
+    width: 190px;
+    flex-shrink: 0;
+}
+
 .nav-lista a {
     display: flex; 
     align-items: center;
@@ -60,6 +65,10 @@
     font-family: sans-serif;
     text-align: center;
     z-index: 1;
+}
+
+.nav-lista li.panel-admin a {
+    white-space: nowrap;
 }
 
 /* Efecto hover para cada li dentro de la lista de navegación */
@@ -158,6 +167,11 @@
         justify-content: flex-start;
         background-color: transparent !important; /* Quita el fondo en móviles */
         border: none !important;                  /* Quita los bordes en móviles */
+    }
+
+    .nav-lista li.panel-admin a {
+        justify-content: center;
+        padding-left: 0;
     }
 
     /* Quita el fondo en hover y en estado activo para móvil */

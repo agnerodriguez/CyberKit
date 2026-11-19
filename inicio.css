@@ -4,6 +4,22 @@
     padding: 0;
 }
 
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('fuentes/PressStart2P.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Michroma';
+  src: url('fuentes/Michroma-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 body {
     background-image: url(fondos/fondo.png);
     background-size: cover;
@@ -15,6 +31,15 @@ body {
     position: relative;
      display: flex;
     flex-direction: column;
+}
+
+
+.fuentePrincipal {
+  font-family: 'Press Start 2P';
+}
+
+.fuenteSecundaria {
+  font-family: 'Michroma';
 }
 
 /* ENCABEZADO */

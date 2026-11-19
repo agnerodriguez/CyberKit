@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="panel.css">
 </head>
 <body>
+    
+    <div class="NOCELULAR">
+        <div class="aviso fuentePrincipal">
+            <p>Este apartado no esta disponible en este dispositivo</p>
+            <button class="VolverInicio fuentePrincipal"><a href="inicio.php">Volver a inicio</a></button>
+        </div>
+    </div>
+
     <div class="contenedor">
 
         <!-- Sidebar -->

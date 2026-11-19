@@ -42,7 +42,7 @@ $pagina_actual = basename($_SERVER['PHP_SELF']);
             </li>
 
             <?php if (isset($_SESSION['admin']) && $_SESSION['admin'] == 1): ?>
-                <li class="<?= $pagina_actual == 'panel.php' ? 'activo' : '' ?>">
+                <li class="panel-admin <?= $pagina_actual == 'panel.php' ? 'activo' : '' ?>">
                     <a href="panel.php" onclick="Seleccionado(this)">Panel de administración</a>
                 </li>
             <?php endif; ?>
